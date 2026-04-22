@@ -822,24 +822,93 @@
       </div>
     </div>
 
-    <!-- ANALYZER -->
+    <!-- TRANSAKCE -->
     <div class="card">
-      <div class="card-title"><span>◎</span> Analyzátor nákupu</div>
+      <div class="card-title"><span>◎</span> Transakce portfolia</div>
 
-      <div class="form-group">
-        <label class="form-label">Částka (USD)</label>
-        <input type="number" id="amount" value="1000" min="1" step="100">
+      <!-- TABS -->
+      <div style="display:flex;gap:6px;margin-bottom:18px">
+        <button class="chart-btn active" id="tab-buy"   onclick="switchTab('buy')">▲ Dokup</button>
+        <button class="chart-btn"        id="tab-sell"  onclick="switchTab('sell')">▼ Odprodej</button>
+        <button class="chart-btn"        id="tab-new"   onclick="switchTab('new')">＋ Nová pozice</button>
+        <button class="chart-btn"        id="tab-del"   onclick="switchTab('del')">✕ Smazat pozici</button>
       </div>
 
-      <div class="form-group">
-        <label class="form-label">Ticker</label>
-        <select id="tickerSelect"></select>
+      <!-- TAB: DOKUP -->
+      <div id="panel-buy">
+        <div class="form-group">
+          <label class="form-label">Ticker</label>
+          <select id="buyTicker"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Počet kusů</label>
+          <input type="number" id="buyQty" value="1" min="0" step="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cena nákupu (USD) — volitelné</label>
+          <input type="number" id="buyPrice" placeholder="auto" min="0" step="0.01">
+        </div>
+        <button class="btn btn-primary" onclick="execBuy()">▲ Potvrdit dokup</button>
+        <div class="buy-result" id="buyResult" style="margin-top:12px"></div>
       </div>
 
-      <button class="btn btn-primary" onclick="analyze()">Analyzovat nákup</button>
-      <button class="btn btn-secondary" onclick="clearResult()" style="margin-left:8px">✕</button>
+      <!-- TAB: ODPRODEJ -->
+      <div id="panel-sell" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Ticker</label>
+          <select id="sellTicker"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Počet kusů k prodeji</label>
+          <input type="number" id="sellQty" value="1" min="1" step="1">
+        </div>
+        <button class="btn danger" onclick="execSell()" style="background:#ef4444;color:#fff">▼ Potvrdit prodej</button>
+        <div class="buy-result" id="sellResult" style="margin-top:12px"></div>
+      </div>
 
-      <div class="buy-result" id="buyResult"></div>
+      <!-- TAB: NOVÁ POZICE -->
+      <div id="panel-new" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Ticker (např. ENB)</label>
+          <input type="text" id="newPosTicker" placeholder="TICKER" style="text-transform:uppercase">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sektor</label>
+          <select id="newPosSector">
+            <option value="BDC">BDC</option>
+            <option value="REIT">REIT</option>
+            <option value="Other" selected>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Počet kusů</label>
+          <input type="number" id="newPosQty" value="0" min="0" step="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Div. výnos % (např. 6.5)</label>
+          <input type="number" id="newPosYield" placeholder="0.0" step="0.1" min="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Aktuální cena USD</label>
+          <input type="number" id="newPosPrice" placeholder="0.00" step="0.01" min="0">
+        </div>
+        <button class="btn btn-primary" onclick="execNewPos()">＋ Přidat pozici</button>
+        <div class="buy-result" id="newPosResult" style="margin-top:12px"></div>
+      </div>
+
+      <!-- TAB: SMAZAT -->
+      <div id="panel-del" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Vyber pozici ke smazání</label>
+          <select id="delTicker"></select>
+        </div>
+        <div id="delPreview" style="margin:10px 0;padding:12px;background:var(--surface2);border-radius:10px;font-size:0.82rem;color:var(--muted)">
+          Vyber ticker výše
+        </div>
+        <button class="btn" onclick="execDel()" style="background:#ef4444;color:#fff">✕ Smazat pozici</button>
+        <div class="buy-result" id="delResult" style="margin-top:12px"></div>
+      </div>
+
     </div>
 
   </div>
@@ -1152,11 +1221,15 @@ function renderHoldings() {
 }
 
 function populateSelect() {
-  const sel = document.getElementById('tickerSelect');
-  const current = sel.value;
-  sel.innerHTML = portfolio.tickers.map(t =>
-    `<option value="${t}" ${t===current?'selected':''}>${t} — ${(getYield(t)*100).toFixed(2)}%</option>`
-  ).join('');
+  // Naplní všechny selecty tickery
+  ['buyTicker','sellTicker','delTicker'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const cur = sel.value;
+    sel.innerHTML = portfolio.tickers.map(t =>
+      `<option value="${t}" ${t===cur?'selected':''}>${t} — ${portfolio.qty[t]||0} ks @ $${getPrice(t).toFixed(2)}</option>`
+    ).join('');
+  });
 }
 
 function renderAll() {
@@ -1170,38 +1243,132 @@ function renderAll() {
 }
 
 // ═══════════════════════════════════════════════
-// ANALYZE
+// TRANSAKCE
 // ═══════════════════════════════════════════════
-function analyze() {
-  const t = document.getElementById('tickerSelect').value;
-  const amt = parseFloat(document.getElementById('amount').value);
-  if (!t || isNaN(amt) || amt <= 0) return;
-
-  const price = getPrice(t);
-  const yld = getYield(t);
-  const qty = amt / price;
-  const divYear = qty * price * yld;
-  const divMonth = divYear / 12;
-  const payback = price / (price * yld);
-
-  const el = document.getElementById('buyResult');
-  el.innerHTML = `
-    <div class="buy-result-row"><span class="label">Ticker</span><span class="val">${t} · ${portfolio.sectors[t]||'—'}</span></div>
-    <div class="buy-result-row"><span class="label">Cena</span><span class="val">$${price.toFixed(2)} ${livePrices[t] ? '🟢 LIVE' : '🟡 Fallback'}</span></div>
-    <div class="buy-result-row"><span class="label">Investice</span><span class="val">$${amt.toFixed(0)}</span></div>
-    <div class="buy-result-row"><span class="label">Počet akcií</span><span class="val">${qty.toFixed(4)} ks</span></div>
-    <div class="buy-result-row"><span class="label">Výnos</span><span class="val">${(yld*100).toFixed(2)}%</span></div>
-    <div class="buy-result-row"><span class="label">Dividenda / rok</span><span class="val green">+$${divYear.toFixed(2)}</span></div>
-    <div class="buy-result-row"><span class="label">Dividenda / měsíc</span><span class="val green">+$${divMonth.toFixed(2)}</span></div>
-    <div class="buy-result-row"><span class="label">Návratnost (roky)</span><span class="val">${payback.toFixed(1)} let</span></div>
-  `;
-  el.classList.add('show');
+function switchTab(tab) {
+  ['buy','sell','new','del'].forEach(t => {
+    document.getElementById(`panel-${t}`).style.display = t === tab ? '' : 'none';
+    document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
+  });
+  if (tab === 'buy')  populateTxSelect('buyTicker');
+  if (tab === 'sell') populateTxSelect('sellTicker');
+  if (tab === 'del')  { populateTxSelect('delTicker'); updateDelPreview(); }
 }
 
-function clearResult() {
-  const el = document.getElementById('buyResult');
-  el.classList.remove('show');
-  setTimeout(() => { el.innerHTML = ''; }, 300);
+function populateTxSelect(id) {
+  const sel = document.getElementById(id);
+  const cur = sel.value;
+  sel.innerHTML = portfolio.tickers.map(t =>
+    `<option value="${t}" ${t===cur?'selected':''}>${t} — ${portfolio.qty[t]||0} ks @ $${getPrice(t).toFixed(2)}</option>`
+  ).join('');
+}
+
+function updateDelPreview() {
+  const t = document.getElementById('delTicker').value;
+  if (!t) return;
+  const qty = portfolio.qty[t] || 0;
+  const val = qty * getPrice(t);
+  document.getElementById('delPreview').innerHTML =
+    `<strong style="color:var(--text)">${t}</strong> · ${qty} ks · ${fmtUSD(val)}<br>
+     <span style="color:#ef4444">Tato pozice bude trvale odstraněna z portfolia.</span>`;
+}
+
+function showTxResult(elId, msg, ok=true) {
+  const el = document.getElementById(elId);
+  el.style.display = 'block';
+  el.style.borderColor = ok ? 'rgba(0,229,160,0.3)' : 'rgba(239,68,68,0.3)';
+  el.innerHTML = `<div class="buy-result-row"><span class="val" style="color:${ok?'var(--accent)':'#ef4444'}">${msg}</span></div>`;
+}
+
+function execBuy() {
+  const t   = document.getElementById('buyTicker').value;
+  const qty = parseFloat(document.getElementById('buyQty').value) || 0;
+  const customPrice = parseFloat(document.getElementById('buyPrice').value);
+
+  if (!t || qty <= 0) { showTxResult('buyResult','⚠ Zadej ticker a počet kusů',false); return; }
+
+  const oldQty = portfolio.qty[t] || 0;
+  portfolio.qty[t] = oldQty + qty;
+
+  // Pokud zadal cenu nákupu, aktualizuj fallback
+  if (customPrice > 0) {
+    portfolio.fallback[t] = customPrice;
+    delete livePrices[t]; // vymaž live cenu aby se použil nový fallback
+  }
+
+  renderAll();
+  populateTxSelect('buyTicker');
+  showTxResult('buyResult',
+    `✓ Dokoupeno ${qty} ks ${t} | Nový stav: ${portfolio.qty[t]} ks`);
+  showToast(`▲ ${t} +${qty} ks`);
+}
+
+function execSell() {
+  const t   = document.getElementById('sellTicker').value;
+  const qty = parseFloat(document.getElementById('sellQty').value) || 0;
+
+  if (!t || qty <= 0) { showTxResult('sellResult','⚠ Zadej počet kusů',false); return; }
+
+  const oldQty = portfolio.qty[t] || 0;
+  if (qty > oldQty) {
+    showTxResult('sellResult',`⚠ Máš jen ${oldQty} ks ${t}`,false); return;
+  }
+
+  portfolio.qty[t] = oldQty - qty;
+  renderAll();
+  populateTxSelect('sellTicker');
+  showTxResult('sellResult',
+    `✓ Prodáno ${qty} ks ${t} | Zbývá: ${portfolio.qty[t]} ks`);
+  showToast(`▼ ${t} −${qty} ks`);
+}
+
+function execNewPos() {
+  const t     = document.getElementById('newPosTicker').value.trim().toUpperCase();
+  const sec   = document.getElementById('newPosSector').value;
+  const qty   = parseFloat(document.getElementById('newPosQty').value) || 0;
+  const yld   = parseFloat(document.getElementById('newPosYield').value) / 100 || 0;
+  const price = parseFloat(document.getElementById('newPosPrice').value) || 0;
+
+  if (!t)     { showTxResult('newPosResult','⚠ Zadej ticker',false); return; }
+  if (portfolio.tickers.includes(t)) {
+    showTxResult('newPosResult',`⚠ ${t} už existuje — použij Dokup`,false); return;
+  }
+  if (price <= 0) { showTxResult('newPosResult','⚠ Zadej aktuální cenu',false); return; }
+
+  portfolio.tickers.push(t);
+  portfolio.sectors[t]  = sec;
+  portfolio.qty[t]      = qty;
+  portfolio.yields[t]   = yld;
+  portfolio.fallback[t] = price;
+
+  renderAll();
+  // Reset formuláře
+  ['newPosTicker','newPosQty','newPosYield','newPosPrice'].forEach(id =>
+    document.getElementById(id).value = '');
+
+  showTxResult('newPosResult',`✓ ${t} přidán do portfolia (${qty} ks @ $${price})`);
+  showToast(`＋ ${t} přidán`);
+}
+
+function execDel() {
+  const t = document.getElementById('delTicker').value;
+  if (!t) return;
+
+  if (!confirm(`Opravdu smazat ${t} z portfolia?`)) return;
+
+  portfolio.tickers = portfolio.tickers.filter(x => x !== t);
+  delete portfolio.sectors[t];
+  delete portfolio.qty[t];
+  delete portfolio.yields[t];
+  delete portfolio.fallback[t];
+  delete livePrices[t];
+  delete liveYields[t];
+
+  renderAll();
+  populateTxSelect('delTicker');
+  updateDelPreview();
+  showTxResult('delResult',`✓ ${t} odstraněn z portfolia`);
+  showToast(`✕ ${t} smazán`);
 }
 
 // ═══════════════════════════════════════════════
