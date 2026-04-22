@@ -770,13 +770,6 @@
         </div>
         <div class="sector-row">
           <div class="sector-header">
-            <div class="sector-name">Utility <span class="sector-tag utility">Energetika</span></div>
-            <div class="sector-meta"><span class="sector-val" id="secValUtility">—</span></div>
-          </div>
-          <div class="bar-track"><div class="bar-fill utility" id="barUtility"></div></div>
-        </div>
-        <div class="sector-row">
-          <div class="sector-header">
             <div class="sector-name">Other <span class="sector-tag other">Různé</span></div>
             <div class="sector-meta"><span class="sector-val" id="secValOther">—</span></div>
           </div>
@@ -970,41 +963,35 @@
 // DATA — mutable portfolio object
 // ═══════════════════════════════════════════════
 const portfolio = {
-  tickers: ['PFLT','ARCC','CSWC','HTGC','MAIN','O','WPC','OHI','ENB','DUK','NEE','MO','VZ','KO','PRU'],
+  tickers: ['PFLT','ARCC','CSWC','HTGC','MAIN','O','WPC','OHI','MO','VZ','VICI','BMS'],
   sectors: {
     PFLT:'BDC', ARCC:'BDC', CSWC:'BDC', HTGC:'BDC', MAIN:'BDC',
-    O:'REIT', WPC:'REIT', OHI:'REIT',
-    ENB:'Utility', DUK:'Utility', NEE:'Utility',
-    MO:'Other', VZ:'Other', KO:'Other', PRU:'Other'
+    O:'REIT', WPC:'REIT', OHI:'REIT', VICI:'REIT',
+    MO:'Other', VZ:'Other', BMS:'Other'
   },
   yields: {
-    PFLT:0.130, ARCC:0.097, CSWC:0.118, HTGC:0.102, MAIN:0.067,
-    O:0.0498, WPC:0.052, OHI:0.061,
-    ENB:0.055, DUK:0.035, NEE:0.028,
-    MO:0.067, VZ:0.061, KO:0.031, PRU:0.035
+    PFLT:0.140, ARCC:0.101, CSWC:0.118, HTGC:0.102, MAIN:0.067,
+    O:0.0498,   WPC:0.058,  OHI:0.061,  VICI:0.055,
+    MO:0.067,   VZ:0.061,   BMS:0.018
   },
   fallback: {
-    PFLT: 8.80,  // Robinhood live 22.4.2026
-    ARCC: 18.98, // TradingView live 22.4.2026
-    CSWC: 22.80, // stockinvest.us 8.4.2026
-    HTGC: 15.95, // analyst target ~$18, 52w low $13.70, est mid
-    MAIN: 52.50, // stockanalysis.com NAV $33.33, trading premium
-    O:    55.20, // Realty Income approx April 2026
-    WPC:  58.10, // W.P. Carey approx April 2026
-    OHI:  35.40, // Omega Healthcare approx April 2026
-    ENB:  40.50, // Enbridge NYSE approx April 2026
-    DUK:  115.20,// Duke Energy approx April 2026
-    NEE:  68.30, // NextEra Energy approx April 2026
-    MO:   54.80, // Altria approx April 2026
-    VZ:   43.50, // Verizon approx April 2026
-    KO:   71.20, // Coca-Cola approx April 2026
-    PRU:  108.40 // Prudential approx April 2026
+    PFLT: 8.70,  // XTB live 22.4.2026
+    ARCC: 18.95, // XTB live 22.4.2026
+    CSWC: 23.75, // XTB live 22.4.2026
+    HTGC: 15.69, // XTB live 22.4.2026
+    MAIN: 54.00, // XTB live 22.4.2026
+    O:    64.06, // XTB live 22.4.2026
+    WPC:  73.78, // XTB live 22.4.2026
+    OHI:  45.95, // XTB live 22.4.2026
+    MO:   64.73, // XTB live 22.4.2026
+    VZ:   46.31, // XTB live 22.4.2026
+    VICI: 28.45, // XTB live 22.4.2026
+    BMS:  59.43  // XTB live 22.4.2026
   },
   qty: {
-    PFLT:1928, ARCC:113, CSWC:112, HTGC:76, MAIN:36,
-    O:62, WPC:25, OHI:70,
-    ENB:31, DUK:17, NEE:20,
-    MO:41, VZ:23, KO:25, PRU:10
+    PFLT:1913, ARCC:113, CSWC:85, HTGC:53, MAIN:28,
+    O:53, WPC:18, OHI:47,
+    MO:31, VZ:22, VICI:7, BMS:3
   }
 };
 
@@ -1079,7 +1066,7 @@ function getYield(t) { return liveYields[t] || portfolio.yields[t] || 0; }
 
 function computeStats() {
   let total = 0;
-  const sec = { BDC:0, REIT:0, Utility:0, Other:0 };
+  const sec = { BDC:0, REIT:0, Other:0 };
   let weightedYield = 0;
 
   for (const t of portfolio.tickers) {
@@ -1105,8 +1092,8 @@ function renderStats() {
 
 function renderSectors() {
   const s = computeStats();
-  const map = { BDC:'BDC', REIT:'REIT', Utility:'Utility', Other:'Other' };
-  for (const [key, id] of Object.entries(map)) {
+  const map = { BDC:'BDC', REIT:'REIT', Other:'Other' };
+  for (const [key] of Object.entries(map)) {
     const val = s.sec[key] || 0;
     const pct = s.total > 0 ? (val / s.total) * 100 : 0;
     document.getElementById(`secVal${key}`).textContent =
@@ -1474,13 +1461,13 @@ function updateChart() {
 // ═══════════════════════════════════════════════
 // REBALANCING
 // ═══════════════════════════════════════════════
-const TARGET_WEIGHTS = { BDC: 40, REIT: 25, Utility: 20, Other: 15 };
+const TARGET_WEIGHTS = { BDC: 45, REIT: 35, Other: 20 };
 let targetWeights = { ...TARGET_WEIGHTS };
 
 function renderRebalancing() {
   const s = computeStats();
   const capital = parseFloat(document.getElementById('rebalCapital').value) || 0;
-  const sectors = ['BDC','REIT','Utility','Other'];
+  const sectors = ['BDC','REIT','Other'];
   const colors = { BDC:'bdc', REIT:'reit', Utility:'utility', Other:'other' };
 
   // Summary cards
