@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio Pro Live</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #080d18;
+    --surface: #0d1526;
+    --surface2: #111d35;
+    --border: #1a2a46;
+    --accent: #00e5a0;
+    --accent2: #0ea5e9;
+    --accent3: #f59e0b;
+    --danger: #ef4444;
+    --text: #e2eaf7;
+    --muted: #5a7499;
+    --mono: 'DM Mono', monospace;
+    --display: 'Syne', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 14px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid pattern */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,160,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,160,0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1380px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+
+  /* HEADER */
+  header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo-block h1 {
+    font-family: var(--display);
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1;
+    background: linear-gradient(135deg, #00e5a0 0%, #0ea5e9 60%, #a78bfa 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .logo-block p {
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-top: 6px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .live-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,229,160,0.08);
+    border: 1px solid rgba(0,229,160,0.2);
+    border-radius: 100px;
+    padding: 8px 16px;
+    font-size: 0.75rem;
+    color: var(--accent);
+    letter-spacing: 1px;
+  }
+
+  .live-dot {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  /* STAT BAR */
+  .stat-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 28px;
+    border: 1px solid var(--border);
+  }
+
+  .stat-item {
+    background: var(--surface);
+    padding: 20px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-item::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .stat-item:nth-child(1)::after { background: var(--accent); }
+  .stat-item:nth-child(2)::after { background: var(--accent2); }
+  .stat-item:nth-child(3)::after { background: var(--accent3); }
+  .stat-item:nth-child(4)::after { background: #a78bfa; }
+
+  .stat-label {
+    color: var(--muted);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+
+  .stat-value {
+    font-family: var(--display);
+    font-size: 1.7rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text);
+  }
+
+  .stat-value.green { color: var(--accent); }
+
+  /* MAIN GRID */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 900px) {
+    .main-grid { grid-template-columns: 1fr; }
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .card:hover { border-color: rgba(0,229,160,0.2); }
+
+  .card-title {
+    font-family: var(--display);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--muted);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card-title span { font-size: 1rem; }
+
+  /* SECTOR BARS */
+  .sector-row {
+    margin-bottom: 16px;
+  }
+
+  .sector-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+  }
+
+  .sector-name {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  .sector-meta {
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+
+  .sector-val {
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  .bar-track {
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 100px;
+    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+    width: 0%;
+  }
+
+  .bar-fill.bdc { background: linear-gradient(90deg, #00e5a0, #0ea5e9); }
+  .bar-fill.reit { background: linear-gradient(90deg, #0ea5e9, #a78bfa); }
+  .bar-fill.utility { background: linear-gradient(90deg, #f59e0b, #ef4444); }
+  .bar-fill.other { background: linear-gradient(90deg, #a78bfa, #ec4899); }
+
+  /* SIGNALS TABLE */
+  .signal-table { width: 100%; border-collapse: collapse; }
+
+  .signal-table th {
+    text-align: left;
+    color: var(--muted);
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0 8px 10px 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .signal-table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid rgba(26,42,70,0.5);
+    font-size: 0.82rem;
+    vertical-align: middle;
+  }
+
+  .signal-table tr:last-child td { border-bottom: none; }
+  .signal-table tr:hover td { background: rgba(0,229,160,0.03); }
+
+  .ticker-badge {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--text);
+  }
+
+  .sector-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .sector-tag.bdc { background: rgba(0,229,160,0.12); color: #00e5a0; }
+  .sector-tag.reit { background: rgba(14,165,233,0.12); color: #0ea5e9; }
+  .sector-tag.utility { background: rgba(245,158,11,0.12); color: #f59e0b; }
+  .sector-tag.other { background: rgba(167,139,250,0.12); color: #a78bfa; }
+
+  .signal-pill {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+  .signal-pill.buy { background: rgba(0,229,160,0.15); color: var(--accent); border: 1px solid rgba(0,229,160,0.3); }
+  .signal-pill.hold { background: rgba(245,158,11,0.1); color: var(--accent3); border: 1px solid rgba(245,158,11,0.2); }
+  .signal-pill.watch { background: rgba(14,165,233,0.1); color: var(--accent2); border: 1px solid rgba(14,165,233,0.2); }
+
+  .yield-val { color: var(--accent); font-weight: 500; }
+  .price-val { color: var(--text); font-family: var(--mono); }
+  .price-loading { color: var(--accent3); font-style: italic; font-size: 0.75rem; }
+
+  /* BOTTOM PANEL */
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 900px) {
+    .bottom-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ANALYZER FORM */
+  .form-group { margin-bottom: 14px; }
+
+  .form-label {
+    display: block;
+    color: var(--muted);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+
+  input[type="number"], select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    padding: 12px 16px;
+    border-radius: 10px;
+    outline: none;
+    transition: border-color 0.2s;
+    appearance: none;
+  }
+
+  input[type="number"]:focus, select:focus {
+    border-color: rgba(0,229,160,0.4);
+    box-shadow: 0 0 0 3px rgba(0,229,160,0.06);
+  }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn:active { transform: scale(0.97); }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #080d18;
+  }
+  .btn-primary:hover { background: #00ffb2; box-shadow: 0 0 20px rgba(0,229,160,0.3); }
+
+  .btn-secondary {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { border-color: rgba(0,229,160,0.3); color: var(--accent); }
+
+  .btn-sm {
+    padding: 8px 16px;
+    font-size: 0.7rem;
+  }
+
+  /* BUY RESULT */
+  .buy-result {
+    margin-top: 16px;
+    padding: 16px;
+    background: var(--surface2);
+    border-radius: 12px;
+    border: 1px solid rgba(0,229,160,0.15);
+    display: none;
+  }
+
+  .buy-result.show { display: block; animation: slideIn 0.3s ease; }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .buy-result-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.82rem;
+  }
+  .buy-result-row:last-child { border-bottom: none; }
+  .buy-result-row .label { color: var(--muted); }
+  .buy-result-row .val { color: var(--text); font-weight: 500; }
+  .buy-result-row .val.green { color: var(--accent); }
+
+  /* HOLDINGS TABLE */
+  .holdings-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+  .holdings-table th {
+    text-align: left;
+    color: var(--muted);
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0 8px 10px 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .holdings-table td {
+    padding: 9px 8px;
+    border-bottom: 1px solid rgba(26,42,70,0.4);
+    vertical-align: middle;
+  }
+  .holdings-table tr:last-child td { border-bottom: none; }
+  .holdings-table tr:hover td { background: rgba(0,229,160,0.02); }
+
+  /* SCROLLABLE */
+  .scroll-wrap { max-height: 340px; overflow-y: auto; }
+  .scroll-wrap::-webkit-scrollbar { width: 4px; }
+  .scroll-wrap::-webkit-scrollbar-track { background: transparent; }
+  .scroll-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* LOADING STATES */
+  .skeleton {
+    background: linear-gradient(90deg, var(--surface2) 25%, rgba(0,229,160,0.05) 50%, var(--surface2) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+    display: inline-block;
+    height: 1em;
+    width: 60px;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 24px 0;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(8,13,24,0.85);
+    backdrop-filter: blur(6px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    width: 100%;
+    max-width: 720px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(24px);
+    transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+    overflow: hidden;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .modal-header h2 {
+    font-family: var(--display);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+
+  .modal-close {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .modal-close:hover { color: var(--text); border-color: rgba(0,229,160,0.3); }
+
+  .modal-body { overflow-y: auto; padding: 20px 24px; flex: 1; }
+  .modal-body::-webkit-scrollbar { width: 4px; }
+  .modal-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+
+  /* EDITOR TABLE */
+  .editor-table { width: 100%; border-collapse: collapse; }
+  .editor-table th {
+    text-align: left;
+    color: var(--muted);
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0 8px 12px 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .editor-table td { padding: 8px; border-bottom: 1px solid rgba(26,42,70,0.4); vertical-align: middle; }
+  .editor-table tr:last-child td { border-bottom: none; }
+
+  .editor-input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    padding: 7px 10px;
+    border-radius: 8px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .editor-input:focus { border-color: rgba(0,229,160,0.4); }
+
+  .editor-select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    padding: 7px 10px;
+    border-radius: 8px;
+    width: 100%;
+    outline: none;
+  }
+
+  .btn-icon {
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.2);
+    color: #ef4444;
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .btn-icon:hover { background: rgba(239,68,68,0.2); }
+
+  /* ADD ROW */
+  .add-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr auto;
+    gap: 8px;
+    align-items: end;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .add-row-label {
+    color: var(--muted);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  /* Toast notification */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface);
+    border: 1px solid rgba(0,229,160,0.3);
+    color: var(--accent);
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-family: var(--display);
+    font-weight: 600;
+    letter-spacing: 1px;
+    z-index: 999;
+    transform: translateY(80px);
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .toast.show { transform: translateY(0); }
+
+  .full-width { grid-column: 1 / -1; }
+
+  /* CHART */
+  .chart-wrap { position: relative; height: 220px; margin-top: 8px; }
+  canvas#portfolioChart { width: 100% !important; height: 100% !important; }
+
+  .chart-controls { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  .chart-btn {
+    padding: 5px 14px; border-radius: 100px; font-family: var(--mono); font-size: 0.72rem;
+    border: 1px solid var(--border); background: var(--surface2); color: var(--muted);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .chart-btn.active { background: rgba(0,229,160,0.12); border-color: rgba(0,229,160,0.4); color: var(--accent); }
+
+  /* REBALANCING */
+  .rebal-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+  .rebal-table th {
+    text-align: left; color: var(--muted); font-size: 0.65rem; letter-spacing: 2px;
+    text-transform: uppercase; padding: 0 8px 10px 8px; border-bottom: 1px solid var(--border);
+  }
+  .rebal-table td { padding: 9px 8px; border-bottom: 1px solid rgba(26,42,70,0.4); vertical-align: middle; }
+  .rebal-table tr:last-child td { border-bottom: none; }
+
+  .rebal-buy  { color: var(--accent); font-weight: 600; }
+  .rebal-sell { color: #ef4444; font-weight: 600; }
+  .rebal-ok   { color: var(--muted); }
+
+  .target-input {
+    background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+    font-family: var(--mono); font-size: 0.8rem; padding: 5px 8px; border-radius: 8px;
+    width: 64px; outline: none; text-align: right;
+  }
+  .target-input:focus { border-color: rgba(0,229,160,0.4); }
+
+  .rebal-summary {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px; margin-bottom: 16px;
+  }
+  .rebal-sum-item {
+    background: var(--surface2); border-radius: 12px; padding: 12px 14px;
+    border: 1px solid var(--border);
+  }
+  .rebal-sum-label { color: var(--muted); font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; }
+  .rebal-sum-val { font-family: var(--display); font-weight: 700; font-size: 1.1rem; color: var(--text); }
+
+  /* AUTO-REFRESH badge */
+  .auto-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(14,165,233,0.08); border: 1px solid rgba(14,165,233,0.2);
+    border-radius: 100px; padding: 6px 14px; font-size: 0.72rem; color: var(--accent2);
+    cursor: pointer; transition: all 0.2s; user-select: none;
+  }
+  .auto-badge.on { background: rgba(14,165,233,0.15); border-color: rgba(14,165,233,0.4); }
+  .auto-badge:hover { border-color: rgba(14,165,233,0.5); }
+  .countdown { font-weight: 600; min-width: 28px; text-align: right; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-block">
+      <h1>Portfolio Pro Live</h1>
+      <p>Dividend Income Dashboard · Real-Time</p>
+    </div>
+    <div class="header-actions">
+      <div class="live-indicator">
+        <div class="live-dot"></div>
+        <span id="lastUpdate">OFFLINE</span>
+      </div>
+      <div class="auto-badge" id="autoBadge" onclick="toggleAutoRefresh()" title="Auto-refresh každých 15 min">
+        ⏱ AUTO <span class="countdown" id="countdown">—</span>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="openEditor()">
+        ✎ Editovat portfolio
+      </button>
+      <button class="btn btn-secondary btn-sm" onclick="fetchData()" id="refreshBtn">
+        ↻ Načíst data
+      </button>
+    </div>
+  </header>
+
+  <!-- STAT BAR -->
+  <div class="stat-bar">
+    <div class="stat-item">
+      <div class="stat-label">Hodnota portfolia</div>
+      <div class="stat-value" id="statTotal">—</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Roční dividenda</div>
+      <div class="stat-value green" id="statDiv">—</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Průměrný výnos</div>
+      <div class="stat-value" id="statYield">—</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Počet pozic</div>
+      <div class="stat-value" id="statCount">15</div>
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+
+    <!-- SECTOR ALLOCATION -->
+    <div class="card">
+      <div class="card-title"><span>◈</span> Alokace sektorů</div>
+      <div id="sectorBars">
+        <div class="sector-row">
+          <div class="sector-header">
+            <div class="sector-name">BDC <span class="sector-tag bdc">Business Dev.</span></div>
+            <div class="sector-meta"><span class="sector-val" id="secValBDC">—</span></div>
+          </div>
+          <div class="bar-track"><div class="bar-fill bdc" id="barBDC"></div></div>
+        </div>
+        <div class="sector-row">
+          <div class="sector-header">
+            <div class="sector-name">REIT <span class="sector-tag reit">Real Estate</span></div>
+            <div class="sector-meta"><span class="sector-val" id="secValREIT">—</span></div>
+          </div>
+          <div class="bar-track"><div class="bar-fill reit" id="barREIT"></div></div>
+        </div>
+        <div class="sector-row">
+          <div class="sector-header">
+            <div class="sector-name">Utility <span class="sector-tag utility">Energetika</span></div>
+            <div class="sector-meta"><span class="sector-val" id="secValUtility">—</span></div>
+          </div>
+          <div class="bar-track"><div class="bar-fill utility" id="barUtility"></div></div>
+        </div>
+        <div class="sector-row">
+          <div class="sector-header">
+            <div class="sector-name">Other <span class="sector-tag other">Různé</span></div>
+            <div class="sector-meta"><span class="sector-val" id="secValOther">—</span></div>
+          </div>
+          <div class="bar-track"><div class="bar-fill other" id="barOther"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIGNALS -->
+    <div class="card">
+      <div class="card-title"><span>⟁</span> Signály · Žebříček výnosu</div>
+      <div class="scroll-wrap">
+        <table class="signal-table" id="signalTable">
+          <thead>
+            <tr>
+              <th>Ticker</th>
+              <th>Cena</th>
+              <th>Výnos</th>
+              <th>Signál</th>
+            </tr>
+          </thead>
+          <tbody id="signalBody">
+            <tr><td colspan="4" style="color:var(--muted);padding:20px 8px;text-align:center;">Klikni „Načíst data" →</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM GRID -->
+  <div class="bottom-grid">
+
+    <!-- HOLDINGS -->
+    <div class="card">
+      <div class="card-title"><span>▤</span> Pozice portfolia</div>
+      <div class="scroll-wrap">
+        <table class="holdings-table" id="holdingsTable">
+          <thead>
+            <tr>
+              <th>Ticker</th>
+              <th>Ks</th>
+              <th>Cena</th>
+              <th>Hodnota</th>
+              <th>Div/rok</th>
+            </tr>
+          </thead>
+          <tbody id="holdingsBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ANALYZER -->
+    <div class="card">
+      <div class="card-title"><span>◎</span> Analyzátor nákupu</div>
+
+      <div class="form-group">
+        <label class="form-label">Částka (USD)</label>
+        <input type="number" id="amount" value="1000" min="1" step="100">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Ticker</label>
+        <select id="tickerSelect"></select>
+      </div>
+
+      <button class="btn btn-primary" onclick="analyze()">Analyzovat nákup</button>
+      <button class="btn btn-secondary" onclick="clearResult()" style="margin-left:8px">✕</button>
+
+      <div class="buy-result" id="buyResult"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- CHART + REBALANCING ROW -->
+<div class="main-grid" style="margin-top:20px">
+
+  <!-- PORTFOLIO VALUE CHART -->
+  <div class="card">
+    <div class="card-title"><span>◈</span> Vývoj hodnoty portfolia</div>
+    <div class="chart-controls">
+      <button class="chart-btn active" onclick="setChartMode('value',this)">Hodnota</button>
+      <button class="chart-btn" onclick="setChartMode('dividend',this)">Dividenda/rok</button>
+      <button class="chart-btn" onclick="setChartMode('yield',this)">Výnos %</button>
+      <span style="color:var(--muted);font-size:0.7rem;margin-left:auto">Simulace · přidej snapshot →</span>
+      <button class="btn btn-secondary btn-sm" onclick="addSnapshot()" style="padding:5px 12px;font-size:0.7rem">+ Snapshot</button>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="portfolioChart"></canvas>
+    </div>
+    <div style="color:var(--muted);font-size:0.7rem;margin-top:10px">
+      Graf ukládá snapshoty při každém kliknutí — data zůstanou po dobu session.
+    </div>
+  </div>
+
+  <!-- REBALANCING -->
+  <div class="card">
+    <div class="card-title"><span>⇄</span> Rebalancování sektorů</div>
+    <div class="rebal-summary" id="rebalSummary"></div>
+
+    <div style="margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <label class="form-label" style="margin:0">Volný kapitál (USD):</label>
+      <input type="number" id="rebalCapital" value="1000" min="0" step="100"
+        style="width:120px;margin:0" oninput="renderRebalancing()">
+      <button class="btn btn-primary btn-sm" onclick="renderRebalancing()" style="margin:0">Přepočítat</button>
+    </div>
+
+    <div class="scroll-wrap" style="max-height:260px">
+      <table class="rebal-table">
+        <thead>
+          <tr>
+            <th>Sektor</th>
+            <th>Aktuální</th>
+            <th>Cíl %</th>
+            <th>Rozdíl</th>
+            <th>Akce</th>
+          </tr>
+        </thead>
+        <tbody id="rebalBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- EDITOR MODAL -->
+<div class="modal-overlay" id="editorOverlay" onclick="overlayClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>✎ Editor portfolia</h2>
+      <button class="modal-close" onclick="closeEditor()">✕</button>
+    </div>
+    <div class="modal-body">
+      <table class="editor-table">
+        <thead>
+          <tr>
+            <th>Ticker</th>
+            <th>Sektor</th>
+            <th>Počet ks</th>
+            <th>Div. výnos %</th>
+            <th>Fallback $</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="editorBody"></tbody>
+      </table>
+
+      <!-- ADD NEW ROW -->
+      <div class="add-row">
+        <div>
+          <span class="add-row-label">Ticker</span>
+          <input class="editor-input" id="newTicker" placeholder="AMCR" style="text-transform:uppercase">
+        </div>
+        <div>
+          <span class="add-row-label">Sektor</span>
+          <select class="editor-select" id="newSector">
+            <option value="BDC">BDC</option>
+            <option value="REIT">REIT</option>
+            <option value="Utility">Utility</option>
+            <option value="Other" selected>Other</option>
+          </select>
+        </div>
+        <div>
+          <span class="add-row-label">Počet ks</span>
+          <input class="editor-input" id="newQty" type="number" placeholder="0" min="0">
+        </div>
+        <div>
+          <span class="add-row-label">Div. výnos %</span>
+          <input class="editor-input" id="newYield" type="number" placeholder="5.0" step="0.1" min="0">
+        </div>
+        <div style="padding-top:22px">
+          <button class="btn btn-primary btn-sm" onclick="addTicker()" style="white-space:nowrap">+ Přidat</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="saveEditor()">✓ Uložit změny</button>
+      <button class="btn btn-secondary" onclick="closeEditor()">Zrušit</button>
+      <span id="editorMsg" style="color:var(--accent);font-size:0.75rem;margin-left:auto"></span>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+// DATA — mutable portfolio object
+// ═══════════════════════════════════════════════
+const portfolio = {
+  tickers: ['PFLT','ARCC','CSWC','HTGC','MAIN','O','WPC','OHI','ENB','DUK','NEE','MO','VZ','KO','PRU'],
+  sectors: {
+    PFLT:'BDC', ARCC:'BDC', CSWC:'BDC', HTGC:'BDC', MAIN:'BDC',
+    O:'REIT', WPC:'REIT', OHI:'REIT',
+    ENB:'Utility', DUK:'Utility', NEE:'Utility',
+    MO:'Other', VZ:'Other', KO:'Other', PRU:'Other'
+  },
+  yields: {
+    PFLT:0.130, ARCC:0.097, CSWC:0.118, HTGC:0.102, MAIN:0.067,
+    O:0.0498, WPC:0.052, OHI:0.061,
+    ENB:0.055, DUK:0.035, NEE:0.028,
+    MO:0.067, VZ:0.061, KO:0.031, PRU:0.035
+  },
+  fallback: {
+    PFLT: 8.80,  // Robinhood live 22.4.2026
+    ARCC: 18.98, // TradingView live 22.4.2026
+    CSWC: 22.80, // stockinvest.us 8.4.2026
+    HTGC: 15.95, // analyst target ~$18, 52w low $13.70, est mid
+    MAIN: 52.50, // stockanalysis.com NAV $33.33, trading premium
+    O:    55.20, // Realty Income approx April 2026
+    WPC:  58.10, // W.P. Carey approx April 2026
+    OHI:  35.40, // Omega Healthcare approx April 2026
+    ENB:  40.50, // Enbridge NYSE approx April 2026
+    DUK:  115.20,// Duke Energy approx April 2026
+    NEE:  68.30, // NextEra Energy approx April 2026
+    MO:   54.80, // Altria approx April 2026
+    VZ:   43.50, // Verizon approx April 2026
+    KO:   71.20, // Coca-Cola approx April 2026
+    PRU:  108.40 // Prudential approx April 2026
+  },
+  qty: {
+    PFLT:1928, ARCC:113, CSWC:112, HTGC:76, MAIN:36,
+    O:62, WPC:25, OHI:70,
+    ENB:31, DUK:17, NEE:20,
+    MO:41, VZ:23, KO:25, PRU:10
+  }
+};
+
+let livePrices = {};
+let liveYields = {};
+let fetchInProgress = false;
+
+// ═══════════════════════════════════════════════
+// DATA FETCHING – Finnhub API
+// ═══════════════════════════════════════════════
+const FINNHUB_KEY = 'd69fq61r01qjmno55nqgd69fq61r01qjmno55nr0';
+
+async function fetchPrice(ticker) {
+  const finnhubUrl = `https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${FINNHUB_KEY}`;
+  const proxies = [
+    finnhubUrl, // přímý request (funguje z http serveru)
+    `https://corsproxy.io/?url=${encodeURIComponent(finnhubUrl)}`,
+    `https://api.allorigins.win/get?url=${encodeURIComponent(finnhubUrl)}`,
+  ];
+
+  for (const url of proxies) {
+    try {
+      const r = await fetch(url);
+      if (!r.ok) continue;
+      let json = await r.json();
+      if (json.contents) json = JSON.parse(json.contents); // allorigins wrapper
+      const price = json.c > 0 ? json.c : json.pc;
+      if (price && price > 0) {
+        return { price, yield: portfolio.yields[ticker] || 0 };
+      }
+    } catch(e) { /* zkus další proxy */ }
+  }
+  return { price: portfolio.fallback[ticker] || 0, yield: portfolio.yields[ticker] || 0 };
+}
+
+async function fetchData() {
+  if (fetchInProgress) return;
+  fetchInProgress = true;
+
+  const btn = document.getElementById('refreshBtn');
+  btn.textContent = '⟳ Načítám…';
+  btn.disabled = true;
+  document.getElementById('lastUpdate').textContent = 'NAČÍTÁM…';
+
+  let loaded = 0;
+  for (const t of portfolio.tickers) {
+    const d = await fetchPrice(t);
+    livePrices[t] = d.price;
+    liveYields[t] = d.yield;
+    loaded++;
+    document.getElementById('lastUpdate').textContent = `NAČÍTÁM ${loaded}/${portfolio.tickers.length}…`;
+    renderAll();
+    // Finnhub free: max 60 req/min → 1 req per 1s je safe
+    await new Promise(r => setTimeout(r, 1100));
+  }
+
+  const now = new Date();
+  document.getElementById('lastUpdate').textContent =
+    `LIVE · ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+
+  btn.innerHTML = '↻ Načíst data';
+  btn.disabled = false;
+  fetchInProgress = false;
+  showToast('✓ Live ceny načteny přes Finnhub');
+}
+
+// ═══════════════════════════════════════════════
+// COMPUTE
+// ═══════════════════════════════════════════════
+function getPrice(t) { return livePrices[t] || portfolio.fallback[t] || 0; }
+function getYield(t) { return liveYields[t] || portfolio.yields[t] || 0; }
+
+function computeStats() {
+  let total = 0;
+  const sec = { BDC:0, REIT:0, Utility:0, Other:0 };
+  let weightedYield = 0;
+
+  for (const t of portfolio.tickers) {
+    const val = (portfolio.qty[t] || 0) * getPrice(t);
+    total += val;
+    const s = portfolio.sectors[t];
+    if (sec[s] !== undefined) sec[s] += val;
+    weightedYield += val * getYield(t);
+  }
+  return { total, sec, avgYield: total > 0 ? weightedYield / total : 0 };
+}
+
+// ═══════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════
+function renderStats() {
+  const s = computeStats();
+  document.getElementById('statTotal').textContent = fmtUSD(s.total);
+  document.getElementById('statDiv').textContent = fmtUSD(s.total * s.avgYield);
+  document.getElementById('statYield').textContent = (s.avgYield * 100).toFixed(2) + '%';
+  document.getElementById('statCount').textContent = portfolio.tickers.length;
+}
+
+function renderSectors() {
+  const s = computeStats();
+  const map = { BDC:'BDC', REIT:'REIT', Utility:'Utility', Other:'Other' };
+  for (const [key, id] of Object.entries(map)) {
+    const val = s.sec[key] || 0;
+    const pct = s.total > 0 ? (val / s.total) * 100 : 0;
+    document.getElementById(`secVal${key}`).textContent =
+      `${fmtUSD(val)} · ${pct.toFixed(1)}%`;
+    document.getElementById(`bar${key}`).style.width = pct + '%';
+  }
+}
+
+function renderSignals() {
+  const rows = portfolio.tickers.map(t => ({
+    ticker: t,
+    sector: portfolio.sectors[t] || 'Other',
+    price: getPrice(t),
+    divYield: getYield(t),
+    score: getYield(t) * 100
+  }));
+
+  rows.sort((a, b) => b.score - a.score);
+
+  const tbody = document.getElementById('signalBody');
+  tbody.innerHTML = rows.map(r => {
+    const signal = r.score >= 9 ? ['buy','KUP'] : r.score >= 5 ? ['watch','WATCH'] : ['hold','DRŽ'];
+    const isLive = !!livePrices[r.ticker];
+    return `<tr>
+      <td>
+        <span class="ticker-badge">${r.ticker}</span>
+        <span class="sector-tag ${r.sector.toLowerCase()}">${r.sector}</span>
+      </td>
+      <td class="price-val">${isLive ? '$'+r.price.toFixed(2) : '<span class="price-loading">fallback</span>'}</td>
+      <td class="yield-val">${(r.divYield*100).toFixed(2)}%</td>
+      <td><span class="signal-pill ${signal[0]}">${signal[1]}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderHoldings() {
+  const tbody = document.getElementById('holdingsBody');
+  const rows = portfolio.tickers.map(t => {
+    const qty = portfolio.qty[t] || 0;
+    const price = getPrice(t);
+    const val = qty * price;
+    const divAnnum = val * getYield(t);
+    const isLive = !!livePrices[t];
+    return { t, qty, price, val, divAnnum, isLive };
+  });
+
+  rows.sort((a, b) => b.val - a.val);
+
+  tbody.innerHTML = rows.map(r => `<tr>
+    <td><span class="ticker-badge">${r.t}</span></td>
+    <td style="color:var(--muted)">${r.qty}</td>
+    <td>${r.isLive ? '$'+r.price.toFixed(2) : '<span class="price-loading">~</span>'}</td>
+    <td style="color:var(--text)">${fmtUSD(r.val)}</td>
+    <td class="yield-val">${fmtUSD(r.divAnnum)}</td>
+  </tr>`).join('');
+}
+
+function populateSelect() {
+  const sel = document.getElementById('tickerSelect');
+  const current = sel.value;
+  sel.innerHTML = portfolio.tickers.map(t =>
+    `<option value="${t}" ${t===current?'selected':''}>${t} — ${(getYield(t)*100).toFixed(2)}%</option>`
+  ).join('');
+}
+
+function renderAll() {
+  renderStats();
+  renderSectors();
+  renderSignals();
+  renderHoldings();
+  populateSelect();
+  updateChart();
+  renderRebalancing();
+}
+
+// ═══════════════════════════════════════════════
+// ANALYZE
+// ═══════════════════════════════════════════════
+function analyze() {
+  const t = document.getElementById('tickerSelect').value;
+  const amt = parseFloat(document.getElementById('amount').value);
+  if (!t || isNaN(amt) || amt <= 0) return;
+
+  const price = getPrice(t);
+  const yld = getYield(t);
+  const qty = amt / price;
+  const divYear = qty * price * yld;
+  const divMonth = divYear / 12;
+  const payback = price / (price * yld);
+
+  const el = document.getElementById('buyResult');
+  el.innerHTML = `
+    <div class="buy-result-row"><span class="label">Ticker</span><span class="val">${t} · ${portfolio.sectors[t]||'—'}</span></div>
+    <div class="buy-result-row"><span class="label">Cena</span><span class="val">$${price.toFixed(2)} ${livePrices[t] ? '🟢 LIVE' : '🟡 Fallback'}</span></div>
+    <div class="buy-result-row"><span class="label">Investice</span><span class="val">$${amt.toFixed(0)}</span></div>
+    <div class="buy-result-row"><span class="label">Počet akcií</span><span class="val">${qty.toFixed(4)} ks</span></div>
+    <div class="buy-result-row"><span class="label">Výnos</span><span class="val">${(yld*100).toFixed(2)}%</span></div>
+    <div class="buy-result-row"><span class="label">Dividenda / rok</span><span class="val green">+$${divYear.toFixed(2)}</span></div>
+    <div class="buy-result-row"><span class="label">Dividenda / měsíc</span><span class="val green">+$${divMonth.toFixed(2)}</span></div>
+    <div class="buy-result-row"><span class="label">Návratnost (roky)</span><span class="val">${payback.toFixed(1)} let</span></div>
+  `;
+  el.classList.add('show');
+}
+
+function clearResult() {
+  const el = document.getElementById('buyResult');
+  el.classList.remove('show');
+  setTimeout(() => { el.innerHTML = ''; }, 300);
+}
+
+// ═══════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════
+function fmtUSD(n) {
+  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ═══════════════════════════════════════════════
+// PORTFOLIO EDITOR
+// ═══════════════════════════════════════════════
+
+// Working copies that get edited in modal
+let editTickers = [];
+let editSectors = {};
+let editQty = {};
+let editYields = {};
+let editFallback = {};
+
+function openEditor() {
+  // Clone current state into edit buffers
+  editTickers = [...portfolio.tickers];
+  editSectors = {...portfolio.sectors};
+  editQty = {...portfolio.qty};
+  editYields = {...portfolio.yields};
+  editFallback = {...portfolio.fallback};
+  renderEditorBody();
+  document.getElementById('editorOverlay').classList.add('open');
+  document.getElementById('editorMsg').textContent = '';
+}
+
+function closeEditor() {
+  document.getElementById('editorOverlay').classList.remove('open');
+}
+
+function overlayClick(e) {
+  if (e.target === document.getElementById('editorOverlay')) closeEditor();
+}
+
+function renderEditorBody() {
+  const tbody = document.getElementById('editorBody');
+  tbody.innerHTML = editTickers.map((t, i) => `
+    <tr id="erow-${i}">
+      <td><span class="ticker-badge">${t}</span></td>
+      <td>
+        <select class="editor-select" onchange="editSectors['${t}']=this.value">
+          ${['BDC','REIT','Utility','Other'].map(s =>
+            `<option value="${s}" ${editSectors[t]===s?'selected':''}>${s}</option>`
+          ).join('')}
+        </select>
+      </td>
+      <td>
+        <input class="editor-input" type="number" min="0"
+          value="${editQty[t]||0}"
+          onchange="editQty['${t}']=parseFloat(this.value)||0"
+          style="width:90px">
+      </td>
+      <td>
+        <input class="editor-input" type="number" min="0" step="0.1"
+          value="${((editYields[t]||0)*100).toFixed(2)}"
+          onchange="editYields['${t}']=parseFloat(this.value)/100||0"
+          style="width:80px">
+      </td>
+      <td>
+        <input class="editor-input" type="number" min="0" step="0.01"
+          value="${(editFallback[t]||0).toFixed(2)}"
+          onchange="editFallback['${t}']=parseFloat(this.value)||0"
+          style="width:90px">
+      </td>
+      <td>
+        <button class="btn-icon" onclick="removeEditTicker('${t}')" title="Odebrat">✕</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function removeEditTicker(t) {
+  editTickers = editTickers.filter(x => x !== t);
+  delete editSectors[t];
+  delete editQty[t];
+  delete editYields[t];
+  delete editFallback[t];
+  renderEditorBody();
+}
+
+function addTicker() {
+  const rawTicker = document.getElementById('newTicker').value.trim().toUpperCase();
+  const sector = document.getElementById('newSector').value;
+  const qty = parseFloat(document.getElementById('newQty').value) || 0;
+  const yld = parseFloat(document.getElementById('newYield').value) / 100 || 0;
+
+  if (!rawTicker || rawTicker.length < 1) {
+    showEditorMsg('⚠ Zadej ticker symbol'); return;
+  }
+  if (editTickers.includes(rawTicker)) {
+    showEditorMsg('⚠ Ticker už existuje'); return;
+  }
+
+  editTickers.push(rawTicker);
+  editSectors[rawTicker] = sector;
+  editQty[rawTicker] = qty;
+  editYields[rawTicker] = yld;
+  editFallback[rawTicker] = livePrices[rawTicker] || 0;
+
+  // Clear add fields
+  document.getElementById('newTicker').value = '';
+  document.getElementById('newQty').value = '';
+  document.getElementById('newYield').value = '';
+
+  renderEditorBody();
+  showEditorMsg(`✓ ${rawTicker} přidán`);
+}
+
+function saveEditor() {
+  // Commit edit buffers back to live portfolio
+  portfolio.tickers = [...editTickers];
+  portfolio.sectors = {...editSectors};
+  portfolio.qty = {...editQty};
+  portfolio.yields = {...editYields};
+  portfolio.fallback = {...editFallback};
+
+  // Clear stale live prices for removed tickers
+  for (const t of Object.keys(livePrices)) {
+    if (!portfolio.tickers.includes(t)) {
+      delete livePrices[t];
+      delete liveYields[t];
+    }
+  }
+
+  closeEditor();
+  renderAll();
+  showToast('✓ Portfolio uloženo');
+}
+
+function showEditorMsg(msg) {
+  const el = document.getElementById('editorMsg');
+  el.textContent = msg;
+  setTimeout(() => { el.textContent = ''; }, 2500);
+}
+
+// ═══════════════════════════════════════════════
+// CHART
+// ═══════════════════════════════════════════════
+let chartInstance = null;
+let chartMode = 'value';
+let snapshots = []; // [{label, value, dividend, yield}]
+
+function addSnapshot() {
+  const s = computeStats();
+  const now = new Date();
+  const label = `${now.getDate()}.${now.getMonth()+1} ${now.getHours()}:${now.getMinutes().toString().padStart(2,'0')}`;
+  snapshots.push({
+    label,
+    value: s.total,
+    dividend: s.total * s.avgYield,
+    yield: s.avgYield * 100
+  });
+  updateChart();
+  showToast(`✓ Snapshot přidán (${snapshots.length})`);
+}
+
+function setChartMode(mode, btn) {
+  chartMode = mode;
+  document.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  updateChart();
+}
+
+function updateChart() {
+  const ctx = document.getElementById('portfolioChart').getContext('2d');
+
+  // Always show current value as last point even without snapshots
+  const s = computeStats();
+  const now = new Date();
+  const nowLabel = 'Nyní';
+
+  const allPoints = [
+    ...snapshots,
+    { label: nowLabel, value: s.total, dividend: s.total * s.avgYield, yield: s.avgYield * 100 }
+  ];
+
+  const labels = allPoints.map(p => p.label);
+  const dataMap = { value: allPoints.map(p => +p.value.toFixed(2)),
+                    dividend: allPoints.map(p => +p.dividend.toFixed(2)),
+                    yield: allPoints.map(p => +p.yield.toFixed(3)) };
+  const data = dataMap[chartMode];
+
+  const colors = { value: '#00e5a0', dividend: '#0ea5e9', yield: '#f59e0b' };
+  const color = colors[chartMode];
+
+  const labels2 = { value: 'Hodnota (USD)', dividend: 'Dividenda/rok (USD)', yield: 'Výnos (%)' };
+
+  if (chartInstance) chartInstance.destroy();
+
+  chartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: labels2[chartMode],
+        data,
+        borderColor: color,
+        backgroundColor: color + '18',
+        borderWidth: 2,
+        pointBackgroundColor: color,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        fill: true,
+        tension: 0.35
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#0d1526',
+          borderColor: '#1a2a46',
+          borderWidth: 1,
+          titleColor: '#5a7499',
+          bodyColor: color,
+          bodyFont: { family: "'DM Mono', monospace", size: 13, weight: '500' },
+          callbacks: {
+            label: ctx => chartMode === 'yield'
+              ? ` ${ctx.parsed.y.toFixed(2)}%`
+              : ` $${ctx.parsed.y.toLocaleString('en-US')}`
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: '#1a2a4640' },
+          ticks: { color: '#5a7499', font: { family: "'DM Mono'" , size: 11 } }
+        },
+        y: {
+          grid: { color: '#1a2a4640' },
+          ticks: {
+            color: '#5a7499',
+            font: { family: "'DM Mono'", size: 11 },
+            callback: v => chartMode === 'yield' ? v.toFixed(1)+'%' : '$'+v.toLocaleString('en-US')
+          }
+        }
+      }
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════
+// REBALANCING
+// ═══════════════════════════════════════════════
+const TARGET_WEIGHTS = { BDC: 40, REIT: 25, Utility: 20, Other: 15 };
+let targetWeights = { ...TARGET_WEIGHTS };
+
+function renderRebalancing() {
+  const s = computeStats();
+  const capital = parseFloat(document.getElementById('rebalCapital').value) || 0;
+  const sectors = ['BDC','REIT','Utility','Other'];
+  const colors = { BDC:'bdc', REIT:'reit', Utility:'utility', Other:'other' };
+
+  // Summary cards
+  const totalTarget = Object.values(targetWeights).reduce((a,b) => a+b, 0);
+  document.getElementById('rebalSummary').innerHTML = `
+    <div class="rebal-sum-item">
+      <div class="rebal-sum-label">Portfolio</div>
+      <div class="rebal-sum-val">${fmtUSD(s.total)}</div>
+    </div>
+    <div class="rebal-sum-item">
+      <div class="rebal-sum-label">Kapitál k alokaci</div>
+      <div class="rebal-sum-val" style="color:var(--accent2)">${fmtUSD(capital)}</div>
+    </div>
+    <div class="rebal-sum-item">
+      <div class="rebal-sum-label">Po rebalancování</div>
+      <div class="rebal-sum-val">${fmtUSD(s.total + capital)}</div>
+    </div>
+  `;
+
+  const totalAfter = s.total + capital;
+  const tbody = document.getElementById('rebalBody');
+  tbody.innerHTML = sectors.map(sec => {
+    const current = s.sec[sec] || 0;
+    const currentPct = s.total > 0 ? (current / s.total) * 100 : 0;
+    const targetPct = targetWeights[sec] || 0;
+    const targetVal = (targetPct / 100) * totalAfter;
+    const diff = targetVal - current;
+    const diffPct = currentPct - targetPct;
+
+    let actionHtml = '';
+    if (Math.abs(diff) < 50) {
+      actionHtml = `<span class="rebal-ok">✓ V pořádku</span>`;
+    } else if (diff > 0) {
+      actionHtml = `<span class="rebal-buy">▲ Dokoupit ${fmtUSD(diff)}</span>`;
+    } else {
+      actionHtml = `<span class="rebal-sell">▼ Prodat ${fmtUSD(Math.abs(diff))}</span>`;
+    }
+
+    return `<tr>
+      <td><span class="sector-tag ${colors[sec]}" style="font-size:0.75rem;padding:3px 10px">${sec}</span></td>
+      <td>
+        <div>${fmtUSD(current)}</div>
+        <div style="color:var(--muted);font-size:0.7rem">${currentPct.toFixed(1)}%</div>
+      </td>
+      <td>
+        <input class="target-input" type="number" min="0" max="100" step="1"
+          value="${targetPct}"
+          onchange="targetWeights['${sec}']=parseFloat(this.value)||0;renderRebalancing()"
+          title="Cílová váha %">
+        <span style="color:var(--muted);font-size:0.7rem">%</span>
+      </td>
+      <td style="color:${diffPct > 2 ? '#ef4444' : diffPct < -2 ? '#00e5a0' : 'var(--muted)'}">
+        ${diffPct > 0 ? '+' : ''}${diffPct.toFixed(1)}%
+      </td>
+      <td>${actionHtml}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+// AUTO-REFRESH
+// ═══════════════════════════════════════════════
+const AUTO_INTERVAL = 15 * 60; // 15 minut v sekundách
+let autoEnabled = false;
+let autoSecsLeft = AUTO_INTERVAL;
+let autoTimer = null;
+let countdownTimer = null;
+
+function toggleAutoRefresh() {
+  autoEnabled = !autoEnabled;
+  const badge = document.getElementById('autoBadge');
+  if (autoEnabled) {
+    badge.classList.add('on');
+    autoSecsLeft = AUTO_INTERVAL;
+    startCountdown();
+    showToast('⏱ Auto-refresh zapnut (15 min)');
+  } else {
+    badge.classList.remove('on');
+    clearInterval(autoTimer);
+    clearInterval(countdownTimer);
+    document.getElementById('countdown').textContent = '—';
+    showToast('Auto-refresh vypnut');
+  }
+}
+
+function startCountdown() {
+  clearInterval(autoTimer);
+  clearInterval(countdownTimer);
+
+  countdownTimer = setInterval(() => {
+    autoSecsLeft--;
+    const m = Math.floor(autoSecsLeft / 60);
+    const s = autoSecsLeft % 60;
+    document.getElementById('countdown').textContent =
+      m > 0 ? `${m}m${s.toString().padStart(2,'0')}s` : `${s}s`;
+
+    if (autoSecsLeft <= 0) {
+      autoSecsLeft = AUTO_INTERVAL;
+      fetchData();
+    }
+  }, 1000);
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+renderAll();
+updateChart();
+renderRebalancing();
+</script>
+</body>
+</html>
