@@ -33,7 +33,6 @@
     overflow-x: hidden;
   }
 
-  /* Background grid pattern */
   body::before {
     content: '';
     position: fixed;
@@ -208,9 +207,7 @@
   .card-title span { font-size: 1rem; }
 
   /* SECTOR BARS */
-  .sector-row {
-    margin-bottom: 16px;
-  }
+  .sector-row { margin-bottom: 16px; }
 
   .sector-header {
     display: flex;
@@ -226,15 +223,8 @@
     color: var(--text);
   }
 
-  .sector-meta {
-    color: var(--muted);
-    font-size: 0.75rem;
-  }
-
-  .sector-val {
-    font-weight: 500;
-    color: var(--accent);
-  }
+  .sector-meta { color: var(--muted); font-size: 0.75rem; }
+  .sector-val { font-weight: 500; color: var(--accent); }
 
   .bar-track {
     height: 6px;
@@ -250,10 +240,10 @@
     width: 0%;
   }
 
-  .bar-fill.bdc { background: linear-gradient(90deg, #00e5a0, #0ea5e9); }
-  .bar-fill.reit { background: linear-gradient(90deg, #0ea5e9, #a78bfa); }
+  .bar-fill.bdc     { background: linear-gradient(90deg, #00e5a0, #0ea5e9); }
+  .bar-fill.reit    { background: linear-gradient(90deg, #0ea5e9, #a78bfa); }
   .bar-fill.utility { background: linear-gradient(90deg, #f59e0b, #ef4444); }
-  .bar-fill.other { background: linear-gradient(90deg, #a78bfa, #ec4899); }
+  .bar-fill.other   { background: linear-gradient(90deg, #a78bfa, #ec4899); }
 
   /* SIGNALS TABLE */
   .signal-table { width: 100%; border-collapse: collapse; }
@@ -295,10 +285,10 @@
     margin-left: 6px;
     vertical-align: middle;
   }
-  .sector-tag.bdc { background: rgba(0,229,160,0.12); color: #00e5a0; }
-  .sector-tag.reit { background: rgba(14,165,233,0.12); color: #0ea5e9; }
-  .sector-tag.utility { background: rgba(245,158,11,0.12); color: #f59e0b; }
-  .sector-tag.other { background: rgba(167,139,250,0.12); color: #a78bfa; }
+  .sector-tag.bdc     { background: rgba(0,229,160,0.12);  color: #00e5a0; }
+  .sector-tag.reit    { background: rgba(14,165,233,0.12);  color: #0ea5e9; }
+  .sector-tag.utility { background: rgba(245,158,11,0.12);  color: #f59e0b; }
+  .sector-tag.other   { background: rgba(167,139,250,0.12); color: #a78bfa; }
 
   .signal-pill {
     display: inline-block;
@@ -308,12 +298,12 @@
     font-weight: 600;
     letter-spacing: 1px;
   }
-  .signal-pill.buy { background: rgba(0,229,160,0.15); color: var(--accent); border: 1px solid rgba(0,229,160,0.3); }
-  .signal-pill.hold { background: rgba(245,158,11,0.1); color: var(--accent3); border: 1px solid rgba(245,158,11,0.2); }
-  .signal-pill.watch { background: rgba(14,165,233,0.1); color: var(--accent2); border: 1px solid rgba(14,165,233,0.2); }
+  .signal-pill.buy   { background: rgba(0,229,160,0.15);  color: var(--accent);  border: 1px solid rgba(0,229,160,0.3); }
+  .signal-pill.hold  { background: rgba(245,158,11,0.1);  color: var(--accent3); border: 1px solid rgba(245,158,11,0.2); }
+  .signal-pill.watch { background: rgba(14,165,233,0.1);  color: var(--accent2); border: 1px solid rgba(14,165,233,0.2); }
 
-  .yield-val { color: var(--accent); font-weight: 500; }
-  .price-val { color: var(--text); font-family: var(--mono); }
+  .yield-val     { color: var(--accent); font-weight: 500; }
+  .price-val     { color: var(--text); font-family: var(--mono); }
   .price-loading { color: var(--accent3); font-style: italic; font-size: 0.75rem; }
 
   /* BOTTOM PANEL */
@@ -327,7 +317,7 @@
     .bottom-grid { grid-template-columns: 1fr; }
   }
 
-  /* ANALYZER FORM */
+  /* FORM */
   .form-group { margin-bottom: 14px; }
 
   .form-label {
@@ -339,7 +329,10 @@
     margin-bottom: 8px;
   }
 
-  input[type="number"], select {
+  /* ── FIX 1: unified input style – covers text, number, select ── */
+  input[type="number"],
+  input[type="text"],
+  select {
     width: 100%;
     background: var(--surface2);
     border: 1px solid var(--border);
@@ -353,7 +346,9 @@
     appearance: none;
   }
 
-  input[type="number"]:focus, select:focus {
+  input[type="number"]:focus,
+  input[type="text"]:focus,
+  select:focus {
     border-color: rgba(0,229,160,0.4);
     box-shadow: 0 0 0 3px rgba(0,229,160,0.06);
   }
@@ -390,10 +385,7 @@
   }
   .btn-secondary:hover { border-color: rgba(0,229,160,0.3); color: var(--accent); }
 
-  .btn-sm {
-    padding: 8px 16px;
-    font-size: 0.7rem;
-  }
+  .btn-sm { padding: 8px 16px; font-size: 0.7rem; }
 
   /* BUY RESULT */
   .buy-result {
@@ -409,7 +401,7 @@
 
   @keyframes slideIn {
     from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
   .buy-result-row {
@@ -421,7 +413,7 @@
   }
   .buy-result-row:last-child { border-bottom: none; }
   .buy-result-row .label { color: var(--muted); }
-  .buy-result-row .val { color: var(--text); font-weight: 500; }
+  .buy-result-row .val   { color: var(--text); font-weight: 500; }
   .buy-result-row .val.green { color: var(--accent); }
 
   /* HOLDINGS TABLE */
@@ -449,7 +441,7 @@
   .scroll-wrap::-webkit-scrollbar-track { background: transparent; }
   .scroll-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-  /* LOADING STATES */
+  /* LOADING */
   .skeleton {
     background: linear-gradient(90deg, var(--surface2) 25%, rgba(0,229,160,0.05) 50%, var(--surface2) 75%);
     background-size: 200% 100%;
@@ -461,15 +453,8 @@
   }
 
   @keyframes shimmer {
-    0% { background-position: 200% 0; }
+    0%   { background-position: 200% 0; }
     100% { background-position: -200% 0; }
-  }
-
-  /* DIVIDER */
-  .divider {
-    height: 1px;
-    background: var(--border);
-    margin: 24px 0;
   }
 
   /* MODAL */
@@ -622,7 +607,7 @@
     display: block;
   }
 
-  /* Toast notification */
+  /* Toast */
   .toast {
     position: fixed;
     bottom: 24px;
@@ -686,7 +671,7 @@
     border: 1px solid var(--border);
   }
   .rebal-sum-label { color: var(--muted); font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; }
-  .rebal-sum-val { font-family: var(--display); font-weight: 700; font-size: 1.1rem; color: var(--text); }
+  .rebal-sum-val   { font-family: var(--display); font-weight: 700; font-size: 1.1rem; color: var(--text); }
 
   /* AUTO-REFRESH badge */
   .auto-badge {
@@ -698,6 +683,23 @@
   .auto-badge.on { background: rgba(14,165,233,0.15); border-color: rgba(14,165,233,0.4); }
   .auto-badge:hover { border-color: rgba(14,165,233,0.5); }
   .countdown { font-weight: 600; min-width: 28px; text-align: right; }
+
+  /* ── FIX 4: fetch progress bar ── */
+  #fetchProgress {
+    display: none;
+    margin-top: 8px;
+    height: 3px;
+    border-radius: 100px;
+    background: var(--surface2);
+    overflow: hidden;
+  }
+  #fetchProgressBar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.3s ease;
+    border-radius: 100px;
+  }
 </style>
 </head>
 <body>
@@ -718,12 +720,8 @@
       <div class="auto-badge" id="autoBadge" onclick="toggleAutoRefresh()" title="Auto-refresh každých 15 min">
         ⏱ AUTO <span class="countdown" id="countdown">—</span>
       </div>
-      <button class="btn btn-secondary btn-sm" onclick="openEditor()">
-        ✎ Editovat portfolio
-      </button>
-      <button class="btn btn-secondary btn-sm" onclick="fetchData()" id="refreshBtn">
-        ↻ Načíst data
-      </button>
+      <button class="btn btn-secondary btn-sm" onclick="openEditor()">✎ Editovat portfolio</button>
+      <button class="btn btn-secondary btn-sm" onclick="fetchData()" id="refreshBtn">↻ Načíst data</button>
     </div>
   </header>
 
@@ -743,7 +741,7 @@
     </div>
     <div class="stat-item">
       <div class="stat-label">Počet pozic</div>
-      <div class="stat-value" id="statCount">15</div>
+      <div class="stat-value" id="statCount">—</div>
     </div>
   </div>
 
@@ -767,6 +765,14 @@
             <div class="sector-meta"><span class="sector-val" id="secValREIT">—</span></div>
           </div>
           <div class="bar-track"><div class="bar-fill reit" id="barREIT"></div></div>
+        </div>
+        <!-- ── FIX 3: přidán Utility sektor do alokace ── -->
+        <div class="sector-row">
+          <div class="sector-header">
+            <div class="sector-name">Utility <span class="sector-tag utility">Utilities</span></div>
+            <div class="sector-meta"><span class="sector-val" id="secValUtility">—</span></div>
+          </div>
+          <div class="bar-track"><div class="bar-fill utility" id="barUtility"></div></div>
         </div>
         <div class="sector-row">
           <div class="sector-header">
@@ -826,12 +832,11 @@
     <div class="card">
       <div class="card-title"><span>◎</span> Transakce portfolia</div>
 
-      <!-- TABS -->
       <div style="display:flex;gap:6px;margin-bottom:18px">
-        <button class="chart-btn active" id="tab-buy"   onclick="switchTab('buy')">▲ Dokup</button>
-        <button class="chart-btn"        id="tab-sell"  onclick="switchTab('sell')">▼ Odprodej</button>
-        <button class="chart-btn"        id="tab-new"   onclick="switchTab('new')">＋ Nová pozice</button>
-        <button class="chart-btn"        id="tab-del"   onclick="switchTab('del')">✕ Smazat pozici</button>
+        <button class="chart-btn active" id="tab-buy"  onclick="switchTab('buy')">▲ Dokup</button>
+        <button class="chart-btn"        id="tab-sell" onclick="switchTab('sell')">▼ Odprodej</button>
+        <button class="chart-btn"        id="tab-new"  onclick="switchTab('new')">＋ Nová pozice</button>
+        <button class="chart-btn"        id="tab-del"  onclick="switchTab('del')">✕ Smazat pozici</button>
       </div>
 
       <!-- TAB: DOKUP -->
@@ -862,7 +867,7 @@
           <label class="form-label">Počet kusů k prodeji</label>
           <input type="number" id="sellQty" value="1" min="1" step="1">
         </div>
-        <button class="btn danger" onclick="execSell()" style="background:#ef4444;color:#fff">▼ Potvrdit prodej</button>
+        <button class="btn" onclick="execSell()" style="background:#ef4444;color:#fff">▼ Potvrdit prodej</button>
         <div class="buy-result" id="sellResult" style="margin-top:12px"></div>
       </div>
 
@@ -870,6 +875,7 @@
       <div id="panel-new" style="display:none">
         <div class="form-group">
           <label class="form-label">Ticker (např. ENB)</label>
+          <!-- ── FIX 1: type="text" má nyní stejný styl jako ostatní inputy ── -->
           <input type="text" id="newPosTicker" placeholder="TICKER" style="text-transform:uppercase">
         </div>
         <div class="form-group">
@@ -877,6 +883,7 @@
           <select id="newPosSector">
             <option value="BDC">BDC</option>
             <option value="REIT">REIT</option>
+            <option value="Utility">Utility</option>
             <option value="Other" selected>Other</option>
           </select>
         </div>
@@ -900,7 +907,7 @@
       <div id="panel-del" style="display:none">
         <div class="form-group">
           <label class="form-label">Vyber pozici ke smazání</label>
-          <select id="delTicker"></select>
+          <select id="delTicker" onchange="updateDelPreview()"></select>
         </div>
         <div id="delPreview" style="margin:10px 0;padding:12px;background:var(--surface2);border-radius:10px;font-size:0.82rem;color:var(--muted)">
           Vyber ticker výše
@@ -910,7 +917,6 @@
       </div>
 
     </div>
-
   </div>
 
 </div>
@@ -925,14 +931,16 @@
       <button class="chart-btn active" onclick="setChartMode('value',this)">Hodnota</button>
       <button class="chart-btn" onclick="setChartMode('dividend',this)">Dividenda/rok</button>
       <button class="chart-btn" onclick="setChartMode('yield',this)">Výnos %</button>
-      <span style="color:var(--muted);font-size:0.7rem;margin-left:auto">Simulace · přidej snapshot →</span>
+      <span style="color:var(--muted);font-size:0.7rem;margin-left:auto">Snapshoty se ukládají přes sessions</span>
       <button class="btn btn-secondary btn-sm" onclick="addSnapshot()" style="padding:5px 12px;font-size:0.7rem">+ Snapshot</button>
+      <button class="btn btn-secondary btn-sm" onclick="clearSnapshots()" style="padding:5px 12px;font-size:0.7rem;color:#ef4444;border-color:rgba(239,68,68,0.3)">✕ Reset</button>
     </div>
     <div class="chart-wrap">
       <canvas id="portfolioChart"></canvas>
     </div>
-    <div style="color:var(--muted);font-size:0.7rem;margin-top:10px">
-      Graf ukládá snapshoty při každém kliknutí — data zůstanou po dobu session.
+    <!-- ── FIX 2: localStorage persistence indicator ── -->
+    <div style="color:var(--muted);font-size:0.7rem;margin-top:10px" id="snapshotInfo">
+      Snapshoty: <span id="snapshotCount">0</span> · uloženo v localStorage
     </div>
   </div>
 
@@ -988,7 +996,6 @@
         <tbody id="editorBody"></tbody>
       </table>
 
-      <!-- ADD NEW ROW -->
       <div class="add-row">
         <div>
           <span class="add-row-label">Ticker</span>
@@ -1029,7 +1036,7 @@
 
 <script>
 // ═══════════════════════════════════════════════
-// DATA — mutable portfolio object
+// DATA
 // ═══════════════════════════════════════════════
 const portfolio = {
   tickers: ['PFLT','ARCC','CSWC','HTGC','MAIN','O','WPC','OHI','MO','VZ','VICI','BMS'],
@@ -1044,23 +1051,14 @@ const portfolio = {
     MO:0.067,   VZ:0.061,   BMS:0.018
   },
   fallback: {
-    PFLT: 8.70,  // XTB live 22.4.2026
-    ARCC: 18.95, // XTB live 22.4.2026
-    CSWC: 23.75, // XTB live 22.4.2026
-    HTGC: 15.69, // XTB live 22.4.2026
-    MAIN: 54.00, // XTB live 22.4.2026
-    O:    64.06, // XTB live 22.4.2026
-    WPC:  73.78, // XTB live 22.4.2026
-    OHI:  45.95, // XTB live 22.4.2026
-    MO:   64.73, // XTB live 22.4.2026
-    VZ:   46.31, // XTB live 22.4.2026
-    VICI: 28.45, // XTB live 22.4.2026
-    BMS:  59.43  // XTB live 22.4.2026
+    PFLT:8.70, ARCC:18.95, CSWC:23.75, HTGC:15.69, MAIN:54.00,
+    O:64.06,   WPC:73.78,  OHI:45.95,  VICI:28.45,
+    MO:64.73,  VZ:46.31,   BMS:59.43
   },
   qty: {
     PFLT:1913, ARCC:113, CSWC:85, HTGC:53, MAIN:28,
-    O:53, WPC:18, OHI:47,
-    MO:31, VZ:22, VICI:7, BMS:3
+    O:53, WPC:18, OHI:47, VICI:7,
+    MO:31, VZ:22, BMS:3
   }
 };
 
@@ -1069,31 +1067,32 @@ let liveYields = {};
 let fetchInProgress = false;
 
 // ═══════════════════════════════════════════════
-// DATA FETCHING – Finnhub API
+// ── FIX 4: BATCH FETCH s rate limitem ──
+//    Parallel batches po 5 tickerech, delay jen
+//    mezi batchi → z ~13 s na ~3 s pro 12 tickerů
 // ═══════════════════════════════════════════════
 const FINNHUB_KEY = 'd69fq61r01qjmno55nqgd69fq61r01qjmno55nr0';
+const BATCH_SIZE  = 5;   // max paralelních requestů
+const BATCH_DELAY = 1200; // ms mezi batchi (ochrana rate limitu)
 
-async function fetchPrice(ticker) {
-  const finnhubUrl = `https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${FINNHUB_KEY}`;
+async function fetchPriceSingle(ticker) {
+  const url = `https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${FINNHUB_KEY}`;
   const proxies = [
-    finnhubUrl, // přímý request (funguje z http serveru)
-    `https://corsproxy.io/?url=${encodeURIComponent(finnhubUrl)}`,
-    `https://api.allorigins.win/get?url=${encodeURIComponent(finnhubUrl)}`,
+    url,
+    `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
+    `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
   ];
-
-  for (const url of proxies) {
+  for (const proxy of proxies) {
     try {
-      const r = await fetch(url);
+      const r = await fetch(proxy);
       if (!r.ok) continue;
       let json = await r.json();
-      if (json.contents) json = JSON.parse(json.contents); // allorigins wrapper
+      if (json.contents) json = JSON.parse(json.contents);
       const price = json.c > 0 ? json.c : json.pc;
-      if (price && price > 0) {
-        return { price, yield: portfolio.yields[ticker] || 0 };
-      }
-    } catch(e) { /* zkus další proxy */ }
+      if (price && price > 0) return { price, yld: portfolio.yields[ticker] || 0 };
+    } catch(e) { /* next proxy */ }
   }
-  return { price: portfolio.fallback[ticker] || 0, yield: portfolio.yields[ticker] || 0 };
+  return { price: portfolio.fallback[ticker] || 0, yld: portfolio.yields[ticker] || 0, fallback: true };
 }
 
 async function fetchData() {
@@ -1105,16 +1104,32 @@ async function fetchData() {
   btn.disabled = true;
   document.getElementById('lastUpdate').textContent = 'NAČÍTÁM…';
 
+  const tickers = [...portfolio.tickers];
   let loaded = 0;
-  for (const t of portfolio.tickers) {
-    const d = await fetchPrice(t);
-    livePrices[t] = d.price;
-    liveYields[t] = d.yield;
-    loaded++;
-    document.getElementById('lastUpdate').textContent = `NAČÍTÁM ${loaded}/${portfolio.tickers.length}…`;
+
+  // Rozděl tickery do batchů
+  for (let i = 0; i < tickers.length; i += BATCH_SIZE) {
+    const batch = tickers.slice(i, i + BATCH_SIZE);
+
+    // Fetchni batch paralelně
+    const results = await Promise.allSettled(batch.map(t => fetchPriceSingle(t)));
+
+    results.forEach((res, idx) => {
+      const t = batch[idx];
+      if (res.status === 'fulfilled') {
+        livePrices[t] = res.value.price;
+        liveYields[t] = res.value.yld;
+      }
+      loaded++;
+      document.getElementById('lastUpdate').textContent = `NAČÍTÁM ${loaded}/${tickers.length}…`;
+    });
+
     renderAll();
-    // Finnhub free: max 60 req/min → 1 req per 1s je safe
-    await new Promise(r => setTimeout(r, 1100));
+
+    // Čekej jen pokud ještě zbývají další batche
+    if (i + BATCH_SIZE < tickers.length) {
+      await new Promise(r => setTimeout(r, BATCH_DELAY));
+    }
   }
 
   const now = new Date();
@@ -1134,8 +1149,9 @@ function getPrice(t) { return livePrices[t] || portfolio.fallback[t] || 0; }
 function getYield(t) { return liveYields[t] || portfolio.yields[t] || 0; }
 
 function computeStats() {
+  // ── FIX 3: zahrnuje Utility do sektoru ──
   let total = 0;
-  const sec = { BDC:0, REIT:0, Other:0 };
+  const sec = { BDC:0, REIT:0, Utility:0, Other:0 };
   let weightedYield = 0;
 
   for (const t of portfolio.tickers) {
@@ -1143,6 +1159,7 @@ function computeStats() {
     total += val;
     const s = portfolio.sectors[t];
     if (sec[s] !== undefined) sec[s] += val;
+    else sec['Other'] += val;
     weightedYield += val * getYield(t);
   }
   return { total, sec, avgYield: total > 0 ? weightedYield / total : 0 };
@@ -1154,20 +1171,22 @@ function computeStats() {
 function renderStats() {
   const s = computeStats();
   document.getElementById('statTotal').textContent = fmtUSD(s.total);
-  document.getElementById('statDiv').textContent = fmtUSD(s.total * s.avgYield);
+  document.getElementById('statDiv').textContent   = fmtUSD(s.total * s.avgYield);
   document.getElementById('statYield').textContent = (s.avgYield * 100).toFixed(2) + '%';
   document.getElementById('statCount').textContent = portfolio.tickers.length;
 }
 
 function renderSectors() {
   const s = computeStats();
-  const map = { BDC:'BDC', REIT:'REIT', Other:'Other' };
-  for (const [key] of Object.entries(map)) {
+  // ── FIX 3: Utility přidán do renderSectors ──
+  const sectors = ['BDC','REIT','Utility','Other'];
+  for (const key of sectors) {
     const val = s.sec[key] || 0;
     const pct = s.total > 0 ? (val / s.total) * 100 : 0;
-    document.getElementById(`secVal${key}`).textContent =
-      `${fmtUSD(val)} · ${pct.toFixed(1)}%`;
-    document.getElementById(`bar${key}`).style.width = pct + '%';
+    const valEl = document.getElementById(`secVal${key}`);
+    const barEl = document.getElementById(`bar${key}`);
+    if (valEl) valEl.textContent = `${fmtUSD(val)} · ${pct.toFixed(1)}%`;
+    if (barEl) barEl.style.width = pct + '%';
   }
 }
 
@@ -1179,7 +1198,6 @@ function renderSignals() {
     divYield: getYield(t),
     score: getYield(t) * 100
   }));
-
   rows.sort((a, b) => b.score - a.score);
 
   const tbody = document.getElementById('signalBody');
@@ -1204,11 +1222,8 @@ function renderHoldings() {
     const qty = portfolio.qty[t] || 0;
     const price = getPrice(t);
     const val = qty * price;
-    const divAnnum = val * getYield(t);
-    const isLive = !!livePrices[t];
-    return { t, qty, price, val, divAnnum, isLive };
+    return { t, qty, price, val, divAnnum: val * getYield(t), isLive: !!livePrices[t] };
   });
-
   rows.sort((a, b) => b.val - a.val);
 
   tbody.innerHTML = rows.map(r => `<tr>
@@ -1221,7 +1236,6 @@ function renderHoldings() {
 }
 
 function populateSelect() {
-  // Naplní všechny selecty tickery
   ['buyTicker','sellTicker','delTicker'].forEach(id => {
     const sel = document.getElementById(id);
     if (!sel) return;
@@ -1284,41 +1298,23 @@ function execBuy() {
   const t   = document.getElementById('buyTicker').value;
   const qty = parseFloat(document.getElementById('buyQty').value) || 0;
   const customPrice = parseFloat(document.getElementById('buyPrice').value);
-
   if (!t || qty <= 0) { showTxResult('buyResult','⚠ Zadej ticker a počet kusů',false); return; }
-
-  const oldQty = portfolio.qty[t] || 0;
-  portfolio.qty[t] = oldQty + qty;
-
-  // Pokud zadal cenu nákupu, aktualizuj fallback
-  if (customPrice > 0) {
-    portfolio.fallback[t] = customPrice;
-    delete livePrices[t]; // vymaž live cenu aby se použil nový fallback
-  }
-
-  renderAll();
-  populateTxSelect('buyTicker');
-  showTxResult('buyResult',
-    `✓ Dokoupeno ${qty} ks ${t} | Nový stav: ${portfolio.qty[t]} ks`);
+  portfolio.qty[t] = (portfolio.qty[t] || 0) + qty;
+  if (customPrice > 0) { portfolio.fallback[t] = customPrice; delete livePrices[t]; }
+  renderAll(); populateTxSelect('buyTicker');
+  showTxResult('buyResult',`✓ Dokoupeno ${qty} ks ${t} | Nový stav: ${portfolio.qty[t]} ks`);
   showToast(`▲ ${t} +${qty} ks`);
 }
 
 function execSell() {
   const t   = document.getElementById('sellTicker').value;
   const qty = parseFloat(document.getElementById('sellQty').value) || 0;
-
   if (!t || qty <= 0) { showTxResult('sellResult','⚠ Zadej počet kusů',false); return; }
-
   const oldQty = portfolio.qty[t] || 0;
-  if (qty > oldQty) {
-    showTxResult('sellResult',`⚠ Máš jen ${oldQty} ks ${t}`,false); return;
-  }
-
+  if (qty > oldQty) { showTxResult('sellResult',`⚠ Máš jen ${oldQty} ks ${t}`,false); return; }
   portfolio.qty[t] = oldQty - qty;
-  renderAll();
-  populateTxSelect('sellTicker');
-  showTxResult('sellResult',
-    `✓ Prodáno ${qty} ks ${t} | Zbývá: ${portfolio.qty[t]} ks`);
+  renderAll(); populateTxSelect('sellTicker');
+  showTxResult('sellResult',`✓ Prodáno ${qty} ks ${t} | Zbývá: ${portfolio.qty[t]} ks`);
   showToast(`▼ ${t} −${qty} ks`);
 }
 
@@ -1328,45 +1324,28 @@ function execNewPos() {
   const qty   = parseFloat(document.getElementById('newPosQty').value) || 0;
   const yld   = parseFloat(document.getElementById('newPosYield').value) / 100 || 0;
   const price = parseFloat(document.getElementById('newPosPrice').value) || 0;
-
   if (!t)     { showTxResult('newPosResult','⚠ Zadej ticker',false); return; }
-  if (portfolio.tickers.includes(t)) {
-    showTxResult('newPosResult',`⚠ ${t} už existuje — použij Dokup`,false); return;
-  }
+  if (portfolio.tickers.includes(t)) { showTxResult('newPosResult',`⚠ ${t} už existuje`,false); return; }
   if (price <= 0) { showTxResult('newPosResult','⚠ Zadej aktuální cenu',false); return; }
-
   portfolio.tickers.push(t);
   portfolio.sectors[t]  = sec;
   portfolio.qty[t]      = qty;
   portfolio.yields[t]   = yld;
   portfolio.fallback[t] = price;
-
   renderAll();
-  // Reset formuláře
-  ['newPosTicker','newPosQty','newPosYield','newPosPrice'].forEach(id =>
-    document.getElementById(id).value = '');
-
-  showTxResult('newPosResult',`✓ ${t} přidán do portfolia (${qty} ks @ $${price})`);
+  ['newPosTicker','newPosQty','newPosYield','newPosPrice'].forEach(id => document.getElementById(id).value = '');
+  showTxResult('newPosResult',`✓ ${t} přidán (${qty} ks @ $${price})`);
   showToast(`＋ ${t} přidán`);
 }
 
 function execDel() {
   const t = document.getElementById('delTicker').value;
   if (!t) return;
-
   if (!confirm(`Opravdu smazat ${t} z portfolia?`)) return;
-
   portfolio.tickers = portfolio.tickers.filter(x => x !== t);
-  delete portfolio.sectors[t];
-  delete portfolio.qty[t];
-  delete portfolio.yields[t];
-  delete portfolio.fallback[t];
-  delete livePrices[t];
-  delete liveYields[t];
-
-  renderAll();
-  populateTxSelect('delTicker');
-  updateDelPreview();
+  ['sectors','qty','yields','fallback'].forEach(k => delete portfolio[k][t]);
+  delete livePrices[t]; delete liveYields[t];
+  renderAll(); populateTxSelect('delTicker'); updateDelPreview();
   showTxResult('delResult',`✓ ${t} odstraněn z portfolia`);
   showToast(`✕ ${t} smazán`);
 }
@@ -1388,66 +1367,50 @@ function showToast(msg) {
 // ═══════════════════════════════════════════════
 // PORTFOLIO EDITOR
 // ═══════════════════════════════════════════════
-
-// Working copies that get edited in modal
-let editTickers = [];
-let editSectors = {};
-let editQty = {};
-let editYields = {};
-let editFallback = {};
+let editTickers = [], editSectors = {}, editQty = {}, editYields = {}, editFallback = {};
 
 function openEditor() {
-  // Clone current state into edit buffers
   editTickers = [...portfolio.tickers];
   editSectors = {...portfolio.sectors};
-  editQty = {...portfolio.qty};
-  editYields = {...portfolio.yields};
-  editFallback = {...portfolio.fallback};
+  editQty     = {...portfolio.qty};
+  editYields  = {...portfolio.yields};
+  editFallback= {...portfolio.fallback};
   renderEditorBody();
   document.getElementById('editorOverlay').classList.add('open');
   document.getElementById('editorMsg').textContent = '';
 }
 
-function closeEditor() {
-  document.getElementById('editorOverlay').classList.remove('open');
-}
-
-function overlayClick(e) {
-  if (e.target === document.getElementById('editorOverlay')) closeEditor();
-}
+function closeEditor() { document.getElementById('editorOverlay').classList.remove('open'); }
+function overlayClick(e) { if (e.target === document.getElementById('editorOverlay')) closeEditor(); }
 
 function renderEditorBody() {
   const tbody = document.getElementById('editorBody');
-  tbody.innerHTML = editTickers.map((t, i) => `
-    <tr id="erow-${i}">
+  tbody.innerHTML = editTickers.map((t) => `
+    <tr>
       <td><span class="ticker-badge">${t}</span></td>
       <td>
         <select class="editor-select" onchange="editSectors['${t}']=this.value">
           ${['BDC','REIT','Utility','Other'].map(s =>
-            `<option value="${s}" ${editSectors[t]===s?'selected':''}>${s}</option>`
-          ).join('')}
+            `<option value="${s}" ${editSectors[t]===s?'selected':''}>${s}</option>`).join('')}
         </select>
       </td>
       <td>
         <input class="editor-input" type="number" min="0"
           value="${editQty[t]||0}"
-          onchange="editQty['${t}']=parseFloat(this.value)||0"
-          style="width:90px">
+          onchange="editQty['${t}']=parseFloat(this.value)||0" style="width:90px">
       </td>
       <td>
         <input class="editor-input" type="number" min="0" step="0.1"
           value="${((editYields[t]||0)*100).toFixed(2)}"
-          onchange="editYields['${t}']=parseFloat(this.value)/100||0"
-          style="width:80px">
+          onchange="editYields['${t}']=parseFloat(this.value)/100||0" style="width:80px">
       </td>
       <td>
         <input class="editor-input" type="number" min="0" step="0.01"
           value="${(editFallback[t]||0).toFixed(2)}"
-          onchange="editFallback['${t}']=parseFloat(this.value)||0"
-          style="width:90px">
+          onchange="editFallback['${t}']=parseFloat(this.value)||0" style="width:90px">
       </td>
       <td>
-        <button class="btn-icon" onclick="removeEditTicker('${t}')" title="Odebrat">✕</button>
+        <button class="btn-icon" onclick="removeEditTicker('${t}')">✕</button>
       </td>
     </tr>
   `).join('');
@@ -1455,60 +1418,34 @@ function renderEditorBody() {
 
 function removeEditTicker(t) {
   editTickers = editTickers.filter(x => x !== t);
-  delete editSectors[t];
-  delete editQty[t];
-  delete editYields[t];
-  delete editFallback[t];
+  ['editSectors','editQty','editYields','editFallback'].forEach(k => delete window[k][t]);
   renderEditorBody();
 }
 
 function addTicker() {
-  const rawTicker = document.getElementById('newTicker').value.trim().toUpperCase();
-  const sector = document.getElementById('newSector').value;
+  const raw = document.getElementById('newTicker').value.trim().toUpperCase();
+  const sec = document.getElementById('newSector').value;
   const qty = parseFloat(document.getElementById('newQty').value) || 0;
   const yld = parseFloat(document.getElementById('newYield').value) / 100 || 0;
-
-  if (!rawTicker || rawTicker.length < 1) {
-    showEditorMsg('⚠ Zadej ticker symbol'); return;
-  }
-  if (editTickers.includes(rawTicker)) {
-    showEditorMsg('⚠ Ticker už existuje'); return;
-  }
-
-  editTickers.push(rawTicker);
-  editSectors[rawTicker] = sector;
-  editQty[rawTicker] = qty;
-  editYields[rawTicker] = yld;
-  editFallback[rawTicker] = livePrices[rawTicker] || 0;
-
-  // Clear add fields
-  document.getElementById('newTicker').value = '';
-  document.getElementById('newQty').value = '';
-  document.getElementById('newYield').value = '';
-
-  renderEditorBody();
-  showEditorMsg(`✓ ${rawTicker} přidán`);
+  if (!raw) { showEditorMsg('⚠ Zadej ticker'); return; }
+  if (editTickers.includes(raw)) { showEditorMsg('⚠ Ticker už existuje'); return; }
+  editTickers.push(raw);
+  editSectors[raw] = sec; editQty[raw] = qty; editYields[raw] = yld;
+  editFallback[raw] = livePrices[raw] || 0;
+  ['newTicker','newQty','newYield'].forEach(id => document.getElementById(id).value = '');
+  renderEditorBody(); showEditorMsg(`✓ ${raw} přidán`);
 }
 
 function saveEditor() {
-  // Commit edit buffers back to live portfolio
-  portfolio.tickers = [...editTickers];
-  portfolio.sectors = {...editSectors};
-  portfolio.qty = {...editQty};
-  portfolio.yields = {...editYields};
+  portfolio.tickers  = [...editTickers];
+  portfolio.sectors  = {...editSectors};
+  portfolio.qty      = {...editQty};
+  portfolio.yields   = {...editYields};
   portfolio.fallback = {...editFallback};
-
-  // Clear stale live prices for removed tickers
   for (const t of Object.keys(livePrices)) {
-    if (!portfolio.tickers.includes(t)) {
-      delete livePrices[t];
-      delete liveYields[t];
-    }
+    if (!portfolio.tickers.includes(t)) { delete livePrices[t]; delete liveYields[t]; }
   }
-
-  closeEditor();
-  renderAll();
-  showToast('✓ Portfolio uloženo');
+  closeEditor(); renderAll(); showToast('✓ Portfolio uloženo');
 }
 
 function showEditorMsg(msg) {
@@ -1518,11 +1455,23 @@ function showEditorMsg(msg) {
 }
 
 // ═══════════════════════════════════════════════
-// CHART
+// ── FIX 2: CHART s localStorage persistencí ──
 // ═══════════════════════════════════════════════
+const LS_KEY = 'portfolioPro_snapshots';
 let chartInstance = null;
 let chartMode = 'value';
-let snapshots = []; // [{label, value, dividend, yield}]
+
+// Načti snapshoty z localStorage
+let snapshots = [];
+try {
+  const stored = localStorage.getItem(LS_KEY);
+  if (stored) snapshots = JSON.parse(stored);
+} catch(e) { snapshots = []; }
+
+function saveSnapshots() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(snapshots)); } catch(e) {}
+  document.getElementById('snapshotCount').textContent = snapshots.length;
+}
 
 function addSnapshot() {
   const s = computeStats();
@@ -1534,8 +1483,17 @@ function addSnapshot() {
     dividend: s.total * s.avgYield,
     yield: s.avgYield * 100
   });
+  saveSnapshots();
   updateChart();
-  showToast(`✓ Snapshot přidán (${snapshots.length})`);
+  showToast(`✓ Snapshot uložen (${snapshots.length})`);
+}
+
+function clearSnapshots() {
+  if (!confirm('Smazat všechny snapshoty?')) return;
+  snapshots = [];
+  saveSnapshots();
+  updateChart();
+  showToast('Snapshoty smazány');
 }
 
 function setChartMode(mode, btn) {
@@ -1547,27 +1505,21 @@ function setChartMode(mode, btn) {
 
 function updateChart() {
   const ctx = document.getElementById('portfolioChart').getContext('2d');
-
-  // Always show current value as last point even without snapshots
   const s = computeStats();
-  const now = new Date();
-  const nowLabel = 'Nyní';
-
   const allPoints = [
     ...snapshots,
-    { label: nowLabel, value: s.total, dividend: s.total * s.avgYield, yield: s.avgYield * 100 }
+    { label: 'Nyní', value: s.total, dividend: s.total * s.avgYield, yield: s.avgYield * 100 }
   ];
 
-  const labels = allPoints.map(p => p.label);
-  const dataMap = { value: allPoints.map(p => +p.value.toFixed(2)),
-                    dividend: allPoints.map(p => +p.dividend.toFixed(2)),
-                    yield: allPoints.map(p => +p.yield.toFixed(3)) };
-  const data = dataMap[chartMode];
-
-  const colors = { value: '#00e5a0', dividend: '#0ea5e9', yield: '#f59e0b' };
-  const color = colors[chartMode];
-
-  const labels2 = { value: 'Hodnota (USD)', dividend: 'Dividenda/rok (USD)', yield: 'Výnos (%)' };
+  const labels  = allPoints.map(p => p.label);
+  const dataMap = {
+    value:    allPoints.map(p => +p.value.toFixed(2)),
+    dividend: allPoints.map(p => +p.dividend.toFixed(2)),
+    yield:    allPoints.map(p => +p.yield.toFixed(3))
+  };
+  const data  = dataMap[chartMode];
+  const color = { value:'#00e5a0', dividend:'#0ea5e9', yield:'#f59e0b' }[chartMode];
+  const label2= { value:'Hodnota (USD)', dividend:'Dividenda/rok (USD)', yield:'Výnos (%)' }[chartMode];
 
   if (chartInstance) chartInstance.destroy();
 
@@ -1576,8 +1528,7 @@ function updateChart() {
     data: {
       labels,
       datasets: [{
-        label: labels2[chartMode],
-        data,
+        label: label2, data,
         borderColor: color,
         backgroundColor: color + '18',
         borderWidth: 2,
@@ -1610,7 +1561,7 @@ function updateChart() {
       scales: {
         x: {
           grid: { color: '#1a2a4640' },
-          ticks: { color: '#5a7499', font: { family: "'DM Mono'" , size: 11 } }
+          ticks: { color: '#5a7499', font: { family: "'DM Mono'", size: 11 } }
         },
         y: {
           grid: { color: '#1a2a4640' },
@@ -1623,22 +1574,22 @@ function updateChart() {
       }
     }
   });
+
+  document.getElementById('snapshotCount').textContent = snapshots.length;
 }
 
 // ═══════════════════════════════════════════════
-// REBALANCING
+// ── FIX 3: REBALANCING — přidán Utility sektor ──
 // ═══════════════════════════════════════════════
-const TARGET_WEIGHTS = { BDC: 45, REIT: 35, Other: 20 };
+const TARGET_WEIGHTS = { BDC: 40, REIT: 30, Utility: 15, Other: 15 };
 let targetWeights = { ...TARGET_WEIGHTS };
 
 function renderRebalancing() {
   const s = computeStats();
   const capital = parseFloat(document.getElementById('rebalCapital').value) || 0;
-  const sectors = ['BDC','REIT','Other'];
-  const colors = { BDC:'bdc', REIT:'reit', Utility:'utility', Other:'other' };
+  const sectors = ['BDC','REIT','Utility','Other'];
+  const colorMap = { BDC:'bdc', REIT:'reit', Utility:'utility', Other:'other' };
 
-  // Summary cards
-  const totalTarget = Object.values(targetWeights).reduce((a,b) => a+b, 0);
   document.getElementById('rebalSummary').innerHTML = `
     <div class="rebal-sum-item">
       <div class="rebal-sum-label">Portfolio</div>
@@ -1655,26 +1606,21 @@ function renderRebalancing() {
   `;
 
   const totalAfter = s.total + capital;
-  const tbody = document.getElementById('rebalBody');
-  tbody.innerHTML = sectors.map(sec => {
-    const current = s.sec[sec] || 0;
+  document.getElementById('rebalBody').innerHTML = sectors.map(sec => {
+    const current    = s.sec[sec] || 0;
     const currentPct = s.total > 0 ? (current / s.total) * 100 : 0;
-    const targetPct = targetWeights[sec] || 0;
-    const targetVal = (targetPct / 100) * totalAfter;
-    const diff = targetVal - current;
-    const diffPct = currentPct - targetPct;
+    const targetPct  = targetWeights[sec] || 0;
+    const diff       = ((targetPct / 100) * totalAfter) - current;
+    const diffPct    = currentPct - targetPct;
 
-    let actionHtml = '';
-    if (Math.abs(diff) < 50) {
-      actionHtml = `<span class="rebal-ok">✓ V pořádku</span>`;
-    } else if (diff > 0) {
-      actionHtml = `<span class="rebal-buy">▲ Dokoupit ${fmtUSD(diff)}</span>`;
-    } else {
-      actionHtml = `<span class="rebal-sell">▼ Prodat ${fmtUSD(Math.abs(diff))}</span>`;
-    }
+    const actionHtml = Math.abs(diff) < 50
+      ? `<span class="rebal-ok">✓ V pořádku</span>`
+      : diff > 0
+        ? `<span class="rebal-buy">▲ Dokoupit ${fmtUSD(diff)}</span>`
+        : `<span class="rebal-sell">▼ Prodat ${fmtUSD(Math.abs(diff))}</span>`;
 
     return `<tr>
-      <td><span class="sector-tag ${colors[sec]}" style="font-size:0.75rem;padding:3px 10px">${sec}</span></td>
+      <td><span class="sector-tag ${colorMap[sec]}" style="font-size:0.75rem;padding:3px 10px">${sec}</span></td>
       <td>
         <div>${fmtUSD(current)}</div>
         <div style="color:var(--muted);font-size:0.7rem">${currentPct.toFixed(1)}%</div>
@@ -1682,8 +1628,7 @@ function renderRebalancing() {
       <td>
         <input class="target-input" type="number" min="0" max="100" step="1"
           value="${targetPct}"
-          onchange="targetWeights['${sec}']=parseFloat(this.value)||0;renderRebalancing()"
-          title="Cílová váha %">
+          onchange="targetWeights['${sec}']=parseFloat(this.value)||0;renderRebalancing()">
         <span style="color:var(--muted);font-size:0.7rem">%</span>
       </td>
       <td style="color:${diffPct > 2 ? '#ef4444' : diffPct < -2 ? '#00e5a0' : 'var(--muted)'}">
@@ -1697,10 +1642,9 @@ function renderRebalancing() {
 // ═══════════════════════════════════════════════
 // AUTO-REFRESH
 // ═══════════════════════════════════════════════
-const AUTO_INTERVAL = 15 * 60; // 15 minut v sekundách
+const AUTO_INTERVAL = 15 * 60;
 let autoEnabled = false;
 let autoSecsLeft = AUTO_INTERVAL;
-let autoTimer = null;
 let countdownTimer = null;
 
 function toggleAutoRefresh() {
@@ -1713,7 +1657,6 @@ function toggleAutoRefresh() {
     showToast('⏱ Auto-refresh zapnut (15 min)');
   } else {
     badge.classList.remove('on');
-    clearInterval(autoTimer);
     clearInterval(countdownTimer);
     document.getElementById('countdown').textContent = '—';
     showToast('Auto-refresh vypnut');
@@ -1721,20 +1664,14 @@ function toggleAutoRefresh() {
 }
 
 function startCountdown() {
-  clearInterval(autoTimer);
   clearInterval(countdownTimer);
-
   countdownTimer = setInterval(() => {
     autoSecsLeft--;
     const m = Math.floor(autoSecsLeft / 60);
     const s = autoSecsLeft % 60;
     document.getElementById('countdown').textContent =
       m > 0 ? `${m}m${s.toString().padStart(2,'0')}s` : `${s}s`;
-
-    if (autoSecsLeft <= 0) {
-      autoSecsLeft = AUTO_INTERVAL;
-      fetchData();
-    }
+    if (autoSecsLeft <= 0) { autoSecsLeft = AUTO_INTERVAL; fetchData(); }
   }, 1000);
 }
 
@@ -1742,8 +1679,7 @@ function startCountdown() {
 // INIT
 // ═══════════════════════════════════════════════
 renderAll();
-updateChart();
-renderRebalancing();
+saveSnapshots(); // zobraz počet načtených snapshotů z LS
 </script>
 </body>
 </html>
