@@ -9,23 +9,45 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Portfolio">
 <meta name="theme-color" content="#0284c7">
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Dividendov%C3%A9+portfolio%22%2C%22short_name%22%3A%22Portfolio%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f0f4f8%22%2C%22theme_color%22%3A%22%230284c7%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg+xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'+viewBox%3D'0+0+100+100'%253E%253Crect+width%3D'100'+height%3D'100'+rx%3D'20'+fill%3D'%230284c7'%2F%253E%253Ctext+y%3D'.9em'+font-size%3D'80'+x%3D'10'%253E%25F0%259F%2592%25B9%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22any%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230284c7'/><text y='.9em' font-size='80' x='10'>💹</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#f0f4f8;--card:#ffffff;--border:#cbd5e1;--text:#1e2a3a;
-  --muted:#64748b;--green:#16a34a;--red:#dc2626;--yellow:#d97706;--blue:#0284c7;
-  --font-mono:'DM Mono',monospace;--font-ui:'Space Grotesk',sans-serif;
+  --bg:#f0f4f8;
+  --card:#ffffff;
+  --border:#cbd5e1;
+  --text:#1e2a3a;
+  --muted:#64748b;
+  --green:#16a34a;
+  --red:#dc2626;
+  --yellow:#d97706;
+  --blue:#0284c7;
+  --font-mono:'DM Mono',monospace;
+  --font-ui:'Space Grotesk',sans-serif;
 }
 body{background:var(--bg);color:var(--text);font-family:var(--font-ui);min-height:100vh}
 
-.header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--card);position:sticky;top:0;z-index:10;flex-wrap:wrap;gap:6px}
+.header{
+  display:flex;align-items:center;justify-content:flex-end;
+  padding:10px 14px;border-bottom:1px solid var(--border);
+  background:var(--card);position:sticky;top:0;z-index:10;
+  flex-wrap:wrap;gap:6px;
+}
 .header-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
-.pill{font-size:.7rem;font-family:var(--font-mono);padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s}
+.pill{
+  font-size:.7rem;font-family:var(--font-mono);padding:4px 10px;border-radius:20px;
+  border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;
+  transition:all .2s;
+}
 .pill:hover,.pill.on{border-color:var(--green);color:var(--green);background:rgba(22,163,74,.08)}
-.pill-add{background:linear-gradient(135deg,var(--green),#0d6e2e);border:none;color:white;font-weight:700}
-.pill-add:hover{background:linear-gradient(135deg,#0d6e2e,#0a5a25);color:white}
+.pill-add{
+  background:linear-gradient(135deg, var(--green), #0d6e2e);
+  border:none;color:white;font-weight:700;
+}
+.pill-add:hover{background:linear-gradient(135deg, #0d6e2e, #0a5a25);color:white;border-color:transparent}
 #statusBadge{font-size:.65rem;font-family:var(--font-mono);color:var(--muted)}
 #nextUpdateBadge{font-size:.6rem;font-family:var(--font-mono);color:var(--blue);background:rgba(2,132,199,.1);padding:2px 8px;border-radius:12px}
 
@@ -40,257 +62,554 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-ui);min-heigh
 .main-grid{display:grid;gap:8px;padding:8px 12px 12px}
 @media(min-width:768px){.main-grid{grid-template-columns:1fr 260px}}
 @media(min-width:1024px){.main-grid{grid-template-columns:1fr 300px}}
+@media(min-width:1440px){.main-grid{grid-template-columns:1fr 340px}}
 
 .card{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
 .card-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border)}
 .card-title{font-size:.7rem;font-family:var(--font-mono);color:var(--muted);letter-spacing:.12em;text-transform:uppercase}
-
-.table-wrapper{overflow-x:auto;-webkit-overflow-scrolling:touch}
-.tbl{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.72rem;min-width:580px}
+.tbl{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.72rem}
 .tbl th{padding:6px 8px;color:var(--muted);font-weight:500;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap}
 .tbl th:first-child{text-align:left}
-.tbl td{padding:7px 8px;text-align:right;border-bottom:1px solid var(--border);vertical-align:middle}
-.tbl td:first-child{text-align:left;font-weight:600}
+.tbl td{padding:7px 8px;text-align:right;border-bottom:1px solid var(--border)}
+.tbl td:first-child{text-align:left;font-weight:600;color:var(--text)}
 .tbl tr:last-child td{border-bottom:none}
 .tbl tr:hover td{background:rgba(0,0,0,.02)}
 
-.sig{display:inline-block;font-size:.62rem;padding:2px 7px;border-radius:10px;font-weight:600;white-space:nowrap}
+.th-signal{position:relative;cursor:help;border-bottom:1px dotted var(--muted)}
+.th-signal:hover::after{
+  content:"Skóre ≥80 = STRONG BUY | 65-79 = BUY | 45-64 = HOLD | <45 = RISK";
+  position:absolute;top:100%;right:0;background:var(--card);border:1px solid var(--border);
+  padding:6px 10px;border-radius:8px;font-size:.6rem;font-weight:normal;
+  color:var(--text);white-space:nowrap;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
+
+.sig{display:inline-block;font-size:.62rem;padding:2px 7px;border-radius:10px;font-weight:600;letter-spacing:.05em}
 .sig-buy{background:rgba(22,163,74,.12);color:var(--green);border:1px solid rgba(22,163,74,.3)}
 .sig-strong{background:rgba(22,163,74,.2);color:#0d6e2e;border:1px solid rgba(22,163,74,.4)}
 .sig-hold{background:rgba(217,119,6,.1);color:var(--yellow);border:1px solid rgba(217,119,6,.3)}
 .sig-risk{background:rgba(220,38,38,.1);color:var(--red);border:1px solid rgba(220,38,38,.3)}
+tr.ticker-row{cursor:pointer;transition:background .15s}
+tr.ticker-row:hover{background:rgba(2,132,199,.05)}
+tr.detail-row td{padding:0!important;border-bottom:1px solid var(--border)}
+.detail-panel{display:none;padding:14px 16px;background:rgba(2,132,199,.04);border-top:1px solid var(--border)}
+.detail-panel.open{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.d-item{display:flex;flex-direction:column;gap:2px}
+.d-label{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.d-val{font-size:.82rem;font-weight:600;font-family:var(--font-mono)}
+.d-bar{height:5px;border-radius:3px;margin-top:3px;background:var(--border);overflow:hidden}
+.d-bar-fill{height:100%;border-radius:3px}
 
 .score-wrap{display:flex;align-items:center;gap:6px;justify-content:flex-end}
 .score-bar{width:36px;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
-.score-fill{height:100%;border-radius:2px}
+.score-fill{height:100%;border-radius:2px;transition:width .4s}
 
-.qty-wrap{display:flex;align-items:center;gap:3px;justify-content:flex-end}
-.qty-btn{width:22px;height:22px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--green);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.qty-input{width:52px;background:var(--bg);border:1px solid var(--green);border-radius:6px;font-family:var(--font-mono);font-size:11px;text-align:center;padding:2px 4px}
-.btn-del{background:none;border:1px solid rgba(220,38,38,.25);color:var(--red);border-radius:6px;width:24px;height:24px;cursor:pointer;font-size:.7rem}
-
-tr.ticker-row{cursor:pointer;transition:background .15s}
-tr.ticker-row:hover td{background:rgba(2,132,199,.04)}
-tr.detail-row td{padding:0!important;border-bottom:none}
-.detail-panel{display:none;padding:14px 16px;background:rgba(2,132,199,.03);border-bottom:1px solid var(--border)}
-.detail-panel.open{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
-.d-item{display:flex;flex-direction:column;gap:2px}
-.d-label{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
-.d-val{font-size:.82rem;font-weight:600;font-family:var(--font-mono)}
+.qty-wrap{display:flex;align-items:center;gap:4px;justify-content:flex-end}
+.qty-btn{
+  width:22px;height:22px;border-radius:6px;
+  border:1px solid var(--border);background:var(--bg);
+  color:var(--green);font-size:14px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.qty-btn:hover{background:var(--border)}
+.qty-input{
+  width:52px;background:var(--bg);border:1px solid var(--green);
+  border-radius:6px;color:var(--text);font-family:var(--font-mono);
+  font-size:11px;text-align:center;padding:2px 4px;
+}
+.btn-del{
+  background:none;border:1px solid rgba(220,38,38,.25);color:var(--red);
+  border-radius:6px;width:24px;height:24px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;
+}
+.btn-del:hover{background:rgba(220,38,38,.1)}
 
 .side-stack{display:flex;flex-direction:column;gap:8px}
-.buy-row{display:flex;gap:6px;padding:10px 14px;align-items:center;border-top:1px solid var(--border);flex-wrap:wrap}
-.buy-input{background:var(--bg);border:1px solid var(--border);border-radius:6px;width:80px;text-align:center;padding:5px 8px;font-family:var(--font-mono);font-size:.72rem}
-.btn-green{background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.35);color:var(--green);padding:5px 10px;border-radius:6px;cursor:pointer;font-family:var(--font-mono);font-size:.68rem}
+.autopilot-result{padding:12px 14px;font-size:.72rem;font-family:var(--font-mono);line-height:1.7}
+.ap-best{font-size:1.1rem;font-weight:700;color:var(--green);margin:6px 0 2px}
+.ap-row{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--border)}
+.ap-row:last-child{border:none}
+.alerts-list{padding:10px 14px;font-size:.7rem;font-family:var(--font-mono);line-height:1.8}
+.alert-item{padding:3px 0;border-bottom:1px solid var(--border)}
+.alert-item:last-child{border:none}
+
+.dividend-box{
+  background:linear-gradient(135deg, #e8f5e9, #c8e6c9);
+  border-radius:12px;
+  padding:16px 20px;
+  text-align:center;
+  margin:12px 14px;
+  border:1px solid #a5d6a7;
+}
+.dividend-label{
+  font-size:.65rem;
+  font-family:var(--font-mono);
+  color:#2e7d32;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  margin-bottom:8px;
+}
+.dividend-amount{
+  font-size:2rem;
+  font-weight:700;
+  font-family:var(--font-mono);
+  color:#1b5e20;
+}
+.dividend-tax{
+  font-size:.6rem;
+  color:#558b2f;
+  margin-top:6px;
+}
+.dividend-history{
+  font-size:.55rem;
+  color:#2e7d32;
+  margin-top:8px;
+  padding-top:6px;
+  border-top:1px solid #a5d6a7;
+}
+
+.chart-wrap{padding:10px 14px 14px;height:140px;position:relative}
+canvas.mini{width:100%!important;height:100%!important}
+
+.chart-wrap-small{padding:10px 14px 14px;height:160px;position:relative}
+canvas.small-chart{width:100%!important;height:100%!important}
+
+.buy-row{display:flex;gap:6px;padding:10px 14px;align-items:center;border-top:1px solid var(--border)}
+.buy-input{
+  background:var(--bg);border:1px solid var(--border);color:var(--text);
+  font-family:var(--font-mono);font-size:.72rem;padding:5px 8px;border-radius:6px;
+  width:80px;text-align:center;
+}
+.buy-input:focus{outline:none;border-color:var(--green)}
+.btn-green{background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.35);color:var(--green);font-family:var(--font-mono);font-size:.68rem;padding:5px 10px;border-radius:6px;cursor:pointer;transition:all .15s}
 .btn-green:hover{background:rgba(22,163,74,.2)}
+.btn-auto{background:rgba(2,132,199,.08);border:1px solid rgba(2,132,199,.3);color:var(--blue);font-family:var(--font-mono);font-size:.7rem;padding:6px 12px;border-radius:6px;cursor:pointer;transition:all .15s;width:100%;margin:0 14px 12px;box-sizing:border-box;width:calc(100% - 28px);display:block}
+.btn-auto:hover{background:rgba(2,132,199,.15)}
 
-.dividend-box{background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-radius:12px;padding:16px 20px;text-align:center;margin:12px 14px}
-.dividend-amount{font-size:2rem;font-weight:700;color:#1b5e20;font-family:var(--font-mono)}
-.dividend-sub{font-size:.65rem;color:#558b2f;margin-top:4px}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:#1e2a3a;border:1px solid var(--green);color:var(--green);font-family:var(--font-mono);font-size:.72rem;padding:8px 16px;border-radius:8px;opacity:0;transition:all .3s;pointer-events:none;z-index:99;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-.chart-wrap{padding:10px 14px 14px;height:130px}
-.chart-wrap-sm{padding:10px 14px 14px;height:150px}
+.modal-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);
+  z-index:100;align-items:center;justify-content:center;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:white;border:1px solid var(--border);
+  border-radius:18px;padding:24px;width:360px;max-width:95vw;
+}
+.modal h3{font-family:var(--font-mono);font-size:13px;color:var(--green);margin-bottom:20px}
+.form-row{margin-bottom:12px}
+.form-row label{display:block;font-size:10px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em}
+.form-row input,.form-row select{
+  width:100%;background:var(--bg);border:1px solid var(--border);
+  border-radius:8px;color:var(--text);font-family:var(--font-mono);
+  font-size:12px;padding:8px 10px;
+}
+.form-row input:focus,.form-row select:focus{outline:none;border-color:var(--green)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modal-btns{display:flex;gap:8px;margin-top:20px}
+.btn-confirm{
+  flex:1;background:linear-gradient(135deg, var(--green), #0d6e2e);
+  border:none;padding:10px;border-radius:10px;
+  color:white;font-family:var(--font-mono);font-size:11px;cursor:pointer;
+}
+.btn-cancel{
+  flex:1;background:transparent;border:1px solid var(--border);
+  padding:10px;border-radius:10px;color:var(--muted);
+  font-family:var(--font-mono);font-size:11px;cursor:pointer;
+}
+.err-msg{font-size:10px;color:var(--red);margin-top:8px}
+.loading-price{font-size:10px;color:var(--blue);margin-top:4px}
 
-/* Dividendový kalendář */
-.cal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:10px}
-@media(max-width:480px){.cal-grid{grid-template-columns:repeat(3,1fr)}}
+/* ── Dividendový kalendář ── */
+.cal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .cal-month{border:1px solid var(--border);border-radius:8px;overflow:hidden;font-family:var(--font-mono)}
-.cal-month.cur{border-color:var(--blue);box-shadow:0 0 0 1px rgba(2,132,199,.2)}
-.cal-head{font-size:.55rem;text-transform:uppercase;padding:3px 5px;background:var(--bg);color:var(--muted);display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
-.cal-month.cur .cal-head{background:rgba(2,132,199,.08);color:var(--blue)}
-.cal-total{font-size:.7rem;font-weight:700;color:var(--green);padding:3px 5px 2px}
-.cal-bar{height:3px;margin:0 5px 3px;background:var(--border);border-radius:2px;overflow:hidden}
-.cal-bar-fill{height:100%;border-radius:2px;background:var(--green)}
-.cal-month.cur .cal-bar-fill{background:var(--blue)}
-.cal-rows{padding:0 5px 4px}
-.cal-row{display:flex;justify-content:space-between;font-size:.5rem;color:var(--muted);line-height:1.7}
-.cal-row b{color:var(--text);font-weight:600}
-.cal-empty{font-size:.5rem;color:var(--border);padding:3px 5px;font-style:italic}
-.cal-footer{font-size:.55rem;color:var(--muted);text-align:right;padding:4px 10px 8px;font-family:var(--font-mono)}
+.cal-month.current-month{border-color:var(--blue);box-shadow:0 0 0 1px rgba(2,132,199,.25)}
+.cal-month-header{
+  font-size:.58rem;text-transform:uppercase;letter-spacing:.07em;
+  padding:4px 6px;background:var(--bg);color:var(--muted);
+  display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)
+}
+.cal-month.current-month .cal-month-header{background:rgba(2,132,199,.1);color:var(--blue)}
+.cal-month-total{font-size:.72rem;font-weight:700;color:var(--green);padding:3px 6px 2px}
+.cal-tickers{padding:0 6px 5px;display:flex;flex-direction:column;gap:1px}
+.cal-ticker-row{display:flex;justify-content:space-between;font-size:.52rem;color:var(--muted);line-height:1.6}
+.cal-ticker-row span:first-child{color:var(--text);font-weight:600}
+.cal-empty{font-size:.52rem;color:var(--border);padding:4px 6px;font-style:italic}
 
-.alerts-list{font-size:.68rem;line-height:1.6}
-.alert-item{padding:6px 10px;border-bottom:1px solid var(--border);display:flex;gap:6px;align-items:flex-start}
-.alert-item:last-child{border-bottom:none}
-.alert-warn{color:var(--yellow)}
-.alert-danger{color:var(--red)}
-.alert-info{color:var(--blue)}
-.alert-ok{color:var(--green)}
-
-/* Sektorový graf */
-.sector-list{padding:10px 14px}
-.sector-row{margin-bottom:8px}
-.sector-label{display:flex;justify-content:space-between;font-size:.65rem;font-family:var(--font-mono);margin-bottom:2px}
-.sector-bar-bg{height:6px;background:var(--border);border-radius:3px;overflow:hidden;position:relative}
-.sector-bar-act{height:100%;border-radius:3px;background:var(--blue);transition:width .4s}
-.sector-bar-tgt{position:absolute;top:0;height:100%;width:2px;background:var(--green);border-radius:1px}
-
-/* Doporučení */
-.rec-section{padding:6px 14px 10px}
-.rec-group{margin-bottom:10px}
-.rec-group-title{font-size:.6rem;color:var(--muted);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;padding:3px 0;border-bottom:1px solid var(--border)}
-.rec-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0}
-.rec-ticker{font-size:.72rem;font-weight:700;font-family:var(--font-mono)}
-.rec-signal{font-size:.6rem}
-
-/* Autopilot */
-.ab-item{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-radius:8px;border:1.5px solid var(--border);cursor:pointer;margin-bottom:6px}
+.ab-item{
+  padding:8px 10px;border-radius:8px;border:1.5px solid var(--border);
+  cursor:pointer;transition:all .15s;background:var(--bg);
+  font-family:var(--font-mono);font-size:.7rem;
+}
 .ab-item:hover{border-color:var(--blue);background:rgba(2,132,199,.05)}
 .ab-item.selected{border-color:var(--green);background:rgba(22,163,74,.07)}
-.ab-ticker{font-weight:700;font-family:var(--font-mono)}
-.ab-score{font-size:.7rem;color:var(--muted)}
+.ab-ticker{font-weight:700;font-size:.8rem;min-width:44px}
+.ab-sector{font-size:.58rem;color:var(--muted);min-width:38px}
+.ab-price{color:var(--muted);min-width:52px;text-align:right}
+.ab-info{flex:1;display:flex;flex-direction:column;gap:1px}
+.ab-rebal{font-size:.58rem;padding:1px 5px;border-radius:8px;white-space:nowrap}
+.ab-rebal-under{background:rgba(22,163,74,.12);color:var(--green);border:1px solid rgba(22,163,74,.3)}
+.ab-rebal-over{background:rgba(220,38,38,.08);color:var(--red);border:1px solid rgba(220,38,38,.2)}
+.ab-rebal-ok{background:rgba(100,116,139,.1);color:var(--muted);border:1px solid var(--border)}
 
-#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1e2a3a;border:1px solid var(--green);color:var(--green);padding:8px 16px;border-radius:8px;opacity:0;transition:all .3s;pointer-events:none;z-index:99;white-space:nowrap}
-#toast.show{opacity:1}
+/* ── Sector pie card layout ─────────────────────────────── */
+.sector-inner{display:grid;grid-template-columns:1fr 130px;align-items:start}
+.sector-pie-wrap{padding:8px 10px 8px 0;height:190px;position:relative}
+.sector-pie-wrap canvas{width:100%!important;height:100%!important}
 
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center}
-.modal-overlay.open{display:flex}
-.modal{background:white;border-radius:18px;padding:24px;width:360px;max-width:95vw;max-height:90vh;overflow-y:auto}
-.modal h3{font-size:13px;color:var(--green);margin-bottom:16px}
-.form-row{margin-bottom:10px}
-.form-row label{display:block;font-size:10px;color:var(--muted);margin-bottom:3px}
-.form-row input,.form-row select{width:100%;border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-family:var(--font-mono);font-size:12px}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.modal-btns{display:flex;gap:8px;margin-top:16px}
-.btn-confirm{flex:1;background:linear-gradient(135deg,var(--green),#0d6e2e);border:none;padding:10px;border-radius:10px;color:white;cursor:pointer;font-family:var(--font-mono);font-size:.75rem}
-.btn-cancel{flex:1;background:transparent;border:1px solid var(--border);padding:10px;border-radius:10px;color:var(--muted);cursor:pointer;font-family:var(--font-mono);font-size:.75rem}
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE — mobile / tablet / desktop
+   Breakpoints: ≤479 | 480-599 | 600-767 | 768-1023 | 1024+ | 1440+
+═══════════════════════════════════════════════════════════════ */
+
+/* ── LARGE DESKTOP 1440px+ ─── */
+@media(min-width:1440px){
+  .kpi-row,.main-grid{max-width:1480px;margin-left:auto;margin-right:auto}
+  .kpi-val{font-size:1.75rem}
+  .tbl{font-size:.78rem}
+  .tbl td,.tbl th{padding:9px 11px}
+}
+
+/* ── DESKTOP 1024px+ ─── */
+@media(min-width:1024px){
+  .kpi-row{padding:16px 18px 0;gap:10px}
+  .kpi{padding:14px 18px}
+  .kpi-val{font-size:1.65rem}
+  .main-grid{padding:10px 18px 18px;gap:10px}
+  .tbl{font-size:.76rem}
+  .tbl td,.tbl th{padding:8px 10px}
+}
+
+/* ── TABLET LANDSCAPE 768-1023px ─── */
+@media(min-width:768px) and (max-width:1023px){
+  .kpi-row{padding:12px 14px 0;gap:8px}
+  .kpi-val{font-size:1.45rem}
+  .main-grid{padding:8px 14px 14px}
+  .tbl{font-size:.7rem}
+  .tbl td,.tbl th{padding:6px 7px}
+  /* Sidebar slightly narrower at smaller tablet */
+  .sector-inner{grid-template-columns:1fr 120px}
+  .sector-pie-wrap{height:170px}
+}
+
+/* ── TABLET PORTRAIT 600-767px (sidebar stacks below, full width) ─── */
+@media(min-width:600px) and (max-width:767px){
+  .main-grid{grid-template-columns:1fr;padding:8px 12px 12px}
+  .side-stack{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .side-stack .card:first-child{grid-column:1/-1} /* dividenda přes celou šíři */
+  .tbl{font-size:.69rem}
+  .tbl td,.tbl th{padding:6px 6px}
+  /* Skryj score-bar, ukáže se jen číslo */
+  .score-bar{display:none}
+  .sector-inner{grid-template-columns:1fr 110px}
+  .sector-pie-wrap{height:160px}
+  .cal-grid{grid-template-columns:repeat(4,1fr)} /* 4 sloupce jsou OK na šířce 600px+ */
+}
+
+/* ── MOBILE 480-599px ─── */
+@media(min-width:480px) and (max-width:599px){
+  .main-grid{padding:6px 10px 10px}
+  /* Tabulka: skryj DPS, D/E, Cov/Pay */
+  .tbl th:nth-child(3),.tbl td:nth-child(3),
+  .tbl th:nth-child(5),.tbl td:nth-child(5),
+  .tbl th:nth-child(6),.tbl td:nth-child(6){display:none}
+  .score-bar{display:none}
+  .tbl{font-size:.67rem}
+  .tbl td,.tbl th{padding:6px 5px}
+  /* Větší touch targety */
+  .qty-btn{width:30px;height:30px;font-size:15px}
+  .qty-input{width:46px}
+  .btn-del{width:28px;height:28px}
+  /* Detail panel */
+  .detail-panel.open{grid-template-columns:repeat(2,1fr)}
+  /* Sektor */
+  .sector-inner{grid-template-columns:1fr}
+  .sector-pie-wrap{height:180px;padding:6px 14px 10px 14px}
+  /* Calendar */
+  .cal-grid{grid-template-columns:repeat(3,1fr)}
+}
+
+/* ── SMALL MOBILE ≤479px ─── */
+@media(max-width:479px){
+  /* Header kompaktní */
+  .header{padding:8px 10px;gap:4px}
+  #nextUpdateBadge{display:none}          /* Skryj timer na malém telefonu */
+  #statusBadge{font-size:.58rem}
+  .pill{font-size:.6rem;padding:3px 8px}
+  .pill-add{padding:5px 10px}
+
+  /* KPI */
+  .kpi-row{padding:8px 10px 0;gap:6px}
+  .kpi{padding:9px 10px}
+  .kpi-label{font-size:.57rem;letter-spacing:.06em}
+  .kpi-val{font-size:1.22rem}
+  .kpi-sub{font-size:.58rem}
+
+  /* Main grid */
+  .main-grid{padding:6px 8px 10px;gap:6px}
+
+  /* Tabulka: skryj DPS, D/E, Cov/Pay */
+  .tbl th:nth-child(3),.tbl td:nth-child(3),
+  .tbl th:nth-child(5),.tbl td:nth-child(5),
+  .tbl th:nth-child(6),.tbl td:nth-child(6){display:none}
+  /* Skryj score bar — zůstane jen číslo */
+  .score-bar{display:none}
+  .tbl{font-size:.63rem}
+  .tbl td,.tbl th{padding:5px 4px}
+  .tbl td:first-child{font-size:.65rem}
+
+  /* Větší touch targety pro tlačítka */
+  .qty-btn{width:32px;height:32px;font-size:16px;border-radius:8px}
+  .qty-input{width:42px;font-size:10px;padding:2px 2px}
+  .btn-del{width:30px;height:30px;font-size:13px}
+
+  /* Detail panel — 2 sloupce */
+  .detail-panel.open{grid-template-columns:repeat(2,1fr);padding:10px 12px}
+
+  /* Sektor pie — skryj graf na nejmenším, ukáže tabulka */
+  .sector-inner{grid-template-columns:1fr}
+  .sector-pie-wrap{height:160px;padding:6px 14px 10px}
+
+  /* Calendar — 3 sloupce */
+  .cal-grid{grid-template-columns:repeat(3,1fr)}
+  .cal-month-total{font-size:.65rem}
+  .cal-ticker-row{font-size:.48rem}
+
+  /* Dividend box */
+  .dividend-box{padding:12px 14px;margin:8px 10px}
+  .dividend-amount{font-size:1.65rem}
+
+  /* Buy row */
+  .buy-row{flex-wrap:wrap;gap:5px}
+  .buy-input{width:72px}
+
+  /* Modaly */
+  .modal{padding:18px 16px;border-radius:14px}
+  .modal h3{font-size:12px}
+  #autoBuyList{max-height:220px}
+
+  /* Karta */
+  .card-header{padding:8px 12px}
+  .card-title{font-size:.62rem;letter-spacing:.1em}
+  .alerts-list,.autopilot-result{font-size:.67rem;padding:8px 12px}
+  .rebalanceBox{font-size:.63rem}
+
+  /* Chart */
+  .chart-wrap{height:120px;padding:8px 10px 10px}
+  .chart-wrap-small{height:140px;padding:8px 10px 10px}
+
+  /* Auto buy modal */
+  .ab-item{padding:7px 8px;font-size:.65rem}
+  .ab-ticker{font-size:.75rem}
+}
+
+/* ── Bezpečná oblast (notch/home indicator u iOS) ─── */
+@supports(padding-bottom: env(safe-area-inset-bottom)){
+  body{padding-bottom:env(safe-area-inset-bottom)}
+  .header{padding-top:max(10px, env(safe-area-inset-top))}
+}
 </style>
 </head>
 <body>
 
-<!-- Modal: Přidat titul -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <h3>➕ PŘIDAT NOVÝ TITUL</h3>
-    <div class="form-row"><label>Ticker</label><input id="addTicker" placeholder="např. KO"></div>
-    <div class="form-row"><label>Název</label><input id="addName" placeholder="Coca-Cola Co."></div>
-    <div class="form-grid">
-      <div class="form-row"><label>Cena (USD)</label><input id="addPrice" type="number" step="0.01"></div>
-      <div class="form-row"><label>Počet akcií</label><input id="addShares" type="number" value="100"></div>
+    <div class="form-row">
+      <label>Ticker (symbol)</label>
+      <input id="addTicker" type="text" placeholder="např. KO" maxlength="10">
+      <div id="priceLoadStatus" class="loading-price"></div>
+      <div id="aiStatus" style="font-size:10px;margin-top:4px;color:var(--blue);min-height:14px"></div>
+    </div>
+    <div class="form-row">
+      <label>Název společnosti</label>
+      <input id="addName" type="text" placeholder="Coca-Cola Co.">
     </div>
     <div class="form-grid">
-      <div class="form-row"><label>Roční dividenda %</label><input id="addYield" type="number" step="0.1" placeholder="3.0"></div>
+      <div class="form-row"><label>Aktuální cena (USD)</label><input id="addPrice" type="number" step="0.01" placeholder="Auto"></div>
+      <div class="form-row"><label>Počet akcií</label><input id="addShares" type="number" value="100" min="1"></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-row"><label>Dividenda % (roční)</label><input id="addYield" type="number" step="0.1" placeholder="např. 3.0"></div>
       <div class="form-row"><label>Sektor</label>
-        <select id="addSector"><option>BDC</option><option>REIT</option><option>Other</option><option>Pharma</option><option>Consumer Staples</option><option>Energy/MLP</option></select>
+        <select id="addSector"><option value="BDC">BDC</option><option value="REIT">REIT</option><option value="Other">Other</option><option value="Pharma">Pharma</option></select>
       </div>
     </div>
+    <div class="err-msg" id="modalErr"></div>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeModal()">Zrušit</button>
-      <button class="btn-confirm" onclick="addTicker()">Přidat</button>
+      <button class="btn-confirm" onclick="addTicker()">Přidat do portfolia</button>
     </div>
   </div>
 </div>
 
-<!-- Modal: Auto Buy -->
+<!-- AUTO BUY MODAL -->
 <div class="modal-overlay" id="autoBuyOverlay">
-  <div class="modal" style="width:420px">
-    <h3>🤖 AUTO BUY</h3>
-    <div id="autoBuyList" style="max-height:300px;overflow-y:auto"></div>
-    <div style="display:flex;gap:8px;margin-top:12px;align-items:center;flex-wrap:wrap">
-      <span style="font-size:.65rem">Rozpočet USD</span>
-      <input class="buy-input" id="abBudget" value="1000" style="width:90px" oninput="updateAbPreview()">
-      <span id="abQtyPreview" style="font-size:.65rem;color:var(--green);flex:1"></span>
+  <div class="modal" style="width:420px;max-width:96vw">
+    <h3>🤖 AUTO BUY — vyber titul</h3>
+    <div style="font-size:.65rem;color:var(--muted);font-family:var(--font-mono);margin-bottom:12px">
+      Tituly seřazeny dle skóre · klikni pro výběr
     </div>
-    <div class="modal-btns">
+    <div id="autoBuyList" style="display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto;padding-right:4px"></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+      <span style="font-size:.65rem;color:var(--muted);font-family:var(--font-mono);white-space:nowrap">Rozpočet USD</span>
+      <input class="buy-input" id="abBudget" type="number" value="1000" min="50" step="50" style="width:90px">
+      <span id="abQtyPreview" style="font-size:.65rem;font-family:var(--font-mono);color:var(--green);flex:1;text-align:right"></span>
+    </div>
+    <div class="err-msg" id="abErr"></div>
+    <div class="modal-btns" style="margin-top:12px">
       <button class="btn-cancel" onclick="closeAutoBuy()">Zrušit</button>
-      <button class="btn-confirm" id="abConfirmBtn" onclick="confirmAutoBuy()" disabled>Nakoupit</button>
+      <button class="btn-confirm" id="abConfirmBtn" onclick="confirmAutoBuy()">✅ Nakoupit</button>
+    </div>
+  </div>
+</div>
+<!-- CO JSI KOUPIL MODAL -->
+<div class="modal-overlay" id="purchaseOverlay">
+  <div class="modal" style="width:380px;max-width:96vw">
+    <h3>🛒 Nakoupeno!</h3>
+    <div style="text-align:center;padding:10px 0 16px">
+      <div style="font-size:2rem;font-weight:700;font-family:var(--font-mono);color:var(--green)" id="purch-ticker">—</div>
+      <div style="font-size:.75rem;font-family:var(--font-mono);color:var(--muted);margin-top:2px" id="purch-sector">—</div>
+    </div>
+    <div style="background:var(--bg);border-radius:10px;padding:12px 16px;font-family:var(--font-mono);font-size:.72rem;display:grid;grid-template-columns:1fr 1fr;gap:8px" id="purch-details"></div>
+    <div style="margin-top:14px;padding:10px 14px;background:rgba(22,163,74,.06);border:1px solid rgba(22,163,74,.2);border-radius:10px;font-family:var(--font-mono);font-size:.65rem">
+      <div style="color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">TOP 3 po nákupu</div>
+      <div id="purch-top3"></div>
+    </div>
+    <div class="modal-btns" style="margin-top:16px">
+      <button class="btn-confirm" onclick="closePurchase()">✅ Zavřít</button>
     </div>
   </div>
 </div>
 
-<!-- Header -->
-<div class="header">
-  <span style="font-size:.75rem;font-weight:700;color:var(--blue)">💹 Portfolio</span>
   <div class="header-actions">
+    <span style="font-size:.7rem;font-family:var(--font-mono);font-weight:600;color:var(--text);margin-right:auto;letter-spacing:.05em">💹 Portfolio</span>
     <span id="nextUpdateBadge">📅 --</span>
     <span id="statusBadge">—</span>
-    <button class="pill pill-add" onclick="openModal()">➕ PŘIDAT</button>
+    <span id="apiKeyPill" style="font-size:.6rem;font-family:var(--font-mono);color:var(--green);border:1px solid var(--green);border-radius:12px;padding:3px 8px">🔑 API ✅</span>
+    <button class="pill pill-add" onclick="openModal()">➕ PŘIDAT TITUL</button>
     <button class="pill" onclick="fetchAll()">↻ Refresh</button>
     <button class="pill" id="autoPill" onclick="toggleAuto()">⏱ Auto</button>
   </div>
 </div>
+<div class="modal-overlay" id="apiKeyOverlay" style="display:none!important">
+  <div class="modal" style="max-width:380px;width:95vw">
+    <h3>🔑 API KLÍČE</h3>
+    <div style="margin-bottom:10px">
+      <label style="font-size:.7rem;font-weight:600;display:block;margin-bottom:4px">Finnhub API klíč <span style="color:var(--red)">*</span></label>
+      <input id="finnhubKeyInput" type="password" placeholder="cxxxxxxxxxxxxxxxxx" autocomplete="off" style="width:100%;padding:8px;font-family:monospace;font-size:.75rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text)">
+      <div style="font-size:.6rem;color:var(--muted);margin-top:3px">Zdarma na finnhub.io/register</div>
+    </div>
+    <div style="margin-bottom:10px">
+      <label style="font-size:.7rem;font-weight:600;display:block;margin-bottom:4px">FMP API klíč</label>
+      <input id="fmpKeyInput" type="password" placeholder="xxxxxxxxxxxxxxxx" autocomplete="off" style="width:100%;padding:8px;font-family:monospace;font-size:.75rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text)">
+      <div style="font-size:.6rem;color:var(--muted);margin-top:3px">Zdarma na financialmodelingprep.com</div>
+    </div>
+    <div style="margin-bottom:10px">
+      <label style="font-size:.7rem;font-weight:600;display:block;margin-bottom:4px">Anthropic klíč <span style="color:var(--muted);font-weight:400">(volitelné)</span></label>
+      <input id="apiKeyInput" type="password" placeholder="sk-ant-api03-…" autocomplete="off" style="width:100%;padding:8px;font-family:monospace;font-size:.75rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text)">
+    </div>
+    <div id="apiKeyStatus" style="font-size:.65rem;min-height:14px;color:var(--muted)"></div>
+    <div class="modal-btns" style="margin-top:16px">
+      <button class="btn-cancel" onclick="closeApiKeyModal()">Zrušit</button>
+      <button class="btn-confirm" onclick="saveApiKey()">💾 Uložit</button>
+    </div>
+  </div>
+</div>
 
-<!-- KPI -->
 <div class="kpi-row">
-  <div class="kpi"><div class="kpi-label">Portfolio</div><div class="kpi-val" id="kpiVal">—</div><div class="kpi-sub" id="kpiSub">aktuální hodnota</div></div>
-  <div class="kpi"><div class="kpi-label">Dividendy / měsíc</div><div class="kpi-val green" id="kpiMonthlyNet">—</div><div class="kpi-sub" id="kpiAnnualNet">—</div></div>
+  <div class="kpi"><div class="kpi-label">Portfolio</div><div class="kpi-val" id="kpiVal">—</div><div class="kpi-sub" id="kpiSub">loading…</div></div>
+  <div class="kpi"><div class="kpi-label">Dividendy měsíc</div><div class="kpi-val green" id="kpiMonthlyNet">—</div><div class="kpi-sub" id="kpiAnnualNet">—/rok (netto)</div></div>
   <div class="kpi"><div class="kpi-label">Div. výnos</div><div class="kpi-val" id="kpiYield">—</div><div class="kpi-sub">portfolio weighted</div></div>
   <div class="kpi"><div class="kpi-label">Avg Score</div><div class="kpi-val" id="kpiScore">—</div><div class="kpi-sub" id="kpiScoreSub">composite</div></div>
 </div>
 
-<!-- Main grid -->
 <div class="main-grid">
 
-  <!-- Tabulka pozic -->
   <div class="card">
-    <div class="card-header">
-      <span class="card-title">POZICE</span>
-      <span id="posCount" style="font-size:.65rem;color:var(--muted)">—</span>
-    </div>
-    <div class="table-wrapper">
-      <table class="tbl">
-        <thead>
-          <tr>
-            <th>Ticker</th>
-            <th>Cena</th>
-            <th>DPS</th>
-            <th>Výnos</th>
-            <th>D/E</th>
-            <th>Cov/Pay</th>
-            <th>Score</th>
-            <th>Signál</th>
-            <th>Počet ks</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="tbl"></tbody>
-      </table>
+    <div class="card-header"><span class="card-title">Pozice</span><span style="font-size:.65rem;" id="posCount">— holdings</span></div>
+    <div style="overflow-x:auto">
+    <table class="tbl">
+      <thead>
+        <tr><th style="text-align:left">Ticker</th><th>Cena</th><th>DPS</th><th>Výnos</th><th>D/E</th><th title="BDC/REIT: NII Coverage | Ostatní: Payout ratio">Cov/Pay</th><th>Score</th><th class="th-signal">Signál ⓘ</th><th>Počet ks</th><th></th></tr>
+      </thead>
+      <tbody id="tbl"></tbody>
+    </table>
     </div>
     <div class="buy-row">
-      <span style="font-size:.72rem">Rozpočet</span>
-      <input class="buy-input" id="budgetInput" value="1000">
-      <span style="font-size:.72rem">USD</span>
+      <span style="font-size:.65rem;">Rozpočet</span>
+      <input class="buy-input" id="budgetInput" type="number" value="1000" min="50" step="50">
+      <span style="font-size:.65rem;">USD</span>
       <button class="btn-green" onclick="autopilot()">🤖 Auto Buy</button>
     </div>
   </div>
 
-  <!-- Pravý sloupec -->
   <div class="side-stack">
 
-    <!-- Měsíční dividenda -->
     <div class="card">
       <div class="card-header"><span class="card-title">💰 Měsíční dividenda (čistá)</span></div>
       <div class="dividend-box">
+        <div class="dividend-label">AKTUÁLNÍ MĚSÍC</div>
         <div class="dividend-amount" id="currentMonthDiv">—</div>
-        <div class="dividend-sub" id="currentMonthLabel">aktuální měsíc</div>
-        <div class="dividend-sub" id="netYear">—</div>
+        <div class="dividend-tax">průměr za rok</div>
+        <div class="dividend-amount" id="netMonth" style="font-size:1.8rem;">—</div>
+        <div class="dividend-tax" id="netYear"></div>
+        <div class="dividend-history" id="dividendHistory"></div>
       </div>
     </div>
 
-    <!-- Graf dividend -->
     <div class="card">
-      <div class="card-header"><span class="card-title">📊 Historie dividend</span></div>
-      <div class="chart-wrap-sm"><canvas id="dividendChart"></canvas></div>
+      <div class="card-header"><span class="card-title">📊 Historie vyplacených dividend</span></div>
+      <div class="chart-wrap-small"><canvas id="dividendChart" class="small-chart"></canvas></div>
     </div>
 
-    <!-- Dividendový kalendář -->
     <div class="card">
       <div class="card-header">
         <span class="card-title">📅 Dividendový kalendář</span>
-        <span id="calYear" style="font-size:.6rem;color:var(--muted);font-family:var(--font-mono)"></span>
+        <span style="font-size:.6rem;color:var(--muted);font-family:var(--font-mono)" id="calYearLabel"></span>
       </div>
-      <div id="divCalendar"></div>
+      <div id="divCalendar" style="padding:10px 12px 14px"></div>
     </div>
 
-    <!-- Vývoj portfolia -->
     <div class="card">
-      <div class="card-header"><span class="card-title">📈 Vývoj portfolia</span></div>
-      <div class="chart-wrap"><canvas id="histChart"></canvas></div>
+      <div class="card-header"><span class="card-title">🤖 Autopilot TOP 3</span></div>
+      <div class="autopilot-result" id="apResult"><span style="color:var(--muted)">Stiskni Auto Buy →</span></div>
     </div>
 
-    <!-- Alerty -->
     <div class="card">
       <div class="card-header"><span class="card-title">⚠️ Alerty</span></div>
-      <div id="alertsBox" class="alerts-list"></div>
+      <div class="alerts-list" id="alertsBox"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">🥧 Složení portfolia</span>
+        <span style="font-size:.6rem;color:var(--muted);font-family:var(--font-mono)">aktuální vs. cíl</span>
+      </div>
+      <div class="sector-inner">
+        <!-- LEVÁ: tabulka sektorů s cíli -->
+        <div style="padding:8px 8px 12px 14px" id="sectorTargetTable"></div>
+        <!-- PRAVÁ: koláč -->
+        <div class="sector-pie-wrap">
+          <canvas id="sectorPieChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">🎯 Doporučení — kam nakoupit</span>
+        <span style="font-size:.6rem;color:var(--muted);font-family:var(--font-mono)">vs. cílová váha</span>
+      </div>
+      <div id="rebalanceBox" style="padding:10px 14px 12px;font-family:var(--font-mono);font-size:.68rem;line-height:1.9"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">📈 Vývoj hodnoty portfolia</span></div>
+      <div class="chart-wrap"><canvas id="histChart" class="mini"></canvas></div>
     </div>
 
   </div>
@@ -300,403 +619,1465 @@ tr.detail-row td{padding:0!important;border-bottom:none}
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
-// ── API klíče ────────────────────────────────────────────────
-const FMP_KEY = 'HCLdtiqzdr6XkZgzZXVGF9iwz1yMrFJS';
 
-// ── Portfolio data ───────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// 📅 DIVIDENDOVÉ KALENDÁŘE
+// ═══════════════════════════════════════════════════════════════
+const divMonths = {
+  // BDC
+  PFLT: [1,2,3,4,5,6,7,8,9,10,11,12], // měsíčně
+  ARCC: [3,6,9,12],                    // čtvrtletně: březen, červen, září, prosinec
+  CSWC: [1,2,3,4,5,6,7,8,9,10,11,12], // měsíčně (od července 2025)
+  HTGC: [3,6,9,12],                    // čtvrtletně: březen, červen, září (srpen/listopad historicky, nyní kvart.)
+  MAIN: [1,2,3,4,5,6,7,8,9,10,11,12], // měsíčně
+  // REIT
+  O:    [1,2,3,4,5,6,7,8,9,10,11,12], // měsíčně
+  WPC:  [1,4,7,10],                    // čtvrtletně: leden, duben, červenec, říjen
+  OHI:  [2,5,8,11],                    // čtvrtletně: únor, květen, srpen, listopad
+  VICI: [1,4,7,10],                    // čtvrtletně: leden, duben, červenec, říjen
+  // Other / Pharma
+  MO:   [1,4,7,10],                    // čtvrtletně: leden, duben, červenec, říjen
+  VZ:   [2,5,8,11],                    // čtvrtletně: únor, květen, srpen, listopad
+  BMY:  [2,5,8,11],                    // čtvrtletně: únor, květen, srpen, listopad
+};
+
+// ═══════════════════════════════════════════════════════════════
+// PORTFOLIO DATA
+// ═══════════════════════════════════════════════════════════════
 let portfolio = {
   tickers: ['PFLT','ARCC','CSWC','HTGC','MAIN','O','WPC','OHI','VICI','MO','VZ','BMY'],
   sectors: { PFLT:'BDC',ARCC:'BDC',CSWC:'BDC',HTGC:'BDC',MAIN:'BDC', O:'REIT',WPC:'REIT',OHI:'REIT',VICI:'REIT', MO:'Other',VZ:'Other',BMY:'Pharma' },
-  qty:      { PFLT:1913,ARCC:113,CSWC:85,HTGC:53,MAIN:28, O:53,WPC:18,OHI:47,VICI:7, MO:31,VZ:22,BMY:3 },
-  fallback: { PFLT:8.63,ARCC:18.67,CSWC:23.50,HTGC:15.51,MAIN:54.06, O:63.33,WPC:73.23,OHI:46.41,VICI:28.42, MO:66.88,VZ:47.12,BMY:58.71 }
+  qty: { PFLT:1913,ARCC:113,CSWC:85,HTGC:53,MAIN:28, O:53,WPC:18,OHI:47,VICI:7, MO:31,VZ:22,BMY:3 },
+  fallback: { PFLT:8.63,ARCC:18.67,CSWC:23.50,HTGC:15.51,MAIN:54.06, O:63.33,WPC:73.23,OHI:46.41,VICI:28.42, MO:66.88,VZ:47.12,BMY:58.71 } // aktualizováno 25.4.2026
 };
 
-let dividendData = { PFLT:1.23,ARCC:1.92,CSWC:2.40,HTGC:1.80,MAIN:3.12,O:3.07,WPC:4.20,OHI:2.68,VICI:1.72,MO:3.92,VZ:2.66,BMY:2.40 };
-let dividendGrowth = { PFLT:0.02,ARCC:0.04,CSWC:0.05,HTGC:0.03,MAIN:0.06,O:0.04,WPC:0.02,OHI:0.01,VICI:0.05,MO:0.03,VZ:0.02,BMY:0.05 };
+let dividendData = { PFLT:1.23, ARCC:1.92, CSWC:2.40, HTGC:1.80, MAIN:3.12, O:3.07, WPC:4.20, OHI:2.68, VICI:1.72, MO:3.92, VZ:2.66, BMY:2.40 };
+let dividendGrowth = { PFLT:0.02, ARCC:0.04, CSWC:0.05, HTGC:0.03, MAIN:0.06, O:0.04, WPC:0.02, OHI:0.01, VICI:0.05, MO:0.03, VZ:0.02, BMY:0.05 };
 
+// DŮLEŽITÉ FUNDAMENTY PRO DIVIDENDOVÉ TITULY
 let fundamentals = {
-  PFLT:{pe:8.3,de:1.57,payout:0.90,sectorStability:0.65,niiCoverage:0.88,pNav:0.77},
-  ARCC:{pe:9.5,de:1.08,payout:0.95,sectorStability:0.80,niiCoverage:1.05,pNav:0.95},
-  CSWC:{pe:9.8,de:0.85,payout:0.92,sectorStability:0.75,niiCoverage:1.15,pNav:1.10},
-  HTGC:{pe:11.5,de:1.02,payout:1.02,sectorStability:0.70,niiCoverage:1.02,pNav:1.50},
-  MAIN:{pe:16.2,de:0.73,payout:0.85,sectorStability:0.90,niiCoverage:1.02,pNav:1.80},
-  O:   {pe:13.8,de:1.20,payout:0.73,sectorStability:0.90,niiCoverage:1.37,pNav:1.00},
-  WPC: {pe:14.0,de:0.82,payout:0.79,sectorStability:0.85,niiCoverage:1.20,pNav:1.00},
-  OHI: {pe:14.0,de:1.10,payout:0.84,sectorStability:0.85,niiCoverage:1.19,pNav:0.95},
-  VICI:{pe:12.0,de:0.70,payout:0.72,sectorStability:0.85,niiCoverage:1.38,pNav:1.05},
-  MO:  {pe:9.5, de:2.00,payout:0.77,sectorStability:0.55,niiCoverage:1.30,pNav:null},
-  VZ:  {pe:9.3, de:1.51,payout:0.55,sectorStability:0.65,niiCoverage:1.25,pNav:null},
-  BMY: {pe:8.8, de:2.55,payout:0.40,sectorStability:0.65,niiCoverage:1.50,pNav:null}
+  // Aktualizováno Q4 2025 / Q1 2026 — zdroj: SEC filings, earnings releases
+  // niiCoverage = NII/DPS (BDC) nebo AFFO coverage ratio (REIT)
+  // pNav = P/NAV tržní cena / NAV per share (BDC/REIT), null = P/E pro ostatní
+  // de = regulatory debt/equity (BDC) nebo net debt/equity (REIT/ostatní)
+
+  // ── BDC ─────────────────────────────────────────────────────────
+  // PFLT: coverage 88% (core NII $0.28 vs div $0.31), D/E reg 1.57x, NAV $10.83, P/NAV ~0.77
+  PFLT:{pe:8.3,  de:1.57, payout:0.90, sectorStability:0.65, niiCoverage:0.88, pNav:0.77},
+
+  // ARCC: NII $2.01/sh vs div $1.92 → coverage ~105%, D/E 1.08x, NAV $19.94, P/NAV ~0.95
+  ARCC:{pe:9.5,  de:1.08, payout:0.95, sectorStability:0.80, niiCoverage:1.05, pNav:0.95},
+
+  // CSWC: NII/div coverage ~115%, D/E ~0.85x, P/NAV ~1.10 (měsíční od 7/2025)
+  CSWC:{pe:9.8,  de:0.85, payout:0.92, sectorStability:0.75, niiCoverage:1.15, pNav:1.10},
+
+  // HTGC: NII $0.48 = 120% base div $0.40, total dist $0.47 → coverage ~102%, D/E net 1.02x, NAV $12.13, P/NAV ~1.50
+  HTGC:{pe:11.5, de:1.02, payout:1.02, sectorStability:0.70, niiCoverage:1.02, pNav:1.50},
+
+  // MAIN: DNII $1.09 vs div $1.065 → coverage ~102%, D/E 0.73x, NAV $33.33, P/NAV ~1.80
+  MAIN:{pe:16.2, de:0.73, payout:0.85, sectorStability:0.90, niiCoverage:1.02, pNav:1.80},
+
+  // ── REIT ────────────────────────────────────────────────────────
+  // O: AFFO payout 73%, net debt/EBITDA 5.4x, AFFO/div coverage 1.37x, P/AFFO ~13.8x — kvalita A-
+  O:   {pe:13.8, de:1.20, payout:0.73, sectorStability:0.90, niiCoverage:1.37, pNav:1.00},
+
+  // WPC: čtvrtletní div, payout ~79%, D/E ~0.82x, P/NAV ~1.00
+  WPC: {pe:14.0, de:0.82, payout:0.79, sectorStability:0.85, niiCoverage:1.20, pNav:1.00},
+
+  // OHI: AFFO $0.80/sh vs div $0.67 → coverage 1.19x, D/E ~1.10x, P/NAV ~0.95
+  OHI: {pe:14.0, de:1.10, payout:0.84, sectorStability:0.85, niiCoverage:1.19, pNav:0.95},
+
+  // VICI: AFFO $2.38/sh vs div $1.72 → coverage 1.38x, net lev 5.0x EBITDA, P/NAV ~1.05
+  VICI:{pe:12.0, de:0.70, payout:0.72, sectorStability:0.85, niiCoverage:1.38, pNav:1.05},
+
+  // ── Ostatní ─────────────────────────────────────────────────────
+  // MO: FCF payout ~77% (udržitelné), GAAP payout >100% ale neg. equity zkresluje D/E
+  // Záporné vlastní jmění → D/E není smysluplné, používáme debt/EBITDA ~2.0x
+  MO:  {pe:9.5,  de:2.00, payout:0.77, sectorStability:0.55, niiCoverage:1.30, pNav:null},
+
+  // VZ: D/E ~1.51x, payout ~55%, stabilní FCF coverage
+  VZ:  {pe:9.3,  de:1.51, payout:0.55, sectorStability:0.65, niiCoverage:1.25, pNav:null},
+
+  // BMY: D/E 2.55x (post-akvizice), payout ~40% z FCF (velmi bezpečné), FCF $12.85B
+  BMY: {pe:8.8,  de:2.55, payout:0.40, sectorStability:0.65, niiCoverage:1.50, pNav:null}
 };
 
-const divMonths = {
-  PFLT:[1,2,3,4,5,6,7,8,9,10,11,12], ARCC:[3,6,9,12], CSWC:[1,2,3,4,5,6,7,8,9,10,11,12],
-  HTGC:[3,6,9,12], MAIN:[1,2,3,4,5,6,7,8,9,10,11,12], O:[1,2,3,4,5,6,7,8,9,10,11,12],
-  WPC:[1,4,7,10], OHI:[2,5,8,11], VICI:[1,4,7,10], MO:[1,4,7,10], VZ:[2,5,8,11], BMY:[2,5,8,11]
-};
-
+// ═══════════════════════════════════════════════════════════════
+// BDC-OPTIMALIZOVANÝ SCORING (v2)
+// Váhy: Coverage 25% | D/E 20% | Payout/NII 15% | Růst 15% | Yield 10% | Valuace 10% | Stabilita 5%
+// Pro BDC: Coverage = NII/DPS (ne GAAP payout), Valuace = P/NAV
+// ═══════════════════════════════════════════════════════════════
 let prices = {...portfolio.fallback};
 let livePrices = {};
 let fetchBusy = false;
-let abSelectedTicker = null;
-let dividendChartInst = null;
-let historyChartInst = null;
-let snapshots = [];
+let yfData = {};
 
-// ── Helpers ──────────────────────────────────────────────────
-function getPrice(t){ return prices[t] || portfolio.fallback[t] || 0; }
-function getDPS(t){ return dividendData[t] || 0; }
-function toast(msg){ const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),2800); }
+function getPrice(t){ return prices[t]||portfolio.fallback[t]||0; }
+function getDPS(t){ return dividendData[t]||0; }
 
-// ── Scoring ──────────────────────────────────────────────────
 function calculateScore(t){
-  const price=getPrice(t), dps=getDPS(t);
-  const yieldPct=price>0?(dps/price)*100:0;
-  const growth=(dividendGrowth[t]||0.03)*100;
-  const f=fundamentals[t]||{pe:15,de:1,payout:0.7,sectorStability:0.6,niiCoverage:1.0,pNav:null};
-  const sector=portfolio.sectors[t];
-  const isBDC=sector==='BDC', isREIT=sector==='REIT', isBDCorREIT=isBDC||isREIT;
-  const coverage=f.niiCoverage||1.0, de=f.de, payout=f.payout;
+  const price = getPrice(t);
+  const dps = getDPS(t);
+  const yieldPct = price > 0 ? (dps/price)*100 : 0;
+  const growth = (dividendGrowth[t]||0.03) * 100;
+  const f = fundamentals[t] || {pe:15, de:1, payout:0.7, sectorStability:0.6, niiCoverage:1.0, pNav:null};
+  const sector = portfolio.sectors[t];
+  const isBDC = sector === 'BDC';
+  const isREIT = sector === 'REIT';
+  const isBDCorREIT = isBDC || isREIT;
+  const coverage = f.niiCoverage || 1.0;
+  const de = f.de;
+  const payout = f.payout;
 
-  let cov=isBDCorREIT?(coverage>=1.20?100:coverage>=1.10?85:coverage>=1.00?70:coverage>=0.90?50:25):(coverage>=1.50?100:coverage>=1.20?85:coverage>=1.00?70:coverage>=0.80?45:20);
-  let deS=isBDC?(de<=1.0?100:de<=1.5?85:de<=2.0?65:de<=3.0?40:20):isREIT?(de<=0.8?100:de<=1.2?85:de<=1.6?65:de<=2.0?45:25):(de<=0.5?100:de<=1.0?85:de<=1.5?65:de<=2.5?40:15);
-  let payS=isBDC?(coverage>=1.10?100:coverage>=1.00?80:coverage>=0.90?55:coverage>=0.80?35:15):(payout>=0.5&&payout<=0.75?100:payout>=0.4&&payout<0.5?80:payout>0.75&&payout<=0.9?70:payout>0.9&&payout<=1.0?50:payout>1.0?25:60);
-  let growS=growth>=6?100:growth>=4?85:growth>=2?65:growth>=1?45:20;
-  let yldS=(yieldPct>=5&&yieldPct<=9)?100:(yieldPct>9&&yieldPct<=11)?75:(yieldPct>11&&yieldPct<=13)?55:(yieldPct>13)?35:(yieldPct>=3)?70:40;
-  if(isBDC&&yieldPct>9&&coverage>=0.90) yldS=Math.min(100,yldS+15);
-  const pNav=f.pNav;
-  let valS=isBDCorREIT&&pNav!=null?(pNav<=0.90?100:pNav<=1.00?85:pNav<=1.10?70:pNav<=1.30?50:30):(f.pe>=8&&f.pe<=14?100:f.pe<=18?80:f.pe<=25?55:f.pe>25?30:60);
-  let stabS=(f.sectorStability||0.6)*100;
-  const raw=cov*0.25+deS*0.20+payS*0.15+growS*0.15+yldS*0.10+valS*0.10+stabS*0.05;
-  const trap=(yieldPct>12&&coverage<0.90&&de>2.0);
-  return {score:Math.max(0,Math.min(100,Math.round(trap?raw-20:raw))),trap,yield:yieldPct,de,payout,pe:f.pe,growth,coverage};
+  // ── 1. NII COVERAGE (25 %) ──────────────────────────────────
+  // Primární metrika u BDC/REIT — NII per share / DPS nebo AFFO coverage
+  // U klasických akcií = FCF coverage (volnější prahy)
+  let coverageScore = 0;
+  if(isBDCorREIT){
+    if(coverage >= 1.20) coverageScore = 100;
+    else if(coverage >= 1.10) coverageScore = 85;
+    else if(coverage >= 1.00) coverageScore = 70;
+    else if(coverage >= 0.90) coverageScore = 50;
+    else coverageScore = 25;
+  } else {
+    if(coverage >= 1.50) coverageScore = 100;
+    else if(coverage >= 1.20) coverageScore = 85;
+    else if(coverage >= 1.00) coverageScore = 70;
+    else if(coverage >= 0.80) coverageScore = 45;
+    else coverageScore = 20;
+  }
+
+  // ── 2. D/E + LEVERAGE (20 %) ────────────────────────────────
+  // BDC regulovaný limit ~2.0×, REITy jiná struktura
+  let deScore = 0;
+  if(isBDC){
+    if(de <= 1.0) deScore = 100;
+    else if(de <= 1.5) deScore = 85;
+    else if(de <= 2.0) deScore = 65;
+    else if(de <= 3.0) deScore = 40;
+    else deScore = 20;
+  } else if(isREIT){
+    if(de <= 0.8) deScore = 100;
+    else if(de <= 1.2) deScore = 85;
+    else if(de <= 1.6) deScore = 65;
+    else if(de <= 2.0) deScore = 45;
+    else deScore = 25;
+  } else {
+    if(de <= 0.5) deScore = 100;
+    else if(de <= 1.0) deScore = 85;
+    else if(de <= 1.5) deScore = 65;
+    else if(de <= 2.5) deScore = 40;
+    else deScore = 15;
+  }
+
+  // ── 3. PAYOUT / NII-BASED (15 %) ────────────────────────────
+  // Pro BDC: GAAP payout je zavádějící (PFLT ~360 %), proto vycházíme z NII coverage
+  // Pro ostatní: klasický payout ratio
+  let payoutScore = 0;
+  if(isBDC){
+    if(coverage >= 1.10) payoutScore = 100;
+    else if(coverage >= 1.00) payoutScore = 80;
+    else if(coverage >= 0.90) payoutScore = 55;
+    else if(coverage >= 0.80) payoutScore = 35;
+    else payoutScore = 15;
+  } else {
+    if(payout >= 0.5 && payout <= 0.75) payoutScore = 100;
+    else if(payout >= 0.4 && payout < 0.5) payoutScore = 80;
+    else if(payout > 0.75 && payout <= 0.9) payoutScore = 70;
+    else if(payout > 0.9 && payout <= 1.0) payoutScore = 50;
+    else if(payout > 1.0) payoutScore = 25;
+    else payoutScore = 60;
+  }
+
+  // ── 4. DIVIDENDOVÝ RŮST + HISTORIE (15 %) ───────────────────
+  let growthScore = growth >= 6 ? 100 : growth >= 4 ? 85 : growth >= 2 ? 65 : growth >= 1 ? 45 : 20;
+
+  // ── 5. VÝNOS / YIELD (10 %) ─────────────────────────────────
+  // Snížena váha — vysoký yield je atraktivní, ale ne primární metrika
+  let yieldScore = (yieldPct >= 5 && yieldPct <= 9) ? 100 :
+                   (yieldPct > 9 && yieldPct <= 11) ? 75 :
+                   (yieldPct > 11 && yieldPct <= 13) ? 55 :
+                   (yieldPct > 13) ? 35 :
+                   (yieldPct >= 3) ? 70 : 40;
+  // BDC bonus: vysoký yield je standard sektoru — penalizujeme méně pokud je coverage ok
+  if(isBDC && yieldPct > 9 && coverage >= 0.90) yieldScore = Math.min(100, yieldScore + 15);
+
+  // ── 6. VALUACE — P/NAV nebo P/E relativní (10 %) ────────────
+  // Pro BDC/REIT: P/NAV je smysluplnější než P/E
+  // Discount to NAV = příležitost (PFLT 0.88 = dobré), premium = riziko (MAIN 1.65 = drahé)
+  let valuationScore = 0;
+  const pNav = f.pNav;
+  if(isBDCorREIT && pNav != null){
+    if(pNav <= 0.90) valuationScore = 100;
+    else if(pNav <= 1.00) valuationScore = 85;
+    else if(pNav <= 1.10) valuationScore = 70;
+    else if(pNav <= 1.30) valuationScore = 50;
+    else valuationScore = 30;
+  } else {
+    const pe = f.pe;
+    if(pe >= 8 && pe <= 14) valuationScore = 100;
+    else if(pe > 14 && pe <= 18) valuationScore = 80;
+    else if(pe > 18 && pe <= 25) valuationScore = 55;
+    else if(pe > 25) valuationScore = 30;
+    else valuationScore = 60;
+  }
+
+  // ── 7. STABILITA SEKTORU + CREDIT QUALITY (5 %) ─────────────
+  let stabilityScore = (f.sectorStability || 0.6) * 100;
+
+  // Váhy: Coverage 25% | D/E 20% | Payout/NII 15% | Růst 15% | Yield 10% | Valuace 10% | Stabilita 5%
+  let rawScore = coverageScore*0.25 + deScore*0.20 + payoutScore*0.15 + growthScore*0.15 + yieldScore*0.10 + valuationScore*0.10 + stabilityScore*0.05;
+
+  // Yield Trap: POUZE pokud jsou splněny všechny tři podmínky zároveň
+  // (vysoký yield + slabá coverage + vysoký leverage) — ne jen vysoký yield!
+  let trap = (yieldPct > 12 && coverage < 0.90 && de > 2.0);
+  let finalScore = Math.max(0, Math.min(100, Math.round(trap ? rawScore - 20 : rawScore)));
+
+  return {score:finalScore, trap, yield:yieldPct, de, payout, pe:f.pe, growth, coverage,
+          deScore, payoutScore, coverageScore, growthScore, yieldScore, valuationScore, stabilityScore};
 }
 
-function getSignal(score,trap){
-  if(trap) return ['TRAP ⚠️','sig-risk'];
-  if(score>=80) return ['STRONG BUY 🟢','sig-strong'];
-  if(score>=65) return ['BUY ✅','sig-buy'];
-  if(score>=45) return ['HOLD ⏸️','sig-hold'];
-  return ['🔴 RISK','sig-risk'];
+function getSectorDiff(ticker){
+  // Vrátí diff = target% - actual% pro sektor tickeru
+  // Záporné = nadváha, kladné = podváha
+  const { vals, total } = calcSectorValues();
+  if(total <= 0) return 0;
+  const sector = getSectorGroup(ticker);
+  const cfg = TARGET_WEIGHTS[sector];
+  if(!cfg) return 0;
+  const actual = ((vals[sector]||0) / total) * 100;
+  return cfg.target - actual;
 }
 
-// ── Měsíční dividendy ────────────────────────────────────────
+function getSignal(score, trap, sectorDiff){
+  if(trap) return ['TRAP ⚠️', 'sig-risk'];
+  // Nadváha sektoru (>2pp nad cílem) — zastrop na HOLD
+  if(sectorDiff !== undefined && sectorDiff < -2){
+    if(score >= 45) return ['HOLD ⏸️', 'sig-hold'];
+    return ['RISK 🔴', 'sig-risk'];
+  }
+  if(score >= 80) return ['STRONG BUY 🟢', 'sig-strong'];
+  if(score >= 65) return ['BUY ✅', 'sig-buy'];
+  if(score >= 45) return ['HOLD ⏸️', 'sig-hold'];
+  return ['RISK 🔴', 'sig-risk'];
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MĚSÍČNÍ DIVIDENDY S HISTORIÍ
+// ═══════════════════════════════════════════════════════════════
+const STORAGE_DIV_HIST = 'dividend_history';
+
+function loadDividendHistory(){
+  try{ const saved = localStorage.getItem(STORAGE_DIV_HIST); if(saved) return JSON.parse(saved); }catch(e){}
+  return [];
+}
+
+function saveDividendHistory(history){ try{ localStorage.setItem(STORAGE_DIV_HIST, JSON.stringify(history)); }catch(e){} }
+
 function calculateMonthlyDividends(){
-  const monthly=Array(12).fill(0);
-  for(const t of portfolio.tickers){
-    const dps=dividendData[t]||0, months=divMonths[t]||[1,4,7,10], shares=portfolio.qty[t]||0;
-    const ppp=(dps/months.length)*shares;
-    for(const m of months) monthly[m-1]+=ppp;
+  const monthly = [0,0,0,0,0,0,0,0,0,0,0,0];
+  for(let t of portfolio.tickers){
+    const dps = dividendData[t] || 0;
+    const months = divMonths[t] || [1,4,7,10];
+    const shares = portfolio.qty[t] || 0;
+    if(months.length === 0) continue;
+    const paymentPerPeriod = (dps / months.length) * shares;
+    for(let m of months) monthly[m-1] += paymentPerPeriod;
   }
   return monthly;
 }
 
-// ── Stats ────────────────────────────────────────────────────
+function getCurrentMonthDividend(){
+  const monthly = calculateMonthlyDividends();
+  const currentMonth = new Date().getMonth();
+  return monthly[currentMonth];
+}
+
+function checkAndSaveMonthlyDividend(){
+  const history = loadDividendHistory();
+  const now = new Date();
+  const currentKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const existing = history.find(h => h.month === currentKey);
+  if(!existing && now.getDate() === 1){
+    const currentDiv = getCurrentMonthDividend();
+    history.push({ month: currentKey, grossDiv: currentDiv, netDiv: currentDiv * 0.85, timestamp: Date.now() });
+    while(history.length > 12) history.shift();
+    saveDividendHistory(history);
+    return true;
+  }
+  return false;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════
+function updateDividendDisplay(){
+  const monthly = calculateMonthlyDividends();
+  const currentMonthIdx = new Date().getMonth();
+  const currentMonthGross = monthly[currentMonthIdx];
+  const avgGrossMonthly = monthly.reduce((a,b)=>a+b,0) / 12;
+  const avgNetMonthly = avgGrossMonthly * 0.85;
+  const totalNetYear = avgNetMonthly * 12;
+  
+  document.getElementById('currentMonthDiv').textContent = '$' + currentMonthGross.toFixed(2);
+  document.getElementById('netMonth').textContent = '$' + avgNetMonthly.toFixed(2);
+  document.getElementById('netYear').textContent = '$' + totalNetYear.toFixed(2) + ' / rok (netto)';
+  document.getElementById('kpiMonthlyNet').textContent = '$' + avgNetMonthly.toFixed(2);
+  document.getElementById('kpiAnnualNet').textContent = '$' + totalNetYear.toFixed(2) + '/rok (netto)';
+  
+  const history = loadDividendHistory();
+  if(history.length > 0){
+    document.getElementById('dividendHistory').innerHTML = '<span style="font-size:.5rem;">📅 poslední záznamy:</span><br>' + 
+      history.slice(-6).map(h => `<span style="font-size:.45rem;">${h.month}: $${h.netDiv.toFixed(2)} netto</span>`).join(' · ');
+  } else {
+    document.getElementById('dividendHistory').innerHTML = '<span style="font-size:.45rem;">⏳ první záznam bude 1. dne měsíce</span>';
+  }
+  renderDividendChart(history);
+}
+
+function renderDividendCalendar(){
+  const MONTH_NAMES = ['LED','ÚNO','BŘE','DUB','KVĚ','ČVN','ČVC','SRP','ZÁŘ','ŘÍJ','LIS','PRO'];
+  const now = new Date();
+  const currentMonth = now.getMonth(); // 0-based
+
+  document.getElementById('calYearLabel').textContent = now.getFullYear();
+
+  // Sestavíme data pro každý měsíc: { gross, tickers: [{t, amount}] }
+  const calData = Array.from({length:12}, () => ({ gross: 0, net: 0, tickers: [] }));
+
+  for(const t of portfolio.tickers){
+    const dps = dividendData[t] || 0;
+    const months = divMonths[t] || [1,4,7,10];
+    const shares = portfolio.qty[t] || 0;
+    if(!months.length || !dps || !shares) continue;
+    const paymentPerPeriod = (dps / months.length) * shares;
+    for(const m of months){
+      const idx = m - 1;
+      calData[idx].gross += paymentPerPeriod;
+      calData[idx].net   += paymentPerPeriod * 0.85;
+      calData[idx].tickers.push({ t, amount: paymentPerPeriod });
+    }
+  }
+
+  // Seřaď tickery v každém měsíci sestupně dle výše výplaty
+  calData.forEach(mo => mo.tickers.sort((a,b) => b.amount - a.amount));
+
+  const maxGross = Math.max(...calData.map(m => m.gross), 1);
+
+  const html = calData.map((mo, idx) => {
+    const isCurrent = idx === currentMonth;
+    const hasPayments = mo.tickers.length > 0;
+
+    const tickerRows = hasPayments
+      ? mo.tickers.map(({t, amount}) =>
+          `<div class="cal-ticker-row"><span>${t}</span><span>$${amount.toFixed(0)}</span></div>`
+        ).join('')
+      : `<div class="cal-empty">—</div>`;
+
+    // Barevný pruh na výši měsíce (relativní k max)
+    const barPct = Math.round((mo.gross / maxGross) * 100);
+    const barColor = isCurrent ? 'var(--blue)' : 'var(--green)';
+
+    return `<div class="cal-month${isCurrent ? ' current-month' : ''}">
+      <div class="cal-month-header">
+        <span>${MONTH_NAMES[idx]}</span>
+        ${isCurrent ? '<span style="font-size:.48rem;background:var(--blue);color:white;padding:1px 4px;border-radius:4px">nyní</span>' : ''}
+      </div>
+      ${hasPayments ? `
+        <div class="cal-month-total">
+          $${mo.gross.toFixed(0)}
+          <span style="font-size:.48rem;color:var(--muted);font-weight:400"> hrubá</span>
+        </div>
+        <div style="height:3px;margin:0 6px 4px;background:var(--border);border-radius:2px;overflow:hidden">
+          <div style="height:100%;width:${barPct}%;background:${barColor};border-radius:2px"></div>
+        </div>
+        <div class="cal-tickers">${tickerRows}</div>
+      ` : `<div class="cal-empty">žádné výplaty</div>`}
+    </div>`;
+  }).join('');
+
+  document.getElementById('divCalendar').innerHTML = `<div class="cal-grid">${html}</div>
+    <div style="margin-top:8px;font-size:.57rem;color:var(--muted);font-family:var(--font-mono);text-align:right">
+      Částky v USD · po srážkové dani (85%) průměr/měsíc: $${(calData.reduce((s,m)=>s+m.net,0)/12).toFixed(0)}
+    </div>`;
+}
+
+function renderDividendChart(historyData){
+  const ctx = document.getElementById('dividendChart').getContext('2d');
+  if(window.dividendChartInstance) window.dividendChartInstance.destroy();
+  const months = historyData.map(h => h.month.slice(5));
+  const netDivs = historyData.map(h => h.netDiv);
+  if(months.length === 0){
+    ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
+    ctx.fillStyle='#64748b';ctx.font='10px DM Mono';ctx.textAlign='center';
+    ctx.fillText('Data se uloží 1. dne měsíce',ctx.canvas.width/2,40);
+    return;
+  }
+  window.dividendChartInstance = new Chart(ctx,{
+    type:'bar',
+    data:{ labels:months, datasets:[{ label:'Čistá dividenda (po 15%)', data:netDivs, backgroundColor:'#16a34a', borderRadius:6, borderColor:'#0d6e2e', borderWidth:1 }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:ctx=>' $'+ctx.raw.toFixed(2) } } }, scales:{ y:{ ticks:{ callback:v=>'$'+v.toFixed(0) } } } }
+  });
+}
+
 function stats(){
   let total=0, scoreSum=0;
-  portfolio.tickers.forEach(t=>{ total+=(portfolio.qty[t]||0)*getPrice(t); scoreSum+=calculateScore(t).score; });
-  const monthly=calculateMonthlyDividends();
-  const annualGross=monthly.reduce((a,b)=>a+b,0);
-  return{ total, annualGross, avgScore:Math.round(scoreSum/Math.max(1,portfolio.tickers.length)), yield:total>0?(annualGross/total)*100:0 };
+  portfolio.tickers.forEach(t=>{ total += (portfolio.qty[t]||0)*getPrice(t); scoreSum += calculateScore(t).score; });
+  const monthly = calculateMonthlyDividends();
+  const annualGross = monthly.reduce((a,b)=>a+b,0);
+  const yieldPct = total>0 ? (annualGross/total)*100 : 0;
+  return{ total, annualGross, avgScore:Math.round(scoreSum/portfolio.tickers.length), yield: yieldPct };
 }
 
-// ── Alerty ───────────────────────────────────────────────────
-function renderAlerts(){
-  const alerts=[];
-  for(const t of portfolio.tickers){
-    const s=calculateScore(t), sec=portfolio.sectors[t], isBR=sec==='BDC'||sec==='REIT';
-    if(s.trap) alerts.push({cls:'alert-danger',icon:'🚨',msg:`${t}: YIELD TRAP! Výnos ${s.yield.toFixed(1)}%, coverage ${s.coverage.toFixed(2)}×`});
-    else if(isBR&&s.coverage<0.90) alerts.push({cls:'alert-warn',icon:'⚠️',msg:`${t}: Nízká NII coverage (${s.coverage.toFixed(2)}×)`});
-    else if(s.de>2.0&&sec!=='BDC') alerts.push({cls:'alert-warn',icon:'🏦',msg:`${t}: Vysoký dluh D/E=${s.de.toFixed(2)}`});
-    else if(!isBR&&s.yield>8) alerts.push({cls:'alert-warn',icon:'💰',msg:`${t}: Vysoký výnos ${s.yield.toFixed(1)}% — prověř udržitelnost`});
-    else if(isBR&&s.coverage>=1.30) alerts.push({cls:'alert-ok',icon:'✅',msg:`${t}: Skvělá coverage ${s.coverage.toFixed(2)}×`});
-  }
-  const box=document.getElementById('alertsBox');
-  box.innerHTML=alerts.length?alerts.map(a=>`<div class="alert-item"><span>${a.icon}</span><span class="${a.cls}">${a.msg}</span></div>`).join('')
-    :'<div class="alert-item"><span>✅</span><span class="alert-ok">Žádné aktivní alerty</span></div>';
+function initLocalYfData(t){
+  // Naplní yfData[t] okamžitě z lokálního objektu fundamentals — bez API
+  const f = fundamentals[t] || {};
+  const sec = portfolio.sectors[t] || 'Other';
+  yfData[t] = {
+    pe:          f.pe        || null,
+    pb:          null,
+    beta:        null,
+    yieldYH:     null,
+    payoutRatio: f.payout != null ? f.payout * 100 : null,
+    exDiv:       null,
+    high52:      null,
+    low52:       null,
+    targetPrice: null,
+    recommendation: null,
+    industry:    sec,
+    sector:      sec,
+    marketCap:   null,
+    // Extra lokální pole
+    pNav:        f.pNav        != null ? f.pNav : null,
+    de:          f.de          != null ? f.de   : null,
+    niiCoverage: f.niiCoverage != null ? f.niiCoverage : null,
+    _local: true  // příznak: zatím jen lokální data
+  };
 }
 
-// ── Kalendář ─────────────────────────────────────────────────
-function renderDividendCalendar(){
-  const MN=['LED','ÚNO','BŘE','DUB','KVĚ','ČVN','ČVC','SRP','ZÁŘ','ŘÍJ','LIS','PRO'];
-  const cur=new Date().getMonth();
-  document.getElementById('calYear').textContent=new Date().getFullYear();
-
-  // Sestavit data
-  const calData=Array.from({length:12},()=>({gross:0,tickers:[]}));
-  for(const t of portfolio.tickers){
-    const dps=dividendData[t]||0, months=divMonths[t]||[1,4,7,10], shares=portfolio.qty[t]||0;
-    const ppp=(dps/months.length)*shares;
-    for(const m of months){ calData[m-1].gross+=ppp; calData[m-1].tickers.push({t,amount:ppp}); }
-  }
-  calData.forEach(mo=>mo.tickers.sort((a,b)=>b.amount-a.amount));
-  const maxGross=Math.max(...calData.map(m=>m.gross),1);
-
-  const html=calData.map((mo,i)=>`
-    <div class="cal-month${i===cur?' cur':''}">
-      <div class="cal-head"><span>${MN[i]}</span>${i===cur?'<span style="font-size:.45rem;background:var(--blue);color:white;padding:1px 3px;border-radius:3px">nyní</span>':''}</div>
-      ${mo.tickers.length?`
-        <div class="cal-total">$${mo.gross.toFixed(0)}</div>
-        <div class="cal-bar"><div class="cal-bar-fill" style="width:${Math.round(mo.gross/maxGross*100)}%"></div></div>
-        <div class="cal-rows">${mo.tickers.map(({t,amount})=>`<div class="cal-row"><b>${t}</b><span>$${amount.toFixed(0)}</span></div>`).join('')}</div>
-      `:'<div class="cal-empty">—</div>'}
-    </div>`).join('');
-
-  const avgNet=(calData.reduce((s,m)=>s+m.gross,0)*0.85/12).toFixed(0);
-  document.getElementById('divCalendar').innerHTML=
-    `<div class="cal-grid">${html}</div><div class="cal-footer">USD · čistý průměr/měsíc: $${avgNet}</div>`;
-}
-
-// ── Grafy ────────────────────────────────────────────────────
-function renderDividendChart(){
-  const ctx=document.getElementById('dividendChart').getContext('2d');
-  if(dividendChartInst) dividendChartInst.destroy();
-  const monthly=calculateMonthlyDividends();
-  dividendChartInst=new Chart(ctx,{
-    type:'bar',
-    data:{labels:['L','Ú','B','D','K','Č','Č','S','Z','Ř','L','P'],datasets:[{data:monthly,backgroundColor:'#16a34a',borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'$'+v.toFixed(0),font:{size:9}},grid:{color:'rgba(0,0,0,.05)'}},x:{ticks:{font:{size:9}}}}}
-  });
-}
-
-function renderHistoryChart(){
-  const ctx=document.getElementById('histChart').getContext('2d');
-  if(historyChartInst) historyChartInst.destroy();
-  const st=stats();
-  const points=[...snapshots];
-  if(!points.length||points[points.length-1].value!==st.total) points.push({label:'nyní',value:st.total});
-  if(points.length<2){
-    ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
-    ctx.fillStyle='#64748b';ctx.font='10px monospace';ctx.textAlign='center';
-    ctx.fillText('Data se zobrazí po prvním záznamu',ctx.canvas.width/2,40); return;
-  }
-  historyChartInst=new Chart(ctx,{
-    type:'line',
-    data:{labels:points.map(p=>p.label),datasets:[{data:points.map(p=>p.value),borderColor:'#16a34a',backgroundColor:'rgba(22,163,74,.06)',fill:true,tension:0.3,pointRadius:3,pointBackgroundColor:'#16a34a'}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'$'+c.parsed.y.toLocaleString()}}},scales:{y:{ticks:{callback:v=>'$'+v.toLocaleString(),font:{size:9}},grid:{color:'rgba(0,0,0,.05)'}},x:{ticks:{font:{size:9}}}}}
-  });
-}
-
-// ── Render ───────────────────────────────────────────────────
-function render(){
-  const st=stats();
-  document.getElementById('kpiVal').textContent='$'+st.total.toLocaleString(undefined,{maximumFractionDigits:0});
-  document.getElementById('kpiYield').textContent=st.yield.toFixed(1)+'%';
-  document.getElementById('kpiScore').textContent=st.avgScore;
-  document.getElementById('kpiScoreSub').innerHTML=st.avgScore>=70?'🟢 výborné':st.avgScore>=55?'🟡 dobré':'🔴 rizikové';
-  document.getElementById('posCount').textContent=portfolio.tickers.length+' holdings';
-
-  const monthly=calculateMonthlyDividends();
-  const avgNet=(monthly.reduce((a,b)=>a+b,0)/12)*0.85;
-  document.getElementById('kpiMonthlyNet').textContent='$'+avgNet.toFixed(2);
-  document.getElementById('kpiAnnualNet').textContent='$'+(avgNet*12).toFixed(2)+'/rok (netto)';
-  const curMo=monthly[new Date().getMonth()];
-  document.getElementById('currentMonthDiv').textContent='$'+(curMo*0.85).toFixed(2);
-  document.getElementById('netYear').textContent='$'+(avgNet*12).toFixed(2)+' / rok (netto)';
-
-  let html='';
-  for(const t of portfolio.tickers){
-    const price=getPrice(t), dps=getDPS(t), sObj=calculateScore(t);
-    const [sig,sigC]=getSignal(sObj.score,sObj.trap);
-    const qty=portfolio.qty[t]||0;
-    const barColor=sObj.score>=75?'#16a34a':sObj.score>=50?'#d97706':'#dc2626';
-    const scoreBadge=`<div class="score-wrap"><span>${sObj.score}</span><div class="score-bar"><div class="score-fill" style="width:${sObj.score}%;background:${barColor}"></div></div></div>`;
-    const isBR=portfolio.sectors[t]==='BDC'||portfolio.sectors[t]==='REIT';
-    const covPay=isBR?sObj.coverage.toFixed(2)+'×':(sObj.payout*100).toFixed(0)+'%';
-    const liveIcon=livePrices[t]===false?'<span title="záložní cena" style="color:var(--muted);font-size:.55rem">~</span>':'';
-
-    html+=`<tr class="ticker-row" onclick="toggleDetail('${t}')">
-      <td>${t}<br><span style="font-size:.55rem;color:var(--muted)">${portfolio.sectors[t]||'Other'}</span></td>
-      <td>${liveIcon}$${price.toFixed(2)}</td>
-      <td>$${dps.toFixed(2)}</td>
-      <td style="color:${sObj.yield>9?'var(--red)':'var(--green)'}">${sObj.yield.toFixed(1)}%</td>
-      <td style="color:${sObj.de>1.5?'var(--red)':'var(--green)'}">${sObj.de.toFixed(2)}</td>
-      <td>${covPay}</td>
-      <td>${scoreBadge}</td>
-      <td><span class="sig ${sigC}">${sig}</span></td>
-      <td><div class="qty-wrap">
-        <button class="qty-btn" onclick="event.stopPropagation();changeQty('${t}',-1)">−</button>
-        <input class="qty-input" value="${qty}" onchange="event.stopPropagation();setQty('${t}',this.value)" onclick="event.stopPropagation()">
-        <button class="qty-btn" onclick="event.stopPropagation();changeQty('${t}',1)">+</button>
-      </div></td>
-      <td><button class="btn-del" onclick="event.stopPropagation();removeTicker('${t}')">🗑</button></td>
-    </tr>
-    <tr class="detail-row"><td colspan="10"><div class="detail-panel" id="detail-${t}"></div></td></tr>`;
-  }
-  document.getElementById('tbl').innerHTML=html;
-
-  renderDividendCalendar();
-  renderDividendChart();
-  renderHistoryChart();
-  renderAlerts();
-}
-
-// ── Detail panel ─────────────────────────────────────────────
 function toggleDetail(t){
   const el=document.getElementById('detail-'+t);
   if(!el) return;
   const isOpen=el.classList.contains('open');
   document.querySelectorAll('.detail-panel.open').forEach(p=>p.classList.remove('open'));
   if(!isOpen){
-    const s=calculateScore(t);
-    const f=fundamentals[t]||{};
-    const price=getPrice(t);
-    const annualDiv=(dividendData[t]||0)*(portfolio.qty[t]||0);
-    const isBR=portfolio.sectors[t]==='BDC'||portfolio.sectors[t]==='REIT';
     el.classList.add('open');
-    el.innerHTML=`
-      <div class="d-item"><span class="d-label">Sektor</span><span class="d-val" style="color:var(--blue)">${portfolio.sectors[t]||'Other'}</span></div>
-      <div class="d-item"><span class="d-label">Cena</span><span class="d-val">$${price.toFixed(2)}</span></div>
-      <div class="d-item"><span class="d-label">Roční div. (DPS)</span><span class="d-val">$${(dividendData[t]||0).toFixed(2)}</span></div>
-      <div class="d-item"><span class="d-label">Roční div. celkem</span><span class="d-val" style="color:var(--green)">$${annualDiv.toFixed(0)}</span></div>
-      <div class="d-item"><span class="d-label">Div. výnos</span><span class="d-val" style="color:${s.yield>9?'var(--red)':'var(--green)'}">${s.yield.toFixed(2)}%</span></div>
-      <div class="d-item"><span class="d-label">Růst div.</span><span class="d-val">${((dividendGrowth[t]||0.03)*100).toFixed(1)}% p.a.</span></div>
-      <div class="d-item"><span class="d-label">${isBR?'NII/AFFO coverage':'Payout ratio'}</span><span class="d-val" style="color:${isBR?(s.coverage>=1?'var(--green)':'var(--red)'):(s.payout<0.8?'var(--green)':'var(--yellow)')}">">${isBR?s.coverage.toFixed(2)+'×':(s.payout*100).toFixed(0)+'%'}</span></div>
-      <div class="d-item"><span class="d-label">Debt / Equity</span><span class="d-val" style="color:${s.de>1.5?'var(--red)':'var(--green)'}">${s.de.toFixed(2)}</span></div>
-      ${f.pNav!=null?`<div class="d-item"><span class="d-label">P/NAV</span><span class="d-val" style="color:${f.pNav<1?'var(--green)':'var(--yellow)'}">${f.pNav.toFixed(2)}×</span></div>`:''}
-      <div class="d-item"><span class="d-label">P/E</span><span class="d-val">${f.pe||'—'}</span></div>
-      <div class="d-item"><span class="d-label">Skóre</span><span class="d-val" style="color:${s.score>=75?'var(--green)':s.score>=50?'var(--yellow)':'var(--red)'}">${s.score}/100</span></div>
-      <div class="d-item"><span class="d-label">Počet ks</span><span class="d-val">${portfolio.qty[t]||0}</span></div>
-      <div class="d-item"><span class="d-label">Hodnota pozice</span><span class="d-val">$${((portfolio.qty[t]||0)*price).toFixed(0)}</span></div>
-    `;
+    // Vždy zobraz okamžitě z lokálních dat
+    if(!yfData[t]) initLocalYfData(t);
+    el.innerHTML=renderDetail(t);
+
+    // Zkus Finnhub na pozadí (enrichment: Beta, 52W, Market Cap, Analyst rec)
+    // Pokud API nefunguje (vyčerpaný kredit apod.), lokální data zůstanou
+    if(yfData[t]._local){
+      const token=getFinnhubKey();
+      if(!token) return;
+      Promise.all([
+        fetch('https://finnhub.io/api/v1/stock/metric?symbol='+t+'&metric=all&token='+token).then(r=>r.ok?r.json():null).catch(()=>null),
+        fetch('https://finnhub.io/api/v1/stock/profile2?symbol='+t+'&token='+token).then(r=>r.ok?r.json():null).catch(()=>null),
+        fetch('https://finnhub.io/api/v1/recommendation?symbol='+t+'&limit=1&token='+token).then(r=>r.ok?r.json():null).catch(()=>null)
+      ]).then(([q,met,rec])=>{
+        if(!q||!q.metric) return; // API selhalo → lokální data zůstanou
+        const m=q.metric||{};
+        let recommendation=yfData[t].recommendation;
+        if(Array.isArray(rec)&&rec.length>0){
+          const r=rec[0],total=(r.buy||0)+(r.hold||0)+(r.sell||0)+(r.strongBuy||0)+(r.strongSell||0);
+          if(total>0){const s=((r.strongBuy||0)*2+(r.buy||0)-(r.sell||0)-(r.strongSell||0)*2)/total;recommendation=s>0.8?'strong_buy':s>0.2?'buy':s>-0.2?'hold':'sell';}
+        }
+        // Enrichment: doplní/přepíše jen to, co Finnhub vrátil
+        yfData[t]={...yfData[t],
+          pe:          m.peNormalizedAnnual||m.peTTM||yfData[t].pe,
+          pb:          m.pbAnnual||m.pbQuarterly||null,
+          beta:        m.beta||null,
+          yieldYH:     m.dividendYieldIndicatedAnnual||null,
+          payoutRatio: m.payoutRatioAnnual||yfData[t].payoutRatio,
+          exDiv:       m.exDividendDate||null,
+          high52:      m['52WeekHigh']||null,
+          low52:       m['52WeekLow']||null,
+          marketCap:   met&&met.marketCapitalization?met.marketCapitalization*1e6:null,
+          recommendation,
+          _local: false
+        };
+        if(el.classList.contains('open')) el.innerHTML=renderDetail(t);
+      });
+    }
+  }
+}
+async function fetchAnalystData(t){
+  const btn=document.getElementById('analystBtn-'+t);
+  const el=document.getElementById('detail-'+t);
+  if(btn){btn.textContent='⏳…';btn.disabled=true;}
+  const key=getFmpKey();
+  if(!key){ if(btn){btn.textContent='❌ Chybí FMP klíč';btn.style.color='var(--red)';btn.disabled=false;} openApiKeyModal(); return; }
+  try{
+    const [tR,rR]=await Promise.all([
+      fetch('https://financialmodelingprep.com/api/v4/price-target-consensus?symbol='+t+'&apikey='+key),
+      fetch('https://financialmodelingprep.com/api/v4/analyst-stock-recommendations?symbol='+t+'&limit=1&apikey='+key)
+    ]);
+    const td=tR.ok?await tR.json():null,rd=rR.ok?await rR.json():null;
+    const tgt=Array.isArray(td)?td[0]:td;
+    if(tgt&&tgt.targetConsensus) yfData[t].targetPrice=parseFloat(tgt.targetConsensus);
+    else if(tgt&&tgt.targetMedian) yfData[t].targetPrice=parseFloat(tgt.targetMedian);
+    const rec=Array.isArray(rd)?rd[0]:rd;
+    if(rec&&rec.analystRatingsStrongBuy!==undefined){
+      const sb=rec.analystRatingsStrongBuy||0,b=rec.analystRatingsbuy||0,h=rec.analystRatingsHold||0,s=rec.analystRatingsSell||0,ss=rec.analystRatingsStrongSell||0,total=sb+b+h+s+ss;
+      if(total>0){const score=(sb*2+b-s-ss*2)/total;yfData[t].recommendation=score>0.8?'strong_buy':score>0.2?'buy':score>-0.2?'hold':'sell';}
+    }
+    if(!yfData[t].targetPrice&&!yfData[t].recommendation){if(btn){btn.textContent='⚠️ FMP nemá data';btn.disabled=false;} return;}
+    if(el&&el.classList.contains('open')) el.innerHTML=renderDetail(t);
+  }catch(e){ if(btn){btn.textContent='❌ '+e.message;btn.style.color='var(--red)';btn.disabled=false;} }
+}
+
+function dItem(label, val, color='', bar=null){
+  const barHtml = bar!=null ? `<div class="d-bar"><div class="d-bar-fill" style="width:${Math.min(bar,100)}%;background:${color||'var(--blue)'}"></div></div>` : '';
+  return `<div class="d-item"><span class="d-label">${label}</span><span class="d-val" style="color:${color||'var(--text)'}">${val}</span>${barHtml}</div>`;
+}
+
+function fmtBig(n){
+  if(!n) return '—';
+  if(n>=1e9) return (n/1e9).toFixed(1)+'B';
+  if(n>=1e6) return (n/1e6).toFixed(0)+'M';
+  return n.toFixed(0);
+}
+
+function recColor(r){
+  if(!r) return 'var(--muted)';
+  if(r==='strong_buy') return 'var(--green)';
+  if(r==='buy') return '#22c55e';
+  if(r==='hold') return 'var(--yellow)';
+  return 'var(--red)';
+}
+function recLabel(r){
+  if(!r) return '—';
+  return {strong_buy:'STRONG BUY',buy:'BUY',hold:'HOLD',underperform:'UNDERPERFORM',sell:'SELL'}[r]||r.toUpperCase();
+}
+
+function detectType(t){
+  const sec = portfolio.sectors[t] || 'Other';
+  if(sec === 'BDC') return 'BDC';
+  if(sec === 'REIT') return 'REIT';
+  if(sec === 'Pharma') return 'Stock';
+  return 'Stock';
+}
+
+function renderDetail(t){
+  const f=yfData[t];
+  const price=getPrice(t);
+  const type=detectType(t);
+  const loc=fundamentals[t]||{};
+  const sec=portfolio.sectors[t]||'Other';
+  const isBR=sec==='BDC'||sec==='REIT';
+
+  if(!f) return `<div class="d-item"><span class="d-label">—</span></div>`;
+
+  const h52=f.high52, l52=f.low52;
+  const rangePct = (h52&&l52&&h52>l52) ? Math.round((price-l52)/(h52-l52)*100) : null;
+  const rangeColor = rangePct!=null ? (rangePct<30?'var(--green)':rangePct<70?'var(--yellow)':'var(--red)') : '';
+
+  const targetUpside = (f.targetPrice&&price) ? ((f.targetPrice-price)/price*100) : null;
+  const targetColor = targetUpside==null?'var(--muted)':targetUpside>10?'var(--green)':targetUpside>0?'var(--yellow)':'var(--red)';
+
+  const betaColor = f.beta==null?'var(--muted)':f.beta<0.8?'var(--green)':f.beta<1.2?'var(--yellow)':'var(--red)';
+  const payColor = f.payoutRatio==null?'var(--muted)':f.payoutRatio<70?'var(--green)':f.payoutRatio<90?'var(--yellow)':'var(--red)';
+  const pbColor = f.pb==null?'var(--muted)':f.pb<1.2?'var(--green)':f.pb<2?'var(--yellow)':'var(--red)';
+
+  // Lokální data
+  const annualDiv=(dividendData[t]||0)*(portfolio.qty[t]||0);
+  const posVal=(portfolio.qty[t]||0)*price;
+  const growthPct=((dividendGrowth[t]||0.03)*100).toFixed(1);
+  const s=calculateScore(t);
+  const nii=f.niiCoverage!=null?f.niiCoverage:loc.niiCoverage;
+  const de=f.de!=null?f.de:loc.de;
+  const pNav=f.pNav!=null?f.pNav:loc.pNav;
+  const niiColor=nii==null?'var(--muted)':nii>=1.10?'var(--green)':nii>=1.00?'var(--yellow)':'var(--red)';
+  const deColor=de==null?'var(--muted)':de<1.5?'var(--green)':de<2.5?'var(--yellow)':'var(--red)';
+  const pNavColor=pNav==null?'var(--muted)':pNav<0.90?'var(--green)':pNav<1.10?'var(--yellow)':'var(--red)';
+
+  let items='';
+  const live=!f._local;
+
+  // ── Sekce: lokální (vždy dostupná) ──
+  items += dItem('Sektor', sec, 'var(--blue)');
+  items += dItem('Hodnota pozice', '$'+posVal.toLocaleString('cs-CZ',{maximumFractionDigits:0}), 'var(--text)');
+  items += dItem('Počet ks', portfolio.qty[t]||0, 'var(--text)');
+  items += dItem('Roční div. celkem', '$'+annualDiv.toFixed(0), 'var(--green)');
+  items += dItem('Div. výnos', s.yield.toFixed(2)+'%', s.yield>9?'var(--red)':'var(--green)');
+  items += dItem('Růst dividendy', growthPct+'% p.a.', 'var(--muted)');
+  items += dItem('P/E', f.pe!=null?f.pe.toFixed(1):(loc.pe||'—'), f.pe!=null?(f.pe<15?'var(--green)':f.pe<25?'var(--yellow)':'var(--red)'):'var(--muted)');
+  items += dItem('Payout ratio', f.payoutRatio!=null?f.payoutRatio.toFixed(0)+'%':(loc.payout!=null?(loc.payout*100).toFixed(0)+'%':'—'), payColor);
+  if(isBR){
+    items += dItem('NII/AFFO coverage', nii!=null?nii.toFixed(2)+'×':'—', niiColor);
+    if(pNav!=null) items += dItem('P/NAV', pNav.toFixed(2)+'×', pNavColor);
+  }
+  if(de!=null) items += dItem('Debt / Equity', de.toFixed(2)+'×', deColor);
+  items += dItem('Skóre', s.score+'/100', s.score>=75?'var(--green)':s.score>=50?'var(--yellow)':'var(--red)');
+
+  // ── Sekce: live Finnhub (zobrazí se po enrichmentu) ──
+  if(live){
+    if(rangePct!=null) items += dItem('52W pozice', rangePct+'%', rangeColor, rangePct);
+    if(l52) items += dItem('52W Low', '$'+l52.toFixed(2), 'var(--green)');
+    if(h52) items += dItem('52W High', '$'+h52.toFixed(2), 'var(--red)');
+    if(f.beta!=null) items += dItem('Beta', f.beta.toFixed(2), betaColor);
+    if(f.yieldYH!=null) items += dItem('Div. výnos (live)', f.yieldYH.toFixed(2)+'%', f.yieldYH>9?'var(--red)':f.yieldYH>=5?'var(--green)':'var(--muted)');
+    if(f.exDiv) items += dItem('Ex-Div datum', f.exDiv, 'var(--text)');
+    if(f.marketCap) items += dItem('Market Cap', fmtBig(f.marketCap), 'var(--muted)');
+    if(type==='REIT'||type==='BDC'){
+      if(f.pb!=null) items += dItem('P/B', f.pb.toFixed(2), pbColor);
+    }
+    if(f.targetPrice){
+      items += dItem('Analyst cíl','$'+f.targetPrice.toFixed(2),targetColor);
+      items += dItem('Upside',targetUpside!=null?(targetUpside>0?'+':'')+targetUpside.toFixed(1)+'%':'—',targetColor);
+    } else {
+      items += '<div class="d-item"><span class="d-label">Analyst cíl</span><span class="d-val"><button onclick="event.stopPropagation();fetchAnalystData(\''+t+'\')" style="font-size:.6rem;padding:2px 7px;border-radius:4px;border:1px solid var(--blue);background:transparent;color:var(--blue);cursor:pointer" id="analystBtn-'+t+'">🤖 Načíst FMP</button></span></div>';
+    }
+    items += dItem('Doporučení', recLabel(f.recommendation), recColor(f.recommendation));
+  } else {
+    // Lokální stav — ukaž indikátor
+    items += '<div class="d-item" style="grid-column:1/-1"><span class="d-label" style="color:var(--muted);font-size:.52rem">⏳ Live data (Beta, 52W, …) se načítají na pozadí…</span></div>';
+  }
+
+  return items;
+}
+
+function render(){
+  const st = stats();
+  document.getElementById('kpiVal').textContent = '$' + st.total.toLocaleString();
+  document.getElementById('kpiYield').textContent = st.yield.toFixed(1)+'%';
+  document.getElementById('kpiScore').textContent = st.avgScore;
+  document.getElementById('kpiScoreSub').textContent = st.avgScore>=70?'🟢 výborné':st.avgScore>=55?'🟡 dobré':'🔴 rizikové';
+  document.getElementById('posCount').textContent = portfolio.tickers.length+' holdings';
+  updateDividendDisplay();
+
+  let html = '';
+  // Předpočítej sector diffy jednou pro celý render
+  const { vals: svVals, total: svTotal } = calcSectorValues();
+  function getSectorDiffLocal(t){
+    if(svTotal <= 0) return 0;
+    const s = getSectorGroup(t);
+    const cfg = TARGET_WEIGHTS[s];
+    if(!cfg) return 0;
+    return cfg.target - ((svVals[s]||0)/svTotal*100);
+  }
+
+  portfolio.tickers.forEach(t => {
+    const price = getPrice(t);
+    const dps = getDPS(t);
+    const sObj = calculateScore(t);
+    const diff = getSectorDiffLocal(t);
+    const [sig, sigC] = getSignal(sObj.score, sObj.trap, diff);
+    const qty = portfolio.qty[t] || 0;
+    const bar = `<div class="score-wrap"><span style="color:${sObj.score>=75?'#16a34a':sObj.score>=50?'#d97706':'#dc2626'}">${sObj.score}</span><div class="score-bar"><div class="score-fill" style="width:${sObj.score}%;background:${sObj.score>=75?'#16a34a':sObj.score>=50?'#d97706':'#dc2626'}"></div></div></div>`;
+    // Badge pokud je nadváha a signál byl potlačen
+    const overweight = diff < -2;
+    const sigCell = overweight
+      ? `<span class="sig ${sigC}">${sig}</span><span style="font-size:.52rem;color:var(--red);margin-left:3px;display:block;line-height:1.2">▲nadváha</span>`
+      : `<span class="sig ${sigC}">${sig}</span>`;
+
+    html += `<tr class="ticker-row" onclick="toggleDetail('${t}')">
+      <td>${t}<br><span style="font-size:.58rem;color:var(--muted)">${portfolio.sectors[t]||'Other'}</span></td>
+      <td title="${livePrices[t]===false?'záložní cena (API nedostupné)':'live cena'}">${livePrices[t]===false?'<span style="color:var(--muted)" title="záložní cena">~</span>':''}$${price.toFixed(2)}</td>
+      <td>$${dps.toFixed(2)}</td>
+      <td style="color:${sObj.yield>9?'var(--red)':sObj.yield>=5?'var(--green)':'var(--muted)'}">${sObj.yield.toFixed(1)}%</td>
+      <td style="color:${sObj.de>1.5?'var(--red)':sObj.de>1?'var(--yellow)':'var(--green)'}">${sObj.de.toFixed(2)}</td>
+      <td style="color:${(portfolio.sectors[t]==='BDC'||portfolio.sectors[t]==='REIT') ? (sObj.coverage>=1.10?'var(--green)':sObj.coverage>=0.90?'var(--yellow)':'var(--red)') : (sObj.payout>1?'var(--red)':sObj.payout>0.9?'var(--yellow)':'var(--green)')}">
+        ${(portfolio.sectors[t]==='BDC'||portfolio.sectors[t]==='REIT') ? sObj.coverage.toFixed(2)+'×' : (sObj.payout*100).toFixed(0)+'%'}
+      </td>
+      <td>${bar}</td>
+      <td>${sigCell}</td>
+      <td><div class="qty-wrap"><button class="qty-btn" onclick="event.stopPropagation();changeQty('${t}',-1)">−</button><input class="qty-input" id="qty-${t}" type="number" value="${qty}" min="0" onchange="event.stopPropagation();setQty('${t}', this.value)"><button class="qty-btn" onclick="event.stopPropagation();changeQty('${t}',1)">+</button></div></td>
+      <td><button class="btn-del" onclick="event.stopPropagation();removeTicker('${t}')">🗑</button></td>
+    </tr>
+    <tr class="detail-row"><td colspan="10"><div class="detail-panel" id="detail-${t}"></div></td></tr>`;
+  });
+  document.getElementById('tbl').innerHTML = html;
+
+  const alerts = [];
+  portfolio.tickers.forEach(t=>{
+    const sObj = calculateScore(t);
+    const isBDCorREIT = portfolio.sectors[t]==='BDC' || portfolio.sectors[t]==='REIT';
+    if(sObj.trap) alerts.push({icon:'🚨',msg:t+' — Yield Trap (výnos '+sObj.yield.toFixed(1)+'% + cov. '+sObj.coverage.toFixed(2)+'× + D/E '+sObj.de.toFixed(2)+')'});
+    else if(sObj.yield>12 && isBDCorREIT && sObj.coverage < 0.95) alerts.push({icon:'⚠️',msg:t+' — Vysoký výnos '+sObj.yield.toFixed(1)+'%, coverage pouze '+sObj.coverage.toFixed(2)+'×'});
+    else if(sObj.yield>9 && !isBDCorREIT) alerts.push({icon:'⚠️',msg:t+' — Vysoký výnos '+sObj.yield.toFixed(1)+'%'});
+    if(sObj.de>2.5 && portfolio.sectors[t]!=='BDC') alerts.push({icon:'🏦',msg:t+' — Vysoký dluh D/E='+sObj.de.toFixed(2)});
+    if(isBDCorREIT && sObj.coverage < 0.90) alerts.push({icon:'📉',msg:t+' — NII coverage pod 90% ('+sObj.coverage.toFixed(2)+'×)'});
+    if(sObj.growth<1.5 && !isBDCorREIT) alerts.push({icon:'📉',msg:t+' — Nízký růst div. ('+sObj.growth.toFixed(1)+'%)'});
+  });
+  document.getElementById('alertsBox').innerHTML = alerts.length ? alerts.map(a=>`<div class="alert-item">${a.icon} ${a.msg}</div>`).join('') : '<span style="color:var(--muted)">✓ Žádné alerty</span>';
+  renderChart();
+  renderSectorPie();
+  renderRebalance();
+  renderDividendCalendar();
+}
+
+function changeQty(ticker, delta){
+  let newQty = Math.max(0, (portfolio.qty[ticker]||0) + delta);
+  portfolio.qty[ticker] = newQty;
+  if(newQty === 0) removeTicker(ticker);
+  else render();
+}
+
+function setQty(ticker, val){
+  let newQty = parseInt(val);
+  if(isNaN(newQty)) newQty = 0;
+  newQty = Math.max(0, newQty);
+  portfolio.qty[ticker] = newQty;
+  if(newQty === 0) removeTicker(ticker);
+  else render();
+}
+
+function removeTicker(ticker){
+  const idx = portfolio.tickers.indexOf(ticker);
+  if(idx !== -1){
+    portfolio.tickers.splice(idx,1);
+    delete portfolio.sectors[ticker]; delete portfolio.qty[ticker]; delete portfolio.fallback[ticker];
+    delete dividendData[ticker]; delete dividendGrowth[ticker]; delete fundamentals[ticker];
+    delete prices[ticker];
+    render();
+    toast('🗑 '+ticker+' odstraněn');
   }
 }
 
-// ── Portfolio management ──────────────────────────────────────
-function changeQty(t,delta){
-  const newQ=Math.max(0,(portfolio.qty[t]||0)+delta);
-  if(newQ===0) removeTicker(t); else { portfolio.qty[t]=newQ; render(); saveSnapshot(); }
-}
-function setQty(t,val){
-  const newQ=Math.max(0,parseInt(val)||0);
-  if(newQ===0) removeTicker(t); else { portfolio.qty[t]=newQ; render(); saveSnapshot(); }
-}
-function removeTicker(t){
-  portfolio.tickers=portfolio.tickers.filter(x=>x!==t);
-  delete portfolio.sectors[t]; delete portfolio.qty[t]; delete portfolio.fallback[t];
-  delete dividendData[t]; delete dividendGrowth[t]; delete fundamentals[t];
-  render(); saveSnapshot(); toast('🗑 '+t+' odstraněn');
-}
+let abSelectedTicker = null;
 
-// ── Snapshots ────────────────────────────────────────────────
-function saveSnapshot(){
-  const st=stats(); if(st.total<=0) return;
-  const label=`${new Date().getDate()}.${new Date().getMonth()+1}.`;
-  const last=snapshots[snapshots.length-1];
-  if(last&&last.label===label) { snapshots[snapshots.length-1].value=st.total; }
-  else { snapshots.push({label,value:st.total}); if(snapshots.length>30) snapshots.shift(); }
-  localStorage.setItem('portfolioSnapshots',JSON.stringify(snapshots));
-  renderHistoryChart();
-}
-function loadSnapshots(){
-  try{ const s=localStorage.getItem('portfolioSnapshots'); if(s) snapshots=JSON.parse(s); }catch(e){ snapshots=[]; }
-}
-
-// ── Fetch cen (Yahoo přes allorigins) ────────────────────────
-async function fetchPrice(ticker){
-  try{
-    const proxy='https://api.allorigins.win/raw?url=';
-    const url=`https://query1.finance.yahoo.com/v8/finance/chart/${ticker}`;
-    const resp=await fetch(proxy+encodeURIComponent(url));
-    const data=await resp.json();
-    return data?.chart?.result?.[0]?.meta?.regularMarketPrice||null;
-  }catch(e){ return null; }
-}
-
-async function fetchAll(){
-  if(fetchBusy) return;
-  fetchBusy=true;
-  document.getElementById('statusBadge').textContent='📡 Načítám…';
-  let liveCount=0;
-  const results=await Promise.all(portfolio.tickers.map(t=>fetchPrice(t).then(p=>({t,p}))));
-  results.forEach(({t,p})=>{ if(p&&p>0){prices[t]=p;livePrices[t]=true;liveCount++;}else livePrices[t]=false; });
-  render();
-  const time=new Date().toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'});
-  document.getElementById('statusBadge').innerHTML=liveCount>0?`✅ ${liveCount}/${portfolio.tickers.length} · ${time}`:'⚠️ OFFLINE · záložní ceny';
-  const next=new Date(Date.now()+30*60*1000);
-  document.getElementById('nextUpdateBadge').textContent=`🔄 ${next.getHours().toString().padStart(2,'0')}:${next.getMinutes().toString().padStart(2,'0')}`;
-  fetchBusy=false;
-}
-
-// ── Auto Buy ─────────────────────────────────────────────────
 function autopilot(){
-  const ranked=portfolio.tickers.map(t=>({t,score:calculateScore(t).score})).sort((a,b)=>b.score-a.score);
-  document.getElementById('autoBuyList').innerHTML=ranked.map(r=>`
+  const budget = parseFloat(document.getElementById('budgetInput').value) || 1000;
+  document.getElementById('abBudget').value = budget;
+  abSelectedTicker = null;
+  document.getElementById('abErr').textContent = '';
+  document.getElementById('abQtyPreview').textContent = '';
+  document.getElementById('abConfirmBtn').disabled = true;
+
+  // Sestav seřazený seznam — skóre + rebalance info
+  const { vals, total } = calcSectorValues();
+  const ranked = portfolio.tickers.map(t => {
+    const sObj = calculateScore(t);
+    const [sig, sigC] = getSignal(sObj.score, sObj.trap);
+    const sector = portfolio.sectors[t] || 'Other';
+    const sectorCfg = TARGET_WEIGHTS[sector];
+    const actualPct = total > 0 ? ((vals[sector]||0) / total * 100) : 0;
+    const targetPct = sectorCfg ? sectorCfg.target : 0;
+    const diff = targetPct - actualPct;
+    return { t, sObj, sig, sigC, sector, diff, price: getPrice(t) };
+  }).sort((a, b) => b.sObj.score - a.sObj.score);
+
+  const listEl = document.getElementById('autoBuyList');
+  listEl.innerHTML = ranked.map(r => {
+    const rebalClass = r.diff > 2 ? 'ab-rebal-under' : r.diff < -2 ? 'ab-rebal-over' : 'ab-rebal-ok';
+    const rebalText  = r.diff > 2 ? `▼ podváha ${r.diff.toFixed(1)}pp` : r.diff < -2 ? `▲ nadváha ${Math.abs(r.diff).toFixed(1)}pp` : '● v cíli';
+    const sectorColor = TARGET_WEIGHTS[r.sector]?.color || '#94a3b8';
+    return `
     <div class="ab-item" id="ab-${r.t}" onclick="selectAbTicker('${r.t}')">
-      <span class="ab-ticker">${r.t}</span><span class="ab-score">🎯 ${r.score}</span>
-    </div>`).join('');
+      <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+        <span class="ab-ticker" style="color:var(--text)">${r.t}</span>
+        <span class="ab-sector" style="color:${sectorColor}">${r.sector}</span>
+      </div>
+      <div class="ab-info">
+        <div style="display:flex;align-items:center;gap:5px">
+          <span class="sig ${r.sigC}" style="font-size:.58rem">${r.sig}</span>
+          <span class="ab-rebal ${rebalClass}">${rebalText}</span>
+        </div>
+        <div style="font-size:.6rem;color:var(--muted);margin-top:1px">
+          Coverage: ${r.sObj.coverage.toFixed(2)}× · D/E: ${r.sObj.de.toFixed(2)} · Výnos: ${r.sObj.yield.toFixed(1)}%
+        </div>
+      </div>
+      <div class="ab-price">$${r.price.toFixed(2)}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('abBudget').oninput = () => updateAbPreview();
   document.getElementById('autoBuyOverlay').classList.add('open');
-  document.getElementById('abConfirmBtn').disabled=true;
-  document.getElementById('abQtyPreview').textContent='';
-  abSelectedTicker=null;
 }
+
 function selectAbTicker(t){
-  abSelectedTicker=t;
-  document.querySelectorAll('.ab-item').forEach(el=>el.classList.remove('selected'));
+  abSelectedTicker = t;
+  document.querySelectorAll('.ab-item').forEach(el => el.classList.remove('selected'));
   document.getElementById('ab-'+t)?.classList.add('selected');
-  document.getElementById('abConfirmBtn').disabled=false;
+  document.getElementById('abConfirmBtn').disabled = false;
   updateAbPreview();
 }
+
 function updateAbPreview(){
   if(!abSelectedTicker) return;
-  const budget=parseFloat(document.getElementById('abBudget').value)||0;
-  const price=getPrice(abSelectedTicker), qty=Math.floor(budget/price);
-  document.getElementById('abQtyPreview').textContent=qty>0?`${qty} ks za $${(qty*price).toFixed(2)}`:'💰 nízký rozpočet';
+  const budget = parseFloat(document.getElementById('abBudget').value) || 0;
+  const price = getPrice(abSelectedTicker);
+  const qty = Math.floor(budget / price);
+  const total = qty * price;
+  document.getElementById('abQtyPreview').textContent =
+    qty > 0 ? `${qty} ks · $${total.toFixed(2)}` : '⚠️ nízký rozpočet';
 }
-function confirmAutoBuy(){
-  if(!abSelectedTicker){toast('Vyber titul');return;}
-  const budget=parseFloat(document.getElementById('abBudget').value)||0;
-  const price=getPrice(abSelectedTicker), qty=Math.floor(budget/price);
-  if(qty<=0){toast('Rozpočet nestačí na 1 akcii');return;}
-  portfolio.qty[abSelectedTicker]=(portfolio.qty[abSelectedTicker]||0)+qty;
-  closeAutoBuy(); render(); saveSnapshot();
-  toast(`✅ Nakoupeno ${qty} ks ${abSelectedTicker} za $${(qty*price).toFixed(2)}`);
-}
-function closeAutoBuy(){ document.getElementById('autoBuyOverlay').classList.remove('open'); abSelectedTicker=null; }
 
-// ── Modal ────────────────────────────────────────────────────
-function openModal(){ document.getElementById('modalOverlay').classList.add('open'); }
+function confirmAutoBuy(){
+  if(!abSelectedTicker){ document.getElementById('abErr').textContent = 'Vyber titul'; return; }
+  const budget = parseFloat(document.getElementById('abBudget').value) || 0;
+  const price = getPrice(abSelectedTicker);
+  const qty = Math.floor(budget / price);
+  if(qty <= 0){ document.getElementById('abErr').textContent = 'Rozpočet nestačí na 1 ks'; return; }
+  const t = abSelectedTicker;
+  const sObj = calculateScore(t);
+  const [sig, sigC] = getSignal(sObj.score, sObj.trap);
+  const totalCost = qty * price;
+  const newQty = (portfolio.qty[t]||0) + qty;
+  portfolio.qty[t] = newQty;
+  closeAutoBuy();
+  render(); dailySnapshot();
+
+  // ── Zobraz "Co jsi koupil" modal ──
+  document.getElementById('purch-ticker').textContent = t;
+  document.getElementById('purch-sector').textContent = portfolio.sectors[t] || 'Other';
+  document.getElementById('purch-details').innerHTML = `
+    <div><div style="color:var(--muted);font-size:.58rem;text-transform:uppercase;letter-spacing:.06em">Nakoupeno ks</div><div style="font-size:1.1rem;font-weight:700;color:var(--green)">+${qty} ks</div></div>
+    <div><div style="color:var(--muted);font-size:.58rem;text-transform:uppercase;letter-spacing:.06em">Investováno</div><div style="font-size:1.1rem;font-weight:700">$${totalCost.toFixed(2)}</div></div>
+    <div><div style="color:var(--muted);font-size:.58rem;text-transform:uppercase;letter-spacing:.06em">Cena / ks</div><div style="font-weight:600">$${price.toFixed(2)}</div></div>
+    <div><div style="color:var(--muted);font-size:.58rem;text-transform:uppercase;letter-spacing:.06em">Celkem v portfoliu</div><div style="font-weight:600">${newQty} ks</div></div>
+    <div><div style="color:var(--muted);font-size:.58rem;text-transform:uppercase;letter-spacing:.06em">Signál</div><div><span class="sig ${sigC}" style="font-size:.65rem">${sig}</span></div></div>
+    <div><div style="color:var(--muted);font-size:.58rem;text-transform:uppercase;letter-spacing:.06em">Skóre</div><div style="font-weight:700;color:${sObj.score>=75?'var(--green)':sObj.score>=50?'var(--yellow)':'var(--red)'}">${sObj.score}/100</div></div>
+    <div><div style="color:var(--muted);font-size:.58rem;text-transform:uppercase;letter-spacing:.06em">Roční DPS</div><div style="font-weight:600">$${(getDPS(t)*newQty).toFixed(2)}</div></div>
+    <div><div style="color:var(--muted);font-size:.58rem;text-transform:uppercase;letter-spacing:.06em">Výnos</div><div style="font-weight:600">${sObj.yield.toFixed(1)}%</div></div>
+  `;
+  const ranked = portfolio.tickers.map(x=>({t:x,score:calculateScore(x).score,p:getPrice(x)})).sort((a,b)=>b.score-a.score);
+  document.getElementById('purch-top3').innerHTML = ranked.slice(0,3).map((r,i)=>{
+    const [s,sc]=getSignal(r.score,false);
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;${i<2?'border-bottom:1px solid var(--border)':''}">
+      <span style="font-weight:${r.t===t?'700':'400'};color:${r.t===t?'var(--green)':'var(--text)'}">${r.t}${r.t===t?' ← právě nakoupeno':''}</span>
+      <span style="color:${r.score>=75?'var(--green)':r.score>=50?'var(--yellow)':'var(--red)'}">skóre ${r.score}</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('apResult').innerHTML = `<div style="color:var(--muted);font-size:.62rem">POSLEDNÍ NÁKUP</div>
+    <div class="ap-best">${t} <span style="font-size:.8rem;color:var(--muted)">+${qty} ks</span></div>
+    <hr style="border-color:var(--border);margin:6px 0">
+    ${ranked.slice(0,3).map(r=>`<div class="ap-row"><span>${r.t}</span><span style="color:${r.score>=75?'#16a34a':r.score>=50?'#d97706':'#dc2626'}">${r.score}</span></div>`).join('')}`;
+
+  document.getElementById('purchaseOverlay').classList.add('open');
+}
+
+function closePurchase(){
+  document.getElementById('purchaseOverlay').classList.remove('open');
+}
+
+function openAutoBuyFor(ticker){
+  // Otevři Auto Buy modal s přednastaveným tickerem
+  autopilot();
+  // Počkej na render listu, pak vyber ticker
+  setTimeout(() => {
+    selectAbTicker(ticker);
+    // Scroll to selected item
+    const el = document.getElementById('ab-'+ticker);
+    if(el) el.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }, 50);
+}
+
+function closeAutoBuy(){
+  document.getElementById('autoBuyOverlay').classList.remove('open');
+  abSelectedTicker = null;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SLOŽENÍ PORTFOLIA — KOLÁČOVÝ GRAF + REBALANCE DOPORUČENÍ
+// ═══════════════════════════════════════════════════════════════
+
+// Cílové váhy sektorů (%)
+const TARGET_WEIGHTS = {
+  'BDC':    { target: 47, color: '#0284c7', label: 'BDC' },
+  'REIT':   { target: 22, color: '#16a34a', label: 'REIT' },
+  'Other':  { target: 11, color: '#d97706', label: 'Telco/Tabák' },
+  'Pharma': { target:  9, color: '#7c3aed', label: 'Pharma' },
+  'Staples':{ target:  6, color: '#0891b2', label: 'Consumer Staples' },
+  'Energy': { target:  5, color: '#b45309', label: 'Energy/MLP' },
+};
+
+// Přiřazení ticker → sektor (rozšíření pro nové tituly)
+function getSectorGroup(t){
+  return portfolio.sectors[t] || 'Other';
+}
+
+let sectorPieInst = null;
+
+function calcSectorValues(){
+  const vals = {};
+  for(const key of Object.keys(TARGET_WEIGHTS)) vals[key] = 0;
+  let total = 0;
+  portfolio.tickers.forEach(t => {
+    const val = (portfolio.qty[t]||0) * getPrice(t);
+    const s = getSectorGroup(t);
+    if(vals[s] === undefined) vals[s] = 0;
+    vals[s] += val;
+    total += val;
+  });
+  return { vals, total };
+}
+
+function renderSectorPie(){
+  const { vals, total } = calcSectorValues();
+  const ctx = document.getElementById('sectorPieChart').getContext('2d');
+  if(sectorPieInst) sectorPieInst.destroy();
+
+  const labels = [], data = [], colors = [], borderColors = [];
+  for(const [key, cfg] of Object.entries(TARGET_WEIGHTS)){
+    const v = vals[key] || 0;
+    if(v > 0){
+      labels.push(cfg.label);
+      data.push(+v.toFixed(0));
+      colors.push(cfg.color + 'cc');
+      borderColors.push(cfg.color);
+    }
+  }
+  // Neznámé sektory
+  for(const [key, v] of Object.entries(vals)){
+    if(!TARGET_WEIGHTS[key] && v > 0){
+      labels.push(key);
+      data.push(+v.toFixed(0));
+      colors.push('#94a3b8cc');
+      borderColors.push('#94a3b8');
+    }
+  }
+
+  sectorPieInst = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: colors,
+        borderColor: borderColors,
+        borderWidth: 1.5,
+        hoverOffset: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '60%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const pct = total > 0 ? ((ctx.raw / total) * 100).toFixed(1) : 0;
+              return ` $${ctx.raw.toLocaleString('en-US')}  (${pct}%)`;
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // ── Levá tabulka: sektor | aktuální% → cíl% | progress bar
+  const tableEl = document.getElementById('sectorTargetTable');
+  if(tableEl){
+    let tblHtml = '';
+    for(const [key, cfg] of Object.entries(TARGET_WEIGHTS)){
+      const v = vals[key] || 0;
+      const actual = total > 0 ? (v / total) * 100 : 0;
+      const target = cfg.target;
+      const diff = target - actual;
+      const isOver  = diff < -2;
+      const isUnder = diff > 2;
+      const statusColor = isOver ? 'var(--red)' : isUnder ? 'var(--green)' : 'var(--muted)';
+      const statusIcon  = isOver ? '▲' : isUnder ? '▼' : '●';
+      // Progress bar: fill = actual, marker = target
+      const fillW  = Math.min(actual, 100);
+      const markL  = Math.min(target, 100);
+      const fillColor = isOver ? '#dc2626' : isUnder ? '#16a34a' : '#64748b';
+      tblHtml += `
+      <div style="margin-bottom:7px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
+          <div style="display:flex;align-items:center;gap:4px">
+            <span style="width:7px;height:7px;border-radius:2px;background:${cfg.color};display:inline-block;flex-shrink:0"></span>
+            <span style="font-family:var(--font-mono);font-size:.62rem;font-weight:600">${cfg.label}</span>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:.58rem;display:flex;align-items:center;gap:4px">
+            <span style="color:${statusColor}">${statusIcon}</span>
+            <span style="font-weight:700;color:var(--text)">${actual.toFixed(1)}%</span>
+            <span style="color:var(--muted)">/</span>
+            <span style="color:var(--muted)">${target}%</span>
+          </div>
+        </div>
+        <!-- Progress bar s markerem cíle -->
+        <div style="position:relative;height:5px;background:var(--border);border-radius:3px;overflow:visible">
+          <div style="position:absolute;left:0;top:0;height:100%;width:${fillW}%;background:${fillColor};border-radius:3px;transition:width .4s"></div>
+          <!-- Marker cíle -->
+          <div style="position:absolute;top:-2px;left:${markL}%;transform:translateX(-50%);width:2px;height:9px;background:var(--muted);border-radius:1px;opacity:.7"></div>
+        </div>
+      </div>`;
+    }
+    tableEl.innerHTML = tblHtml;
+  }
+}
+
+function renderRebalance(){
+  const { vals, total } = calcSectorValues();
+  if(total <= 0) return;
+
+  const current = {};
+  for(const key of Object.keys(TARGET_WEIGHTS)) current[key] = ((vals[key]||0)/total)*100;
+
+  // Pro každý sektor: tickery v portfoliu + jejich signál
+  const tickersBySector = {};
+  portfolio.tickers.forEach(t => {
+    const s = portfolio.sectors[t] || 'Other';
+    if(!tickersBySector[s]) tickersBySector[s] = [];
+    const sObj = calculateScore(t);
+    const [sig, sigC] = getSignal(sObj.score, sObj.trap);
+    tickersBySector[s].push({ t, sig, sigC, score: sObj.score });
+  });
+
+  // Nové tituly navrhované pro chybějící sektory
+  const sectorSuggestions = {
+    'Staples': ['KO','PEP','PG'],
+    'Energy':  ['EPD','ET','ENB'],
+  };
+
+  const diffs = Object.entries(TARGET_WEIGHTS).map(([key, cfg]) => ({
+    key, label: cfg.label, color: cfg.color,
+    target: cfg.target,
+    actual: current[key] || 0,
+    diff: cfg.target - (current[key]||0),
+  })).sort((a,b) => b.diff - a.diff);
+
+  let html = '';
+  for(const d of diffs){
+    const isOver  = d.diff < -2;
+    const isUnder = d.diff > 2;
+    const statusColor = isOver ? 'var(--red)' : isUnder ? 'var(--green)' : 'var(--muted)';
+    const statusText  = isOver  ? `▲ +${Math.abs(d.diff).toFixed(1)} pp nadváha` :
+                        isUnder ? `▼ −Math.abs(d.diff).toFixed(1)} pp podváha` :
+                                  '● v cíli';
+    // Sprav překlep v template literálu
+    const statusLabel = isOver  ? `▲ +${Math.abs(d.diff).toFixed(1)} pp nadváha` :
+                        isUnder ? `▼ −${Math.abs(d.diff).toFixed(1)} pp podváha` :
+                                  '● v cíli';
+
+    const tickers = tickersBySector[d.key] || [];
+    const suggestions = sectorSuggestions[d.key] || [];
+
+    // Sestav tickery se signálem
+    let tickerHtml = '';
+    if(tickers.length > 0){
+      tickerHtml = tickers.map(tk => {
+        const highlight = isUnder && (tk.sig.includes('BUY') || tk.sig.includes('STRONG'));
+        const clickable = highlight;
+        return `<span style="display:inline-flex;align-items:center;gap:3px;margin-right:4px;
+          ${highlight ? 'background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.3);border-radius:6px;padding:1px 5px;cursor:pointer;transition:all .15s' : ''}
+          ${highlight ? 'title="Klikni pro Auto Buy"' : ''}"
+          ${clickable ? `onclick="openAutoBuyFor('${tk.t}')" title="Klikni → Auto Buy"` : ''}>
+          <span style="font-weight:600;font-family:var(--font-mono);font-size:.65rem${clickable?';text-decoration:underline dotted':''}">${tk.t}</span>
+          <span class="sig ${tk.sigC}" style="font-size:.52rem;padding:1px 4px">${tk.sig.replace(' 🟢','').replace(' ✅','').replace(' ⏸️','').replace(' 🔴','').replace(' ⚠️','')}</span>
+          ${clickable ? '<span style="font-size:.5rem;color:var(--green)">🛒</span>' : ''}
+        </span>`;
+      }).join('');
+    } else if(suggestions.length > 0){
+      tickerHtml = `<span style="color:var(--muted);font-size:.6rem">chybí pozice →</span> ` +
+        suggestions.map(s => `<span style="font-family:var(--font-mono);font-size:.62rem;color:var(--blue);background:rgba(2,132,199,.08);border:1px solid rgba(2,132,199,.2);border-radius:5px;padding:1px 5px;cursor:pointer" onclick="prefillTicker('${s}')">${s}</span>`).join(' ');
+    } else {
+      tickerHtml = `<span style="color:var(--muted);font-size:.6rem">—</span>`;
+    }
+
+    // Doporučení: pokud je podváženo a má BUY signál → zvýrazni
+    const hasBuySignal = tickers.some(tk => tk.sig.includes('BUY'));
+    const actionBadge = isUnder && hasBuySignal
+      ? `<span style="font-size:.58rem;background:rgba(22,163,74,.15);color:var(--green);border:1px solid rgba(22,163,74,.3);border-radius:6px;padding:1px 6px;margin-left:4px">⭐ nakoupit</span>`
+      : isUnder && suggestions.length > 0
+      ? `<span style="font-size:.58rem;background:rgba(2,132,199,.1);color:var(--blue);border:1px solid rgba(2,132,199,.25);border-radius:6px;padding:1px 6px;margin-left:4px">➕ nová pozice</span>`
+      : '';
+
+    html += `
+    <div style="border-bottom:1px solid var(--border);padding:6px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="display:flex;align-items:center;gap:5px">
+          <span style="width:8px;height:8px;border-radius:2px;background:${d.color};display:inline-block;flex-shrink:0"></span>
+          <span style="font-weight:600;font-size:.68rem">${d.label}</span>
+          ${actionBadge}
+        </div>
+        <span style="font-family:var(--font-mono);font-size:.65rem;color:${statusColor}">${d.actual.toFixed(1)}% → ${d.target}%&nbsp;&nbsp;${statusLabel}</span>
+      </div>
+      <div style="margin-top:4px;display:flex;flex-wrap:wrap;align-items:center;gap:3px">
+        ${tickerHtml}
+      </div>
+    </div>`;
+  }
+
+  document.getElementById('rebalanceBox').innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CHART & HISTORY
+// ═══════════════════════════════════════════════════════════════
+const LS_SNAP='ppv8_snapshots';
+let snapshots=[], chartInst=null;
+try{const s=localStorage.getItem(LS_SNAP);if(s)snapshots=JSON.parse(s);}catch(e){}
+function saveSnaps(){ try{localStorage.setItem(LS_SNAP,JSON.stringify(snapshots));}catch(e){} }
+function dailySnapshot(){
+  const today=new Date().toISOString().slice(0,10);
+  let last=''; try{last=localStorage.getItem('ppv8_lastDay')||'';}catch(e){}
+  if(last===today) return;
+  const st=stats();
+  if(st.total<=0) return;
+  snapshots.push({label:`${new Date().getDate()}.${new Date().getMonth()+1}.${String(new Date().getFullYear()).slice(2)}`, value:st.total});
+  if(snapshots.length>60) snapshots.shift();
+  saveSnaps(); renderChart();
+  try{localStorage.setItem('ppv8_lastDay',today);}catch(e){}
+}
+function renderChart(){
+  const ctx=document.getElementById('histChart').getContext('2d');
+  const st=stats();
+  const pts=[...snapshots,{label:'Nyní',value:st.total}];
+  if(pts.length<2){
+    ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
+    ctx.fillStyle='#64748b';ctx.font='11px DM Mono';ctx.textAlign='center';
+    ctx.fillText('Data po prvním refreshi',ctx.canvas.width/2,60);
+    return;
+  }
+  if(chartInst)chartInst.destroy();
+  chartInst=new Chart(ctx,{type:'line',data:{labels:pts.map(p=>p.label),datasets:[{data:pts.map(p=>+p.value.toFixed(0)),borderColor:'#16a34a',backgroundColor:'rgba(22,163,74,.08)',borderWidth:1.5,pointRadius:3,pointBackgroundColor:'#16a34a',fill:true,tension:.4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' $'+c.parsed.y.toLocaleString('en-US')}}},scales:{x:{grid:{color:'rgba(203,213,225,.5)'},ticks:{font:{size:9}}},y:{grid:{color:'rgba(203,213,225,.5)'},ticks:{callback:v=>'$'+v.toLocaleString('en-US')}}}}});
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FETCH CEN — zdarma, bez API klíče
+// CORS proxy → Yahoo Finance (funguje z lokálního souboru)
+// ═══════════════════════════════════════════════════════════════
+const timeout=(ms)=>new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),ms));
+
+// ── API klíče ─────────────────────────────────────────────────
+const FMP_KEY       = 'HCLdtiqzdr6XkZgzZXVGF9iwz1yMrFJS';
+const FINNHUB_KEY   = 'd7nhirhr01qppri4t8r0d7nhirhr01qppri4t8rg';
+const ANTHROPIC_KEY = '';
+
+function getApiKey(){ return ANTHROPIC_KEY; }
+function getFinnhubKey(){ return FINNHUB_KEY; }
+function getFmpKey(){ return FMP_KEY; }
+function openApiKeyModal(){}
+function closeApiKeyModal(){}
+function saveApiKey(){}
+function updateApiKeyPill(){
+  const pill=document.getElementById('apiKeyPill');
+  if(!pill) return;
+  pill.style.borderColor='var(--green)';
+  pill.style.color='var(--green)';
+  pill.title='Yahoo Finance ✅';
+}
+async function fetchPriceFromFinnhub(ticker){
+  const token = getFinnhubKey();
+  if(!token) return null;
+  try{
+    const resp = await Promise.race([
+      fetch('https://finnhub.io/api/v1/quote?symbol='+ticker+'&token='+token),
+      timeout(8000)
+    ]);
+    if(!resp.ok) return null;
+    const d = await resp.json();
+    return d.c > 0 ? d.c : (d.pc > 0 ? d.pc : null);
+  }catch(e){ return null; }
+}
+async function fetchOne(t){ return {price:portfolio.fallback[t],live:false}; }
+async function fetchAll(){
+  if(fetchBusy) return;
+  fetchBusy=true; let liveCount=0;
+  document.getElementById('statusBadge').textContent='📡 Načítám ceny…';
+  const results=await Promise.all(portfolio.tickers.map(t=>fetchPriceFromFinnhub(t).then(p=>({t,p}))));
+  results.forEach(({t,p})=>{ if(p){prices[t]=p;livePrices[t]=true;liveCount++;}else{livePrices[t]=false;} });
+  render();
+  portfolio.tickers.forEach(t=>fetchFundamentals(t));
+  const now=new Date();
+  const timeStr=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  const total=portfolio.tickers.length;
+  if(liveCount===total) document.getElementById('statusBadge').textContent='LIVE · '+timeStr;
+  else if(liveCount>0) document.getElementById('statusBadge').textContent='ČÁSTEČNĚ '+liveCount+'/'+total+' · '+timeStr;
+  else document.getElementById('statusBadge').textContent='⚠️ OFFLINE · záložní ceny';
+  fetchBusy=false;
+  dailySnapshot();
+}
+
+let autoTimer=null, autoOn=false;
+function toggleAuto(){
+  autoOn=!autoOn;
+  const pill=document.getElementById('autoPill');
+  if(autoOn){
+    pill.classList.add('on'); pill.textContent='⏱ Auto ON';
+    autoTimer=setInterval(fetchAll,30*60*1000);
+    toast('⏱ Auto-refresh každých 30 min');
+  } else {
+    pill.classList.remove('on'); pill.textContent='⏱ Auto';
+    clearInterval(autoTimer);
+    toast('Auto-refresh vypnut');
+  }
+}
+
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+function openModal(){
+  document.getElementById('modalOverlay').classList.add('open');
+  document.getElementById('modalErr').textContent='';
+  document.getElementById('addTicker').value='';
+  document.getElementById('addName').value='';
+  document.getElementById('addPrice').value='';
+  document.getElementById('addShares').value='100';
+  document.getElementById('addYield').value='';
+  document.getElementById('addSector').value='Other';
+  document.getElementById('priceLoadStatus').textContent='';
+}
+
 function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); }
+
+function prefillTicker(symbol){
+  openModal();
+  document.getElementById('addTicker').value = symbol;
+  fetchPriceForAdd(symbol);
+}
+
+// Dočasné fundamenty pro nově přidanou akcii (vyplní AI)
+let pendingFundamentals = null;
+let pendingDivMonths = null;
+let pendingDivGrowth = null;
+
+async function fetchPriceForAdd(ticker){
+  const statusDiv=document.getElementById('priceLoadStatus');
+  statusDiv.textContent='⏳ Načítám cenu...';
+  try{
+    const price = await fetchPriceFromFinnhub(ticker);
+    if(price && price>0){
+      document.getElementById('addPrice').value=price.toFixed(2);
+      statusDiv.textContent='✅ Cena: $'+price.toFixed(2);
+      return price;
+    } else { statusDiv.textContent='⚠️ Cenu nelze načíst'; return null; }
+  }catch(e){ statusDiv.textContent='❌ Chyba načtení'; return null; }
+}
+
+async function fetchFundamentals(t){
+  const token=getFinnhubKey(); if(!token) return false; // Finnhub fundamenty přeskočeny
+  try{
+    const [qR,mR,rR]=await Promise.all([
+      fetch('https://finnhub.io/api/v1/stock/metric?symbol='+t+'&metric=all&token='+token),
+      fetch('https://finnhub.io/api/v1/stock/profile2?symbol='+t+'&token='+token),
+      fetch('https://finnhub.io/api/v1/recommendation?symbol='+t+'&limit=1&token='+token)
+    ]);
+    const q=qR.ok?await qR.json():{},met=mR.ok?await mR.json():{},rec=rR.ok?await rR.json():[];
+    const m=q.metric||{};
+    let recommendation=null;
+    if(Array.isArray(rec)&&rec.length>0){
+      const r=rec[0],total=(r.buy||0)+(r.hold||0)+(r.sell||0)+(r.strongBuy||0)+(r.strongSell||0);
+      if(total>0){const s=((r.strongBuy||0)*2+(r.buy||0)-(r.sell||0)-(r.strongSell||0)*2)/total;recommendation=s>0.8?'strong_buy':s>0.2?'buy':s>-0.2?'hold':'sell';}
+    }
+    yfData[t]={pe:m.peNormalizedAnnual||m.peTTM||null,pb:m.pbAnnual||m.pbQuarterly||null,beta:m.beta||null,yieldYH:m.dividendYieldIndicatedAnnual||null,payoutRatio:m.payoutRatioAnnual||null,exDiv:m.exDividendDate||null,high52:m['52WeekHigh']||null,low52:m['52WeekLow']||null,targetPrice:null,recommendation,industry:met.finnhubIndustry||null,sector:met.finnhubIndustry||null,marketCap:met.marketCapitalization?met.marketCapitalization*1e6:null};
+    return true;
+  }catch(e){ return false; }
+}
+
+async function fetchAnalystData(t){
+  const btn=document.getElementById('analystBtn-'+t);
+  const el=document.getElementById('detail-'+t);
+  if(btn){btn.textContent='⏳…';btn.disabled=true;}
+  const key=getFmpKey();
+  if(!key){ if(btn){btn.textContent='❌ Chybí FMP klíč';btn.style.color='var(--red)';btn.disabled=false;} openApiKeyModal(); return; }
+  try{
+    const [tR,rR]=await Promise.all([
+      fetch('https://financialmodelingprep.com/api/v4/price-target-consensus?symbol='+t+'&apikey='+key),
+      fetch('https://financialmodelingprep.com/api/v4/analyst-stock-recommendations?symbol='+t+'&limit=1&apikey='+key)
+    ]);
+    const td=tR.ok?await tR.json():null,rd=rR.ok?await rR.json():null;
+    const tgt=Array.isArray(td)?td[0]:td;
+    if(tgt&&tgt.targetConsensus) yfData[t].targetPrice=parseFloat(tgt.targetConsensus);
+    else if(tgt&&tgt.targetMedian) yfData[t].targetPrice=parseFloat(tgt.targetMedian);
+    const rec=Array.isArray(rd)?rd[0]:rd;
+    if(rec&&rec.analystRatingsStrongBuy!==undefined){
+      const sb=rec.analystRatingsStrongBuy||0,b=rec.analystRatingsbuy||0,h=rec.analystRatingsHold||0,s=rec.analystRatingsSell||0,ss=rec.analystRatingsStrongSell||0,total=sb+b+h+s+ss;
+      if(total>0){const score=(sb*2+b-s-ss*2)/total;yfData[t].recommendation=score>0.8?'strong_buy':score>0.2?'buy':score>-0.2?'hold':'sell';}
+    }
+    if(!yfData[t].targetPrice&&!yfData[t].recommendation){if(btn){btn.textContent='⚠️ FMP nemá data';btn.disabled=false;} return;}
+    if(el&&el.classList.contains('open')) el.innerHTML=renderDetail(t);
+  }catch(e){ if(btn){btn.textContent='❌ '+e.message;btn.style.color='var(--red)';btn.disabled=false;} }
+}
+
+async function fetchFundamentalsForAdd(ticker){
+  const aiDiv = document.getElementById('aiStatus');
+  aiDiv.textContent = '🤖 AI zjišťuje fundamenty…';
+  pendingFundamentals = null;
+  pendingDivMonths = null;
+  pendingDivGrowth = null;
+  try {
+    const sector = document.getElementById('addSector').value;
+    const prompt = `You are a financial data assistant. Return ONLY a JSON object (no markdown, no explanation) with fundamental data for the stock ticker "${ticker}" (sector: ${sector}).
+
+The JSON must have exactly these fields:
+{
+  "pe": <P/E ratio or P/AFFO for REITs, number>,
+  "de": <debt-to-equity ratio for regular stocks, regulatory debt/equity for BDCs, net debt/EBITDA for REITs, number>,
+  "payout": <dividend payout ratio as decimal e.g. 0.75, or FCF payout for negative-equity companies>,
+  "sectorStability": <0.0-1.0, higher = more stable/defensive sector>,
+  "niiCoverage": <NII/DPS coverage ratio for BDCs, AFFO/dividend coverage for REITs, FCF/dividend for others, number>,
+  "pNav": <price/NAV ratio for BDCs and REITs, null for others>,
+  "divMonths": <array of month numbers 1-12 when dividends are paid, e.g. [3,6,9,12] for quarterly March/June/Sep/Dec>,
+  "divGrowthPct": <annual dividend growth rate as decimal e.g. 0.04 for 4%>,
+  "dividendFrequency": <"monthly" or "quarterly" or "annual">
+}
+
+Use the most recent available data (2024-2025). If data is unavailable, use reasonable defaults. Return only the JSON object.`;
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 500,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const result = await response.json();
+    const text = result.content?.[0]?.text || '';
+    const clean = text.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(clean);
+
+    pendingFundamentals = {
+      pe: parsed.pe ?? 15,
+      de: parsed.de ?? 1.0,
+      payout: parsed.payout ?? 0.7,
+      sectorStability: parsed.sectorStability ?? 0.6,
+      niiCoverage: parsed.niiCoverage ?? 1.0,
+      pNav: parsed.pNav ?? null
+    };
+    pendingDivMonths = parsed.divMonths ?? [1,4,7,10];
+    pendingDivGrowth = parsed.divGrowthPct ?? 0.03;
+
+    // Vyplň yield field pokud je prázdný
+    const yieldField = document.getElementById('addYield');
+    if(!yieldField.value && parsed.niiCoverage){
+      // Neodhadujeme yield — uživatel zadá sám
+    }
+
+    aiDiv.innerHTML = `✅ AI načetlo: NII cov. <b>${pendingFundamentals.niiCoverage.toFixed(2)}×</b> · D/E <b>${pendingFundamentals.de.toFixed(2)}</b> · payout <b>${(pendingFundamentals.payout*100).toFixed(0)}%</b> · div ${parsed.divMonths?.length === 12 ? 'měsíčně' : 'čtvrtletně'}`;
+  } catch(e) {
+    aiDiv.textContent = '⚠️ AI fundamenty nedostupné — použity výchozí hodnoty';
+    pendingFundamentals = {pe:15, de:1.0, payout:0.7, sectorStability:0.6, niiCoverage:1.0, pNav:null};
+    pendingDivMonths = [1,4,7,10];
+    pendingDivGrowth = 0.03;
+  }
+}
+
+document.getElementById('addTicker').addEventListener('blur', function(){
+  const ticker=this.value.trim().toUpperCase();
+  if(ticker && ticker.length>=1){
+    fetchPriceForAdd(ticker);
+    fetchFundamentalsForAdd(ticker);
+  }
+});
+
+document.getElementById('addSector').addEventListener('change', function(){
+  const ticker=document.getElementById('addTicker').value.trim().toUpperCase();
+  if(ticker && ticker.length>=1) fetchFundamentalsForAdd(ticker);
+});
+
 function addTicker(){
   const ticker=document.getElementById('addTicker').value.trim().toUpperCase();
+  const name=document.getElementById('addName').value.trim();
+  let price=parseFloat(document.getElementById('addPrice').value);
   const shares=parseInt(document.getElementById('addShares').value);
+  let yieldPct=parseFloat(document.getElementById('addYield').value);
   const sector=document.getElementById('addSector').value;
-  const price=parseFloat(document.getElementById('addPrice').value);
-  const yieldPct=parseFloat(document.getElementById('addYield').value);
-  if(!ticker){toast('Zadej ticker');return;}
-  if(portfolio.tickers.includes(ticker)){toast('Ticker již existuje');return;}
-  if(isNaN(shares)||shares<=0){toast('Počet akcií musí být >0');return;}
-  if(isNaN(price)||price<=0){toast('Zadej platnou cenu');return;}
-  if(isNaN(yieldPct)||yieldPct<0){toast('Zadej roční výnos v %');return;}
+  const errEl=document.getElementById('modalErr');
+  if(!ticker){ errEl.textContent='Zadej ticker'; return; }
+  if(portfolio.tickers.includes(ticker)){ errEl.textContent=ticker+' již v portfoliu je'; return; }
+  if(isNaN(shares) || shares<=0){ errEl.textContent='Počet akcií >0'; return; }
+  if(isNaN(price) || price<=0){ errEl.textContent='Zadej platnou cenu'; return; }
+  if(isNaN(yieldPct) || yieldPct<0){ errEl.textContent='Zadej roční výnos v %'; return; }
   portfolio.tickers.push(ticker);
   portfolio.sectors[ticker]=sector;
   portfolio.qty[ticker]=shares;
   portfolio.fallback[ticker]=price;
   prices[ticker]=price;
-  dividendData[ticker]=price*(yieldPct/100);
-  fundamentals[ticker]={pe:15,de:1,payout:0.7,sectorStability:0.6,niiCoverage:1.0,pNav:null};
-  dividendGrowth[ticker]=0.03;
-  divMonths[ticker]=[1,4,7,10];
-  closeModal(); render(); saveSnapshot();
+  const dps=price*(yieldPct/100);
+  dividendData[ticker]=dps;
+  fundamentals[ticker] = pendingFundamentals || {pe:15, de:1, payout:0.7, sectorStability:0.6, niiCoverage:1.0, pNav:null};
+  if(!divMonths[ticker]) divMonths[ticker] = pendingDivMonths || [1,4,7,10];
+  dividendGrowth[ticker] = pendingDivGrowth || 0.03;
+  pendingFundamentals = null; pendingDivMonths = null; pendingDivGrowth = null;
+  closeModal();
+  render();
   toast('✅ Přidáno: '+ticker);
-  ['addTicker','addName','addPrice','addYield'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('addShares').value='100';
 }
 
-// ── Auto refresh ─────────────────────────────────────────────
-let autoTimer=null, autoOn=false;
-function toggleAuto(){
-  autoOn=!autoOn;
-  const pill=document.getElementById('autoPill');
-  if(autoOn){ pill.classList.add('on'); pill.textContent='⏱ Auto ON'; autoTimer=setInterval(fetchAll,30*60*1000); toast('Auto-refresh každých 30 minut'); }
-  else{ pill.classList.remove('on'); pill.textContent='⏱ Auto'; clearInterval(autoTimer); toast('Auto-refresh vypnut'); }
+function checkFirstDay(){
+  const now=new Date();
+  const lastCheck=localStorage.getItem('lastDivCheck');
+  const todayKey=`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+  if(now.getDate()===1 && lastCheck!==todayKey){
+    if(checkAndSaveMonthlyDividend()){
+      localStorage.setItem('lastDivCheck', todayKey);
+      updateDividendDisplay();
+      toast('📅 Měsíční dividenda uložena');
+    }
+  }
+  const nextUpdate=new Date(); nextUpdate.setMonth(nextUpdate.getMonth()+1); nextUpdate.setDate(1);
+  const daysUntil=Math.ceil((nextUpdate - now)/(1000*60*60*24));
+  document.getElementById('nextUpdateBadge').innerHTML=`📅 další záznam za ${daysUntil} dní`;
 }
 
-// ── Init ─────────────────────────────────────────────────────
-loadSnapshots();
 render();
-fetchAll();
-setInterval(saveSnapshot, 60*60*1000);
+saveSnaps();
+setTimeout(fetchAll, 400);
+checkFirstDay();
+setInterval(checkFirstDay, 60*60*1000);
+setInterval(()=>{ checkAndSaveMonthlyDividend(); updateDividendDisplay(); }, 24*60*60*1000);
+
+// ═══════════════════════════════════════════════════════════════
+// PWA — Service Worker (inline blob)
+// ═══════════════════════════════════════════════════════════════
+const SW_CODE=`
+const CACHE='portfolio-v1';
+const SHELL=[
+  'https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;600;700&display=swap',
+  'https://fonts.gstatic.com'
+];
+
+self.addEventListener('install',e=>{
+  e.waitUntil(caches.open(CACHE).then(c=>c.addAll([])).then(()=>self.skipWaiting()));
+});
+self.addEventListener('activate',e=>{
+  e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
+});
+self.addEventListener('fetch',e=>{
+  const url=e.request.url;
+  // Fonty cachuj agresivně
+  if(url.includes('fonts.gstatic.com')||url.includes('fonts.googleapis.com')){
+    e.respondWith(caches.open(CACHE).then(c=>c.match(e.request).then(r=>r||(fetch(e.request).then(resp=>{c.put(e.request,resp.clone());return resp;})))));
+    return;
+  }
+  // API ceny — vždy network (nikdy necachuj)
+  if(url.includes('finance.yahoo')||url.includes('allorigins')||url.includes('corsproxy')||url.includes('stooq')||url.includes('alphavantage')) return;
+  // Ostatní — network first, fallback cache
+  e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));
+});
+`;
+
+if('serviceWorker' in navigator && location.protocol==='https:'){
+  const blob=new Blob([SW_CODE],{type:'application/javascript'});
+  const swUrl=URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl,{scope:'./'})
+    .then(r=>console.log('SW registrován'))
+    .catch(()=>{});
+}
+
+// PWA Install prompt
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  // Zobraz tlačítko instalace
+  const btn=document.createElement('button');
+  btn.className='pill pill-add';
+  btn.textContent='📲 Nainstalovat';
+  btn.onclick=()=>{
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(c=>{
+      if(c.outcome==='accepted') btn.remove();
+      deferredPrompt=null;
+    });
+  };
+  document.querySelector('.header-actions').prepend(btn);
+});
+
 </script>
 </body>
 </html>
