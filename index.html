@@ -32,10 +32,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-ui);min-heigh
 
 .header{
   display:flex;align-items:center;justify-content:flex-end;
-  padding:12px 16px;border-bottom:1px solid var(--border);
+  padding:10px 14px;border-bottom:1px solid var(--border);
   background:var(--card);position:sticky;top:0;z-index:10;
+  flex-wrap:wrap;gap:6px;
 }
-.header-actions{display:flex;gap:8px;align-items:center}
+.header-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 .pill{
   font-size:.7rem;font-family:var(--font-mono);padding:4px 10px;border-radius:20px;
   border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;
@@ -59,7 +60,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-ui);min-heigh
 .kpi-sub{font-size:.65rem;color:var(--muted);margin-top:3px;font-family:var(--font-mono)}
 
 .main-grid{display:grid;gap:8px;padding:8px 12px 12px}
-@media(min-width:900px){.main-grid{grid-template-columns:1fr 280px}}
+@media(min-width:768px){.main-grid{grid-template-columns:1fr 260px}}
+@media(min-width:1024px){.main-grid{grid-template-columns:1fr 300px}}
+@media(min-width:1440px){.main-grid{grid-template-columns:1fr 340px}}
 
 .card{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
 .card-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border)}
@@ -251,6 +254,163 @@ canvas.small-chart{width:100%!important;height:100%!important}
 .ab-rebal-under{background:rgba(22,163,74,.12);color:var(--green);border:1px solid rgba(22,163,74,.3)}
 .ab-rebal-over{background:rgba(220,38,38,.08);color:var(--red);border:1px solid rgba(220,38,38,.2)}
 .ab-rebal-ok{background:rgba(100,116,139,.1);color:var(--muted);border:1px solid var(--border)}
+
+/* ── Sector pie card layout ─────────────────────────────── */
+.sector-inner{display:grid;grid-template-columns:1fr 130px;align-items:start}
+.sector-pie-wrap{padding:8px 10px 8px 0;height:190px;position:relative}
+.sector-pie-wrap canvas{width:100%!important;height:100%!important}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE — mobile / tablet / desktop
+   Breakpoints: ≤479 | 480-599 | 600-767 | 768-1023 | 1024+ | 1440+
+═══════════════════════════════════════════════════════════════ */
+
+/* ── LARGE DESKTOP 1440px+ ─── */
+@media(min-width:1440px){
+  .kpi-row,.main-grid{max-width:1480px;margin-left:auto;margin-right:auto}
+  .kpi-val{font-size:1.75rem}
+  .tbl{font-size:.78rem}
+  .tbl td,.tbl th{padding:9px 11px}
+}
+
+/* ── DESKTOP 1024px+ ─── */
+@media(min-width:1024px){
+  .kpi-row{padding:16px 18px 0;gap:10px}
+  .kpi{padding:14px 18px}
+  .kpi-val{font-size:1.65rem}
+  .main-grid{padding:10px 18px 18px;gap:10px}
+  .tbl{font-size:.76rem}
+  .tbl td,.tbl th{padding:8px 10px}
+}
+
+/* ── TABLET LANDSCAPE 768-1023px ─── */
+@media(min-width:768px) and (max-width:1023px){
+  .kpi-row{padding:12px 14px 0;gap:8px}
+  .kpi-val{font-size:1.45rem}
+  .main-grid{padding:8px 14px 14px}
+  .tbl{font-size:.7rem}
+  .tbl td,.tbl th{padding:6px 7px}
+  /* Sidebar slightly narrower at smaller tablet */
+  .sector-inner{grid-template-columns:1fr 120px}
+  .sector-pie-wrap{height:170px}
+}
+
+/* ── TABLET PORTRAIT 600-767px (sidebar stacks below, full width) ─── */
+@media(min-width:600px) and (max-width:767px){
+  .main-grid{grid-template-columns:1fr;padding:8px 12px 12px}
+  .side-stack{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .side-stack .card:first-child{grid-column:1/-1} /* dividenda přes celou šíři */
+  .tbl{font-size:.69rem}
+  .tbl td,.tbl th{padding:6px 6px}
+  /* Skryj score-bar, ukáže se jen číslo */
+  .score-bar{display:none}
+  .sector-inner{grid-template-columns:1fr 110px}
+  .sector-pie-wrap{height:160px}
+  .cal-grid{grid-template-columns:repeat(4,1fr)} /* 4 sloupce jsou OK na šířce 600px+ */
+}
+
+/* ── MOBILE 480-599px ─── */
+@media(min-width:480px) and (max-width:599px){
+  .main-grid{padding:6px 10px 10px}
+  /* Tabulka: skryj DPS, D/E, Cov/Pay */
+  .tbl th:nth-child(3),.tbl td:nth-child(3),
+  .tbl th:nth-child(5),.tbl td:nth-child(5),
+  .tbl th:nth-child(6),.tbl td:nth-child(6){display:none}
+  .score-bar{display:none}
+  .tbl{font-size:.67rem}
+  .tbl td,.tbl th{padding:6px 5px}
+  /* Větší touch targety */
+  .qty-btn{width:30px;height:30px;font-size:15px}
+  .qty-input{width:46px}
+  .btn-del{width:28px;height:28px}
+  /* Detail panel */
+  .detail-panel.open{grid-template-columns:repeat(2,1fr)}
+  /* Sektor */
+  .sector-inner{grid-template-columns:1fr}
+  .sector-pie-wrap{height:180px;padding:6px 14px 10px 14px}
+  /* Calendar */
+  .cal-grid{grid-template-columns:repeat(3,1fr)}
+}
+
+/* ── SMALL MOBILE ≤479px ─── */
+@media(max-width:479px){
+  /* Header kompaktní */
+  .header{padding:8px 10px;gap:4px}
+  #nextUpdateBadge{display:none}          /* Skryj timer na malém telefonu */
+  #statusBadge{font-size:.58rem}
+  .pill{font-size:.6rem;padding:3px 8px}
+  .pill-add{padding:5px 10px}
+
+  /* KPI */
+  .kpi-row{padding:8px 10px 0;gap:6px}
+  .kpi{padding:9px 10px}
+  .kpi-label{font-size:.57rem;letter-spacing:.06em}
+  .kpi-val{font-size:1.22rem}
+  .kpi-sub{font-size:.58rem}
+
+  /* Main grid */
+  .main-grid{padding:6px 8px 10px;gap:6px}
+
+  /* Tabulka: skryj DPS, D/E, Cov/Pay */
+  .tbl th:nth-child(3),.tbl td:nth-child(3),
+  .tbl th:nth-child(5),.tbl td:nth-child(5),
+  .tbl th:nth-child(6),.tbl td:nth-child(6){display:none}
+  /* Skryj score bar — zůstane jen číslo */
+  .score-bar{display:none}
+  .tbl{font-size:.63rem}
+  .tbl td,.tbl th{padding:5px 4px}
+  .tbl td:first-child{font-size:.65rem}
+
+  /* Větší touch targety pro tlačítka */
+  .qty-btn{width:32px;height:32px;font-size:16px;border-radius:8px}
+  .qty-input{width:42px;font-size:10px;padding:2px 2px}
+  .btn-del{width:30px;height:30px;font-size:13px}
+
+  /* Detail panel — 2 sloupce */
+  .detail-panel.open{grid-template-columns:repeat(2,1fr);padding:10px 12px}
+
+  /* Sektor pie — skryj graf na nejmenším, ukáže tabulka */
+  .sector-inner{grid-template-columns:1fr}
+  .sector-pie-wrap{height:160px;padding:6px 14px 10px}
+
+  /* Calendar — 3 sloupce */
+  .cal-grid{grid-template-columns:repeat(3,1fr)}
+  .cal-month-total{font-size:.65rem}
+  .cal-ticker-row{font-size:.48rem}
+
+  /* Dividend box */
+  .dividend-box{padding:12px 14px;margin:8px 10px}
+  .dividend-amount{font-size:1.65rem}
+
+  /* Buy row */
+  .buy-row{flex-wrap:wrap;gap:5px}
+  .buy-input{width:72px}
+
+  /* Modaly */
+  .modal{padding:18px 16px;border-radius:14px}
+  .modal h3{font-size:12px}
+  #autoBuyList{max-height:220px}
+
+  /* Karta */
+  .card-header{padding:8px 12px}
+  .card-title{font-size:.62rem;letter-spacing:.1em}
+  .alerts-list,.autopilot-result{font-size:.67rem;padding:8px 12px}
+  .rebalanceBox{font-size:.63rem}
+
+  /* Chart */
+  .chart-wrap{height:120px;padding:8px 10px 10px}
+  .chart-wrap-small{height:140px;padding:8px 10px 10px}
+
+  /* Auto buy modal */
+  .ab-item{padding:7px 8px;font-size:.65rem}
+  .ab-ticker{font-size:.75rem}
+}
+
+/* ── Bezpečná oblast (notch/home indicator u iOS) ─── */
+@supports(padding-bottom: env(safe-area-inset-bottom)){
+  body{padding-bottom:env(safe-area-inset-bottom)}
+  .header{padding-top:max(10px, env(safe-area-inset-top))}
+}
 </style>
 </head>
 <body>
@@ -326,6 +486,7 @@ canvas.small-chart{width:100%!important;height:100%!important}
 </div>
 
   <div class="header-actions">
+    <span style="font-size:.7rem;font-family:var(--font-mono);font-weight:600;color:var(--text);margin-right:auto;letter-spacing:.05em">💹 Portfolio</span>
     <span id="nextUpdateBadge">📅 --</span>
     <span id="statusBadge">—</span>
     <span id="apiKeyPill" style="font-size:.6rem;font-family:var(--font-mono);color:var(--green);border:1px solid var(--green);border-radius:12px;padding:3px 8px">🔑 API ✅</span>
@@ -428,12 +589,12 @@ canvas.small-chart{width:100%!important;height:100%!important}
         <span class="card-title">🥧 Složení portfolia</span>
         <span style="font-size:.6rem;color:var(--muted);font-family:var(--font-mono)">aktuální vs. cíl</span>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 130px;align-items:start">
+      <div class="sector-inner">
         <!-- LEVÁ: tabulka sektorů s cíli -->
         <div style="padding:8px 8px 12px 14px" id="sectorTargetTable"></div>
         <!-- PRAVÁ: koláč -->
-        <div style="padding:8px 10px 8px 0;height:190px;position:relative">
-          <canvas id="sectorPieChart" style="width:100%!important;height:100%!important"></canvas>
+        <div class="sector-pie-wrap">
+          <canvas id="sectorPieChart"></canvas>
         </div>
       </div>
     </div>
