@@ -14,6 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
+html { font-size: 110% }
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#f0f4f8;
@@ -1151,6 +1152,15 @@ function recLabel(r){
   return {strong_buy:'STRONG BUY',buy:'BUY',hold:'HOLD',underperform:'UNDERPERFORM',sell:'SELL'}[r]||r.toUpperCase();
 }
 
+// Odvodí doporučení ze skóre — záložní zdroj když API nemá data
+function scoreRec(t){
+  const s=calculateScore(t).score;
+  if(s>=80) return 'strong_buy';
+  if(s>=65) return 'buy';
+  if(s>=45) return 'hold';
+  return 'sell';
+}
+
 function detectType(t){
   const sec = portfolio.sectors[t] || 'Other';
   if(sec === 'BDC') return 'BDC';
@@ -1227,12 +1237,18 @@ function renderDetail(t){
       items += dItem('Analyst cíl','$'+f.targetPrice.toFixed(2),targetColor);
       items += dItem('Upside',targetUpside!=null?(targetUpside>0?'+':'')+targetUpside.toFixed(1)+'%':'—',targetColor);
     } else {
-      items += '<div class="d-item"><span class="d-label">Analyst cíl</span><span class="d-val"><button onclick="event.stopPropagation();fetchAnalystData(\''+t+'\')" style="font-size:.6rem;padding:2px 7px;border-radius:4px;border:1px solid var(--blue);background:transparent;color:var(--blue);cursor:pointer" id="analystBtn-'+t+'">🤖 Načíst FMP</button></span></div>';
+      items += dItem('Analyst cíl','—','var(--muted)');
+      items += dItem('Upside','—','var(--muted)');
     }
-    items += dItem('Doporučení', recLabel(f.recommendation), recColor(f.recommendation));
+    // Doporučení: Finnhub rec, nebo záloha ze skóre
+    const rec = f.recommendation || scoreRec(t);
+    const recSuffix = f.recommendation ? '' : ' ★';
+    items += dItem('Doporučení', recLabel(rec)+recSuffix, recColor(rec));
   } else {
-    // Lokální stav — ukaž indikátor
-    items += '<div class="d-item" style="grid-column:1/-1"><span class="d-label" style="color:var(--muted);font-size:.52rem">⏳ Live data (Beta, 52W, …) se načítají na pozadí…</span></div>';
+    // Lokální stav — doporučení ze skóre, live data se načítají
+    const rec = scoreRec(t);
+    items += dItem('Doporučení', recLabel(rec)+' ★', recColor(rec));
+    items += '<div class="d-item" style="grid-column:1/-1"><span class="d-label" style="color:var(--muted);font-size:.52rem">★ interní skóre · Beta, 52W, Market Cap se načítají…</span></div>';
   }
 
   return items;
