@@ -880,9 +880,9 @@ function toggleDetail(t){
     const token=getFinnhubKey();
     if(!token){ el.innerHTML = renderDetail(t); return; }
     Promise.all([
-      fetch('https://corsproxy.io/?'+encodeURIComponent('https://finnhub.io/api/v1/stock/metric?symbol='+t+'&metric=all&token='+token)).then(r=>r.json()).catch(e=>({_err:e.message})),
-      fetch('https://corsproxy.io/?'+encodeURIComponent('https://finnhub.io/api/v1/stock/profile2?symbol='+t+'&token='+token)).then(r=>r.json()).catch(e=>({_err:e.message})),
-      fetch('https://corsproxy.io/?'+encodeURIComponent('https://finnhub.io/api/v1/recommendation?symbol='+t+'&limit=1&token='+token)).then(r=>r.json()).catch(e=>({_err:e.message}))
+      fetch('https://finnhub.io/api/v1/stock/metric?symbol='+t+'&metric=all&token='+token).then(r=>r.json()).catch(e=>({_err:e.message})),
+      fetch('https://finnhub.io/api/v1/stock/profile2?symbol='+t+'&token='+token).then(r=>r.json()).catch(e=>({_err:e.message})),
+      fetch('https://finnhub.io/api/v1/recommendation?symbol='+t+'&limit=1&token='+token).then(r=>r.json()).catch(e=>({_err:e.message}))
     ]).then(([q,met,rec])=>{
       if(q._err||met._err){ el.innerHTML='<div class="d-item"><span class="d-label" style="color:var(--red)">❌ Chyba: '+(q._err||met._err)+'</span></div>'; return; }
       const m=q.metric||{}; let recommendation=null;
@@ -1610,9 +1610,9 @@ async function fetchFundamentals(t){
   const token=getFinnhubKey(); if(!token) return false; // Finnhub fundamenty přeskočeny
   try{
     const [qR,mR,rR]=await Promise.all([
-      fetch('https://corsproxy.io/?'+encodeURIComponent('https://finnhub.io/api/v1/stock/metric?symbol='+t+'&metric=all&token='+token)),
-      fetch('https://corsproxy.io/?'+encodeURIComponent('https://finnhub.io/api/v1/stock/profile2?symbol='+t+'&token='+token)),
-      fetch('https://corsproxy.io/?'+encodeURIComponent('https://finnhub.io/api/v1/recommendation?symbol='+t+'&limit=1&token='+token))
+      fetch('https://finnhub.io/api/v1/stock/metric?symbol='+t+'&metric=all&token='+token),
+      fetch('https://finnhub.io/api/v1/stock/profile2?symbol='+t+'&token='+token),
+      fetch('https://finnhub.io/api/v1/recommendation?symbol='+t+'&limit=1&token='+token)
     ]);
     const q=qR.ok?await qR.json():{},met=mR.ok?await mR.json():{},rec=rR.ok?await rR.json():[];
     const m=q.metric||{};
