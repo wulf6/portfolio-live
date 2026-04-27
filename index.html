@@ -29,7 +29,21 @@ html { font-size: 110% }
   --font-mono:'DM Mono',monospace;
   --font-ui:'Space Grotesk',sans-serif;
 }
-body{background:var(--bg);color:var(--text);font-family:var(--font-ui);min-height:100vh}
+html.dark{
+  --bg:#0f172a;
+  --card:#1e293b;
+  --border:#334155;
+  --text:#e2e8f0;
+  --muted:#94a3b8;
+  --green:#22c55e;
+  --red:#f87171;
+  --yellow:#fbbf24;
+  --blue:#38bdf8;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font-ui);min-height:100vh;transition:background .25s,color .25s}
+.card,.modal,.detail-panel{transition:background .25s,border-color .25s}
+.pill-dark{background:transparent;border:1px solid var(--border);color:var(--muted);font-size:.68rem;padding:4px 8px;border-radius:20px;cursor:pointer;font-family:var(--font-mono);transition:all .2s;line-height:1}
+.pill-dark:hover{border-color:var(--blue);color:var(--blue)}
 
 .header{
   display:flex;align-items:center;justify-content:flex-end;
@@ -494,6 +508,7 @@ canvas.small-chart{width:100%!important;height:100%!important}
     <button class="pill pill-add" onclick="openModal()">➕ PŘIDAT TITUL</button>
     <button class="pill" onclick="fetchAll()">↻ Refresh</button>
     <button class="pill" id="autoPill" onclick="toggleAuto()">⏱ Auto</button>
+    <button class="pill-dark" id="darkBtn" onclick="toggleDark()" title="Tmavý / světlý režim">🌙</button>
   </div>
 </div>
 <div class="modal-overlay" id="apiKeyOverlay" style="display:none!important">
@@ -1152,6 +1167,17 @@ function recLabel(r){
   return {strong_buy:'STRONG BUY',buy:'BUY',hold:'HOLD',underperform:'UNDERPERFORM',sell:'SELL'}[r]||r.toUpperCase();
 }
 
+// Gordon Growth Model: P = DPS / (požadovaný výnos - růst dividendy)
+// Požadovaný výnos dle sektoru: BDC 10%, REIT 7%, Other/Pharma 5.5%
+function fairValue(t){
+  const dps = dividendData[t] || 0;
+  const g   = dividendGrowth[t] || 0.03;
+  const sec = portfolio.sectors[t] || 'Other';
+  const r   = sec==='BDC' ? 0.10 : sec==='REIT' ? 0.07 : 0.055;
+  if(r <= g || dps <= 0) return null;
+  return dps / (r - g);
+}
+
 // Odvodí doporučení ze skóre — záložní zdroj když API nemá data
 function scoreRec(t){
   const s=calculateScore(t).score;
@@ -1233,13 +1259,13 @@ function renderDetail(t){
     if(type==='REIT'||type==='BDC'){
       if(f.pb!=null) items += dItem('P/B', f.pb.toFixed(2), pbColor);
     }
-    if(f.targetPrice){
-      items += dItem('Analyst cíl','$'+f.targetPrice.toFixed(2),targetColor);
-      items += dItem('Upside',targetUpside!=null?(targetUpside>0?'+':'')+targetUpside.toFixed(1)+'%':'—',targetColor);
-    } else {
-      items += dItem('Analyst cíl','—','var(--muted)');
-      items += dItem('Upside','—','var(--muted)');
-    }
+    // Analyst cíl: Finnhub/FMP pokud dostupný, jinak Gordon Growth Model
+    const fv = f.targetPrice || fairValue(t);
+    const fvLabel = f.targetPrice ? 'Analyst cíl' : 'Fair value (GGM)';
+    const fvUpside = (fv && price) ? ((fv - price) / price * 100) : null;
+    const fvColor = fvUpside==null?'var(--muted)':fvUpside>15?'var(--green)':fvUpside>0?'var(--yellow)':'var(--red)';
+    items += dItem(fvLabel, fv ? '$'+fv.toFixed(2) : '—', fvColor);
+    items += dItem('Upside', fvUpside!=null?(fvUpside>0?'+':'')+fvUpside.toFixed(1)+'%':'—', fvColor);
     // Doporučení: Finnhub rec, nebo záloha ze skóre
     const rec = f.recommendation || scoreRec(t);
     const recSuffix = f.recommendation ? '' : ' ★';
@@ -1248,6 +1274,11 @@ function renderDetail(t){
     // Lokální stav — doporučení ze skóre, live data se načítají
     const rec = scoreRec(t);
     items += dItem('Doporučení', recLabel(rec)+' ★', recColor(rec));
+    // Fair value i v lokálním režimu
+    const fv0=fairValue(t), fvUp0=fv0&&price?((fv0-price)/price*100):null;
+    const fvC0=fvUp0==null?'var(--muted)':fvUp0>15?'var(--green)':fvUp0>0?'var(--yellow)':'var(--red)';
+    items += dItem('Fair value (GGM)', fv0?'$'+fv0.toFixed(2):'—', fvC0);
+    items += dItem('Upside', fvUp0!=null?(fvUp0>0?'+':'')+fvUp0.toFixed(1)+'%':'—', fvC0);
     items += '<div class="d-item" style="grid-column:1/-1"><span class="d-label" style="color:var(--muted);font-size:.52rem">★ interní skóre · Beta, 52W, Market Cap se načítají…</span></div>';
   }
 
@@ -2030,9 +2061,113 @@ function checkFirstDay(){
   document.getElementById('nextUpdateBadge').innerHTML=`📅 další záznam za ${daysUntil} dní`;
 }
 
+// ── Dark mode ────────────────────────────────────────────────
+function toggleDark(){
+  const dark=document.documentElement.classList.toggle('dark');
+  document.getElementById('darkBtn').textContent=dark?'☀️':'🌙';
+  localStorage.setItem('darkMode', dark?'1':'0');
+}
+(function initDark(){
+  const saved=localStorage.getItem('darkMode');
+  const prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if(saved==='1'||(saved===null&&prefersDark)){
+    document.documentElement.classList.add('dark');
+    document.getElementById('darkBtn').textContent='☀️';
+  }
+})();
+
+// ═══════════════════════════════════════════════════════════════
+// AUTO-AKTUALIZACE DPS (dividendData) — jednou za 24 hodin
+// Zdroj: Finnhub /stock/dividend — součet výplat za posledních 12 měsíců
+// Uloženo v localStorage klíč 'dpsCache' + 'dpsCacheTs'
+// ═══════════════════════════════════════════════════════════════
+const DPS_CACHE_KEY = 'dpsCache';
+const DPS_TS_KEY    = 'dpsCacheTs';
+const DPS_TTL_MS    = 24 * 60 * 60 * 1000; // 24 hodin
+
+function loadDpsCache(){
+  // Načti uloženou DPS cache a přepiš dividendData
+  try{
+    const raw = localStorage.getItem(DPS_CACHE_KEY);
+    if(!raw) return false;
+    const cache = JSON.parse(raw);
+    let loaded = 0;
+    for(const [t, dps] of Object.entries(cache)){
+      if(dps > 0){ dividendData[t] = dps; loaded++; }
+    }
+    return loaded > 0;
+  }catch(e){ return false; }
+}
+
+async function fetchOneDps(t, token){
+  // Stáhne výplaty za posledních 13 měsíců a sečte → roční DPS
+  try{
+    const from = new Date();
+    from.setMonth(from.getMonth() - 13);
+    const fromStr = from.toISOString().split('T')[0];
+    const toStr   = new Date().toISOString().split('T')[0];
+    const r = await fetch(
+      `https://finnhub.io/api/v1/stock/dividend?symbol=${t}&from=${fromStr}&to=${toStr}&token=${token}`
+    );
+    if(!r.ok) return null;
+    const data = await r.json();
+    if(!Array.isArray(data) || data.length === 0) return null;
+    // Součet posledních 12 měsíců výplat
+    const cutoff = new Date(); cutoff.setFullYear(cutoff.getFullYear()-1);
+    const annual = data
+      .filter(d => new Date(d.payDate || d.exDate || '') >= cutoff)
+      .reduce((s, d) => s + (parseFloat(d.amount)||0), 0);
+    return annual > 0 ? parseFloat(annual.toFixed(4)) : null;
+  }catch(e){ return null; }
+}
+
+async function refreshDpsAll(force=false){
+  const token = getFinnhubKey();
+  if(!token) return;
+
+  // Zkontroluj timestamp — obnov jen pokud je cache starší než 24h nebo force=true
+  const lastTs = parseInt(localStorage.getItem(DPS_TS_KEY)||'0');
+  const age    = Date.now() - lastTs;
+  if(!force && age < DPS_TTL_MS) return;
+
+  // Zkus aktualizovat každý ticker (postupně, aby se nespustil rate limit)
+  const cache = {};
+  let updated = 0;
+  for(const t of portfolio.tickers){
+    const dps = await fetchOneDps(t, token);
+    if(dps !== null){
+      const old = dividendData[t] || 0;
+      dividendData[t] = dps;
+      cache[t] = dps;
+      if(Math.abs(dps - old) > 0.001) updated++;
+    } else {
+      // API nevrátilo data — zachovej stávající hodnotu v cache
+      cache[t] = dividendData[t];
+    }
+    // Malá pauza mezi requesty (Finnhub free tier: 60 req/min)
+    await new Promise(r => setTimeout(r, 120));
+  }
+
+  // Uložení cache + timestamp
+  localStorage.setItem(DPS_CACHE_KEY, JSON.stringify(cache));
+  localStorage.setItem(DPS_TS_KEY, Date.now().toString());
+
+  if(updated > 0){
+    render();
+    updateDividendDisplay();
+    toast(`📊 DPS aktualizováno: ${updated} změn`);
+  }
+}
+
+// Načti cache okamžitě při startu (zobrazí poslední uložená data)
+loadDpsCache();
+
 render();
 saveSnaps();
 setTimeout(fetchAll, 400);
+// DPS refresh: spustí se po 2s (po načtení cen), dál každých 24h
+setTimeout(()=>refreshDpsAll(), 2000);
+setInterval(()=>refreshDpsAll(), DPS_TTL_MS);
 checkFirstDay();
 setInterval(checkFirstDay, 60*60*1000);
 setInterval(()=>{ checkAndSaveMonthlyDividend(); updateDividendDisplay(); }, 24*60*60*1000);
