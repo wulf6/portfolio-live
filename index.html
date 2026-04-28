@@ -92,7 +92,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-ui);min-heigh
 
 .th-signal{position:relative;cursor:help;border-bottom:1px dotted var(--muted)}
 .th-signal:hover::after{
-  content:"Skóre ≥80 = STRONG BUY | 65-79 = BUY | 45-64 = HOLD | <45 = RISK";
+  content:"STRONG BUY = skóre≥80 + podhodnocené | BUY = skóre≥65 + fair/levné | HOLD = drahé nebo skóre 45–64 | RISK = skóre<45";
   position:absolute;top:100%;right:0;background:var(--card);border:1px solid var(--border);
   padding:6px 10px;border-radius:8px;font-size:.6rem;font-weight:normal;
   color:var(--text);white-space:nowrap;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.1);
@@ -508,30 +508,70 @@ canvas.small-chart{width:100%!important;height:100%!important}
     <button class="pill pill-add" onclick="openModal()">➕ PŘIDAT TITUL</button>
     <button class="pill" onclick="fetchAll()">↻ Refresh</button>
     <button class="pill" id="autoPill" onclick="toggleAuto()">⏱ Auto</button>
+    <button class="pill-dark" onclick="openDataModal()" title="Čerstvost dat & ruční editace">📋 Data</button>
     <button class="pill-dark" id="darkBtn" onclick="toggleDark()" title="Tmavý / světlý režim">🌙</button>
   </div>
 </div>
-<div class="modal-overlay" id="apiKeyOverlay" style="display:none!important">
-  <div class="modal" style="max-width:380px;width:95vw">
-    <h3>🔑 API KLÍČE</h3>
-    <div style="margin-bottom:10px">
-      <label style="font-size:.7rem;font-weight:600;display:block;margin-bottom:4px">Finnhub API klíč <span style="color:var(--red)">*</span></label>
-      <input id="finnhubKeyInput" type="password" placeholder="cxxxxxxxxxxxxxxxxx" autocomplete="off" style="width:100%;padding:8px;font-family:monospace;font-size:.75rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text)">
-      <div style="font-size:.6rem;color:var(--muted);margin-top:3px">Zdarma na finnhub.io/register</div>
+<div class="modal-overlay" id="dataModalOverlay" onclick="if(event.target===this)closeDataModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;overflow-y:auto;padding:20px">
+  <div class="modal" style="max-width:760px;width:98vw;margin:auto;position:relative">
+    <button onclick="closeDataModal()" style="position:absolute;top:10px;right:12px;background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--muted)">✕</button>
+    <h3 style="font-size:.75rem;letter-spacing:.12em;margin-bottom:14px">📋 ČERSTVOST DAT &amp; RUČNÍ EDITACE</h3>
+
+    <!-- Info -->
+    <div style="font-size:.63rem;color:var(--muted);margin-bottom:12px;line-height:1.6;background:rgba(2,132,199,.06);border:1px solid rgba(2,132,199,.15);border-radius:8px;padding:9px 12px">
+      <strong style="color:var(--blue)">Automaticky:</strong> Cena (live), DPS (24h z Finnhub), D/E + P/B + Payout (kvartálně z Finnhub)<br>
+      <strong style="color:var(--yellow)">Ručně 1× kvartálně:</strong> NAV (BDC), NII/AFFO coverage (BDC/REIT) — Finnhub free tyto neposkytuje<br>
+      <strong style="color:var(--muted)">Bezriziková sazba (rf):</strong> orientačně 1× měsíčně
     </div>
-    <div style="margin-bottom:10px">
-      <label style="font-size:.7rem;font-weight:600;display:block;margin-bottom:4px">FMP API klíč</label>
-      <input id="fmpKeyInput" type="password" placeholder="xxxxxxxxxxxxxxxx" autocomplete="off" style="width:100%;padding:8px;font-family:monospace;font-size:.75rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text)">
-      <div style="font-size:.6rem;color:var(--muted);margin-top:3px">Zdarma na financialmodelingprep.com</div>
+
+    <!-- rf slider -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:10px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
+      <span style="font-size:.65rem;font-weight:600;min-width:90px">Bezriz. sazba rf</span>
+      <input type="range" id="rfSlider" min="2" max="8" step="0.25" style="flex:1" oninput="updateRf(this.value)">
+      <span id="rfVal" style="font-size:.72rem;font-weight:700;font-family:var(--font-mono);color:var(--blue);min-width:36px">4.50%</span>
+      <button onclick="saveRf()" class="pill" style="font-size:.58rem;padding:3px 9px">Uložit</button>
     </div>
-    <div style="margin-bottom:10px">
-      <label style="font-size:.7rem;font-weight:600;display:block;margin-bottom:4px">Anthropic klíč <span style="color:var(--muted);font-weight:400">(volitelné)</span></label>
-      <input id="apiKeyInput" type="password" placeholder="sk-ant-api03-…" autocomplete="off" style="width:100%;padding:8px;font-family:monospace;font-size:.75rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text)">
+
+    <!-- tabulka -->
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:.63rem" id="dataTable">
+        <thead>
+          <tr style="border-bottom:2px solid var(--border)">
+            <th style="text-align:left;padding:5px 7px;color:var(--muted);font-weight:600">Ticker</th>
+            <th style="padding:5px 7px;color:var(--muted);font-weight:600">DPS</th>
+            <th style="padding:5px 7px;color:var(--muted);font-weight:600">D/E</th>
+            <th style="padding:5px 7px;color:var(--muted);font-weight:600">NAV×</th>
+            <th style="padding:5px 7px;color:var(--muted);font-weight:600">NII/AFFO</th>
+            <th style="padding:5px 7px;color:var(--muted);font-weight:600">Payout%</th>
+            <th style="padding:5px 7px;color:var(--muted);font-weight:600">Fundam. update</th>
+            <th style="padding:5px 7px;color:var(--muted);font-weight:600">Editace</th>
+          </tr>
+        </thead>
+        <tbody id="dataTableBody"></tbody>
+      </table>
     </div>
-    <div id="apiKeyStatus" style="font-size:.65rem;min-height:14px;color:var(--muted)"></div>
-    <div class="modal-btns" style="margin-top:16px">
-      <button class="btn-cancel" onclick="closeApiKeyModal()">Zrušit</button>
-      <button class="btn-confirm" onclick="saveApiKey()">💾 Uložit</button>
+
+    <!-- log -->
+    <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:10px">
+      <div style="font-size:.6rem;font-weight:600;color:var(--muted);letter-spacing:.1em;margin-bottom:6px">PROTOKOL AKTUALIZACÍ</div>
+      <div id="dataLog" style="font-size:.58rem;font-family:var(--font-mono);color:var(--muted);max-height:120px;overflow-y:auto;line-height:1.8"></div>
+    </div>
+
+    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+      <button onclick="refreshFundamentalsManual()" class="pill pill-add" style="font-size:.62rem">🔄 Aktualizovat fundam. z Finnhub</button>
+      <button onclick="clearFundamentalsCache()" class="pill" style="font-size:.62rem;color:var(--red);border-color:var(--red)">🗑 Vymazat cache</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit modal pro NAV / NII -->
+<div class="modal-overlay" id="editOverlay" onclick="if(event.target===this)closeEditModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:110;display:none;align-items:center;justify-content:center">
+  <div class="modal" style="max-width:320px;width:95vw">
+    <h3 style="font-size:.72rem;letter-spacing:.1em;margin-bottom:12px" id="editTitle">Editace</h3>
+    <div id="editFields" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button onclick="closeEditModal()" class="pill" style="font-size:.62rem">Zrušit</button>
+      <button onclick="saveEdit()" class="pill pill-add" style="font-size:.62rem">Uložit</button>
     </div>
   </div>
 </div>
@@ -725,6 +765,8 @@ let fundamentals = {
 // ═══════════════════════════════════════════════════════════════
 let prices = {...portfolio.fallback};
 let livePrices = {};
+let priceTs = {};   // timestamp poslední živé ceny per ticker
+let dpsTs = {};     // timestamp poslední aktualizace DPS per ticker
 let fetchBusy = false;
 let yfData = {};
 
@@ -865,16 +907,49 @@ function getSectorDiff(ticker){
   return cfg.target - actual;
 }
 
-function getSignal(score, trap, sectorDiff){
+// Spočítá pozici vůči fair value pásmu pro daný ticker
+function getFVValuation(t){
+  try{
+    const fvr = fairValueRange(t);
+    if(!fvr) return 'unknown';
+    const price = getPrice(t);
+    if(!price) return 'unknown';
+    if(price < fvr.low  * 0.98) return 'under'; // pod pásmem (nebo těsně)
+    if(price > fvr.high * 1.02) return 'over';  // nad pásmem (nebo těsně)
+    return 'fair';
+  }catch(e){ return 'unknown'; }
+}
+
+// Signál = skóre × ocenění × nadváha sektoru
+// Matice:           under        fair        over
+//  score≥80:     STRONG BUY    BUY         HOLD (drahé)
+//  score≥65:     BUY           BUY         HOLD
+//  score≥45:     HOLD          HOLD        HOLD→RISK
+//  score<45:     RISK          RISK        RISK
+function getSignal(score, trap, sectorDiff, valuation){
   if(trap) return ['TRAP ⚠️', 'sig-risk'];
-  // Nadváha sektoru (>2pp nad cílem) — zastrop na HOLD
   if(sectorDiff !== undefined && sectorDiff < -2){
     if(score >= 45) return ['HOLD ⏸️', 'sig-hold'];
     return ['RISK 🔴', 'sig-risk'];
   }
-  if(score >= 80) return ['STRONG BUY 🟢', 'sig-strong'];
-  if(score >= 65) return ['BUY ✅', 'sig-buy'];
-  if(score >= 45) return ['HOLD ⏸️', 'sig-hold'];
+  const val = valuation || 'unknown';
+  const over  = val === 'over';
+  const under = val === 'under';
+
+  if(score >= 80){
+    if(under) return ['STRONG BUY 🟢', 'sig-strong'];
+    if(over)  return ['HOLD ⏸️',       'sig-hold'];   // kvalitní ale drahé
+    return           ['BUY ✅',         'sig-buy'];
+  }
+  if(score >= 65){
+    if(under) return ['BUY ✅',   'sig-buy'];
+    if(over)  return ['HOLD ⏸️',  'sig-hold'];
+    return           ['BUY ✅',   'sig-buy'];
+  }
+  if(score >= 45){
+    if(over)  return ['HOLD ⏸️',  'sig-hold'];
+    return           ['HOLD ⏸️',  'sig-hold'];
+  }
   return ['RISK 🔴', 'sig-risk'];
 }
 
@@ -1167,15 +1242,146 @@ function recLabel(r){
   return {strong_buy:'STRONG BUY',buy:'BUY',hold:'HOLD',underperform:'UNDERPERFORM',sell:'SELL'}[r]||r.toUpperCase();
 }
 
-// Gordon Growth Model: P = DPS / (požadovaný výnos - růst dividendy)
-// Požadovaný výnos dle sektoru: BDC 10%, REIT 7%, Other/Pharma 5.5%
-function fairValue(t){
-  const dps = dividendData[t] || 0;
-  const g   = dividendGrowth[t] || 0.03;
+// ═══════════════════════════════════════════════════════════════
+// FAIR VALUE — institucionální model
+// r_final = r_sector + debt_premium + coverage_premium + score_premium
+// Metoda podle sektoru: BDC→NAV+coverage, REIT→AFFO, ostatní→D/r
+// ═══════════════════════════════════════════════════════════════
+const RF = 0.045; // výchozí, přepsáno rfOverride z localStorage
+
+// ── Sektorový základ ─────────────────────────────────────────
+// BDC základ je dynamický (podle skóre), ostatní jsou fixní středy
+const SECTOR_BASE = {
+  REIT:    0.060,
+  Pharma:  0.055, // kvalitní pharma 3–5%, problémová 5–7% → střed 5.5%
+  Telco:   0.070,
+  Tobacco: 0.075,
+  Other:   0.060,
+};
+
+function tickerSector(t){
+  if(['VZ','T','TMUS'].includes(t))   return 'Telco';
+  if(['MO','PM','BTI','ALLY'].includes(t)) return 'Tobacco';
   const sec = portfolio.sectors[t] || 'Other';
-  const r   = sec==='BDC' ? 0.10 : sec==='REIT' ? 0.07 : 0.055;
-  if(r <= g || dps <= 0) return null;
-  return dps / (r - g);
+  if(sec === 'BDC')    return 'BDC';
+  if(sec === 'REIT')   return 'REIT';
+  if(sec === 'Pharma') return 'Pharma';
+  return 'Other';
+}
+
+// ── Přirážky ─────────────────────────────────────────────────
+function debtPremium(t){
+  const loc = fundamentals[t] || {};
+  const de  = loc.de || (yfData[t]&&yfData[t].de) || null;
+  if(de===null) return 0;
+  if(de > 3.0) return 0.015;
+  if(de > 2.0) return 0.010;
+  if(de > 1.5) return 0.005;
+  return 0;
+}
+
+function coveragePremium(t){
+  const loc = fundamentals[t] || {};
+  const nii = loc.niiCoverage || (yfData[t]&&yfData[t].niiCoverage) || null;
+  if(nii === null) return 0;
+  if(nii > 1.20) return -0.010; // silné krytí → bonus −1 %
+  if(nii > 1.10) return -0.005; // dobré krytí → bonus −0.5 %
+  if(nii >= 1.00) return  0.000;
+  if(nii >= 0.90) return  0.010; // krytí pod 100 % → +1 %
+  if(nii >= 0.80) return  0.020; // slabé → +2 %
+  return 0.030;                   // kritické (<0.8) → +3 %
+}
+
+function scorePremium(score){
+  if(score >= 85) return -0.010;
+  if(score >= 75) return -0.005;
+  if(score >= 60) return  0.000;
+  if(score >= 45) return +0.005;
+  if(score >= 30) return +0.010;
+  return  0.015;
+}
+
+// Růstová korekce pro Telco: r_efektivní = r_market − g
+// (trh diskontuje pomalý ale existující růst dividendy)
+function growthAdj(t){
+  const ts = tickerSector(t);
+  if(ts !== 'Telco') return 0;
+  return -(dividendGrowth[t] || 0.015); // VZ ~1.5 % → −1.5 pp
+}
+
+// ── Hlavní funkce ─────────────────────────────────────────────
+function fairValueRange(t){
+  const dps   = dividendData[t] || 0;
+  const ts    = tickerSector(t);
+  const sec   = portfolio.sectors[t] || 'Other';
+  const loc   = fundamentals[t] || {};
+  const score = calculateScore(t).score;
+  const price = getPrice(t);
+
+  // BDC základ závisí na skóre (8–14 %)
+  const bdcBase = score>=75 ? 0.085 : score>=50 ? 0.100 : 0.120;
+  const rBase   = ts==='BDC' ? bdcBase : (SECTOR_BASE[ts] || SECTOR_BASE.Other);
+  const rf_     = (typeof getRf === 'function') ? getRf() : RF;
+
+  const dp  = debtPremium(t);
+  const cp  = ts==='BDC' || ts==='REIT' ? coveragePremium(t) : 0;
+  const sp  = scorePremium(score);
+  const ga  = growthAdj(t);
+  const rMid = Math.max(rBase + dp + cp + sp + ga, 0.03);
+
+  // Pásmo ±0.75 pp (optimismus vs. pesimismus trhu)
+  const rLow  = Math.max(rMid - 0.0075, 0.025);
+  const rHigh = rMid + 0.0075;
+
+  const fmt = r => (r*100).toFixed(2)+'%';
+  const components = [
+    `základ ${fmt(rBase)}`,
+    dp  ? `dluh +${fmt(dp)}`      : '',
+    cp  ? `krytí ${cp<0?'':'+'}${fmt(cp)}` : '',
+    sp  ? `skóre ${sp<0?'':'+'}${fmt(sp)}` : '',
+    ga  ? `růst ${ga<0?'':'+'}${fmt(ga)}`  : '',
+  ].filter(Boolean).join(' · ');
+
+  // ── BDC: primárně NAV model ──────────────────────────────────
+  if(ts === 'BDC'){
+    const pNav = loc.pNav || (yfData[t]&&yfData[t].pNav) || null;
+    if(pNav && price && pNav > 0){
+      const nav = price / pNav;
+      // P/NAV pásmo dle kvality + coverage
+      const nii = loc.niiCoverage || 1.0;
+      const [mLow, mHigh] = score>=75&&nii>=1.10 ? [1.00,1.35]
+                          : score>=75             ? [0.95,1.20]
+                          : score>=50&&nii>=1.00  ? [0.85,1.05]
+                          : score>=50             ? [0.80,0.95]
+                          :                         [0.65,0.85];
+      return {
+        low: nav*mLow, high: nav*mHigh,
+        label: 'Spr. cena (NAV)',
+        method: `NAV $${nav.toFixed(2)} × ${mLow}–${mHigh}× | ${components}`
+      };
+    }
+  }
+
+  // ── REIT: AFFO model ─────────────────────────────────────────
+  if(ts === 'REIT'){
+    const nii  = loc.niiCoverage || (yfData[t]&&yfData[t].niiCoverage) || 1.0;
+    const affo = dps * nii;
+    if(affo > 0){
+      return {
+        low: affo/rHigh, high: affo/rLow,
+        label: 'Spr. cena (AFFO)',
+        method: `AFFO $${affo.toFixed(2)} / ${fmt(rLow)}–${fmt(rHigh)} | ${components}`
+      };
+    }
+  }
+
+  // ── Ostatní: dividendový výnosový model ──────────────────────
+  if(!dps) return null;
+  return {
+    low: dps/rHigh, high: dps/rLow,
+    label: 'Spr. cena (výnos)',
+    method: `D $${dps.toFixed(2)} / ${fmt(rLow)}–${fmt(rHigh)} | ${components}`
+  };
 }
 
 // Odvodí doporučení ze skóre — záložní zdroj když API nemá data
@@ -1195,10 +1401,17 @@ function detectType(t){
   return 'Stock';
 }
 
+function fmtTs(ts){
+  if(!ts) return '—';
+  const d=new Date(ts);
+  return d.getDate().toString().padStart(2,'0')+'.'+
+    (d.getMonth()+1).toString().padStart(2,'0')+'.'+d.getFullYear()+
+    ' '+d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
+}
+
 function renderDetail(t){
   const f=yfData[t];
   const price=getPrice(t);
-  const type=detectType(t);
   const loc=fundamentals[t]||{};
   const sec=portfolio.sectors[t]||'Other';
   const isBR=sec==='BDC'||sec==='REIT';
@@ -1209,78 +1422,98 @@ function renderDetail(t){
   const rangePct = (h52&&l52&&h52>l52) ? Math.round((price-l52)/(h52-l52)*100) : null;
   const rangeColor = rangePct!=null ? (rangePct<30?'var(--green)':rangePct<70?'var(--yellow)':'var(--red)') : '';
 
-  const targetUpside = (f.targetPrice&&price) ? ((f.targetPrice-price)/price*100) : null;
-  const targetColor = targetUpside==null?'var(--muted)':targetUpside>10?'var(--green)':targetUpside>0?'var(--yellow)':'var(--red)';
-
   const betaColor = f.beta==null?'var(--muted)':f.beta<0.8?'var(--green)':f.beta<1.2?'var(--yellow)':'var(--red)';
-  const payColor = f.payoutRatio==null?'var(--muted)':f.payoutRatio<70?'var(--green)':f.payoutRatio<90?'var(--yellow)':'var(--red)';
-  const pbColor = f.pb==null?'var(--muted)':f.pb<1.2?'var(--green)':f.pb<2?'var(--yellow)':'var(--red)';
+  const pbColor   = f.pb==null?'var(--muted)':f.pb<1.2?'var(--green)':f.pb<2?'var(--yellow)':'var(--red)';
 
-  // Lokální data
   const annualDiv=(dividendData[t]||0)*(portfolio.qty[t]||0);
   const posVal=(portfolio.qty[t]||0)*price;
   const growthPct=((dividendGrowth[t]||0.03)*100).toFixed(1);
   const s=calculateScore(t);
-  const nii=f.niiCoverage!=null?f.niiCoverage:loc.niiCoverage;
-  const de=f.de!=null?f.de:loc.de;
-  const pNav=f.pNav!=null?f.pNav:loc.pNav;
-  const niiColor=nii==null?'var(--muted)':nii>=1.10?'var(--green)':nii>=1.00?'var(--yellow)':'var(--red)';
-  const deColor=de==null?'var(--muted)':de<1.5?'var(--green)':de<2.5?'var(--yellow)':'var(--red)';
-  const pNavColor=pNav==null?'var(--muted)':pNav<0.90?'var(--green)':pNav<1.10?'var(--yellow)':'var(--red)';
+  const nii  = f.niiCoverage!=null ? f.niiCoverage : loc.niiCoverage;
+  const de   = f.de!=null           ? f.de           : loc.de;
+  const pNav = f.pNav!=null         ? f.pNav         : loc.pNav;
+  const pe   = f.pe!=null           ? f.pe           : loc.pe;
+  const payR = f.payoutRatio!=null  ? f.payoutRatio  : (loc.payout!=null ? loc.payout*100 : null);
 
-  let items='';
+  const niiColor  = nii==null?'var(--muted)':nii>=1.10?'var(--green)':nii>=1.00?'var(--yellow)':'var(--red)';
+  const deColor   = de==null?'var(--muted)':de<1.5?'var(--green)':de<2.5?'var(--yellow)':'var(--red)';
+  const pNavColor = pNav==null?'var(--muted)':pNav<0.90?'var(--green)':pNav<1.10?'var(--yellow)':'var(--red)';
+  const peColor   = pe==null?'var(--muted)':pe<15?'var(--green)':pe<25?'var(--yellow)':'var(--red)';
+  const payColor  = payR==null?'var(--muted)':payR<70?'var(--green)':payR<90?'var(--yellow)':'var(--red)';
+
+  // Spravedlivé pásmo
+  const fvr = fairValueRange(t);
+  let fvItems = '';
+  if(fvr){
+    const price2 = price; // alias pro čitelnost
+    const inBand  = price2 >= fvr.low && price2 <= fvr.high;
+    const under   = price2 < fvr.low;
+    const bandColor = under ? 'var(--green)' : inBand ? 'var(--yellow)' : 'var(--red)';
+    const bandNote  = under ? '▼ pod pásmem (podhodnocena)' : inBand ? '● v pásmu (férová cena)' : '▲ nad pásmem (předražena)';
+    const upsideLow  = ((fvr.low  - price2)/price2*100);
+    const upsideHigh = ((fvr.high - price2)/price2*100);
+    const upsideStr  = `${upsideLow>0?'+':''}${upsideLow.toFixed(0)} % / ${upsideHigh>0?'+':''}${upsideHigh.toFixed(0)} %`;
+
+    fvItems += dItem(fvr.label,
+      `$${fvr.low.toFixed(2)} – $${fvr.high.toFixed(2)}`, bandColor);
+    fvItems += `<div class="d-item" style="grid-column:1/-1">
+      <span class="d-label" style="color:${bandColor};font-size:.58rem">
+        ${bandNote} &nbsp;|&nbsp; potenciál: ${upsideStr}
+      </span>
+    </div>`;
+    fvItems += `<div class="d-item" style="grid-column:1/-1">
+      <span class="d-label" style="color:var(--muted);font-size:.5rem">metoda: ${fvr.method}</span>
+    </div>`;
+  }
+
+  // Doporučení: Finnhub consensus → záloha ze skóre
+  const rec      = f.recommendation || scoreRec(t);
+  const recSrc   = f.recommendation ? '' : ' ★';
+
   const live=!f._local;
 
-  // ── Sekce: lokální (vždy dostupná) ──
-  items += dItem('Sektor', sec, 'var(--blue)');
-  items += dItem('Hodnota pozice', '$'+posVal.toLocaleString('cs-CZ',{maximumFractionDigits:0}), 'var(--text)');
-  items += dItem('Počet ks', portfolio.qty[t]||0, 'var(--text)');
-  items += dItem('Roční div. celkem', '$'+annualDiv.toFixed(0), 'var(--green)');
-  items += dItem('Div. výnos', s.yield.toFixed(2)+'%', s.yield>9?'var(--red)':'var(--green)');
-  items += dItem('Růst dividendy', growthPct+'% p.a.', 'var(--muted)');
-  items += dItem('P/E', f.pe!=null?f.pe.toFixed(1):(loc.pe||'—'), f.pe!=null?(f.pe<15?'var(--green)':f.pe<25?'var(--yellow)':'var(--red)'):'var(--muted)');
-  items += dItem('Payout ratio', f.payoutRatio!=null?f.payoutRatio.toFixed(0)+'%':(loc.payout!=null?(loc.payout*100).toFixed(0)+'%':'—'), payColor);
-  if(isBR){
-    items += dItem('NII/AFFO coverage', nii!=null?nii.toFixed(2)+'×':'—', niiColor);
-    if(pNav!=null) items += dItem('P/NAV', pNav.toFixed(2)+'×', pNavColor);
-  }
-  if(de!=null) items += dItem('Debt / Equity', de.toFixed(2)+'×', deColor);
-  items += dItem('Skóre', s.score+'/100', s.score>=75?'var(--green)':s.score>=50?'var(--yellow)':'var(--red)');
+  let items='';
 
-  // ── Sekce: live Finnhub (zobrazí se po enrichmentu) ──
-  if(live){
-    if(rangePct!=null) items += dItem('52W pozice', rangePct+'%', rangeColor, rangePct);
-    if(l52) items += dItem('52W Low', '$'+l52.toFixed(2), 'var(--green)');
-    if(h52) items += dItem('52W High', '$'+h52.toFixed(2), 'var(--red)');
-    if(f.beta!=null) items += dItem('Beta', f.beta.toFixed(2), betaColor);
-    if(f.yieldYH!=null) items += dItem('Div. výnos (live)', f.yieldYH.toFixed(2)+'%', f.yieldYH>9?'var(--red)':f.yieldYH>=5?'var(--green)':'var(--muted)');
-    if(f.exDiv) items += dItem('Ex-Div datum', f.exDiv, 'var(--text)');
-    if(f.marketCap) items += dItem('Market Cap', fmtBig(f.marketCap), 'var(--muted)');
-    if(type==='REIT'||type==='BDC'){
-      if(f.pb!=null) items += dItem('P/B', f.pb.toFixed(2), pbColor);
-    }
-    // Analyst cíl: Finnhub/FMP pokud dostupný, jinak Gordon Growth Model
-    const fv = f.targetPrice || fairValue(t);
-    const fvLabel = f.targetPrice ? 'Analyst cíl' : 'Fair value (GGM)';
-    const fvUpside = (fv && price) ? ((fv - price) / price * 100) : null;
-    const fvColor = fvUpside==null?'var(--muted)':fvUpside>15?'var(--green)':fvUpside>0?'var(--yellow)':'var(--red)';
-    items += dItem(fvLabel, fv ? '$'+fv.toFixed(2) : '—', fvColor);
-    items += dItem('Upside', fvUpside!=null?(fvUpside>0?'+':'')+fvUpside.toFixed(1)+'%':'—', fvColor);
-    // Doporučení: Finnhub rec, nebo záloha ze skóre
-    const rec = f.recommendation || scoreRec(t);
-    const recSuffix = f.recommendation ? '' : ' ★';
-    items += dItem('Doporučení', recLabel(rec)+recSuffix, recColor(rec));
-  } else {
-    // Lokální stav — doporučení ze skóre, live data se načítají
-    const rec = scoreRec(t);
-    items += dItem('Doporučení', recLabel(rec)+' ★', recColor(rec));
-    // Fair value i v lokálním režimu
-    const fv0=fairValue(t), fvUp0=fv0&&price?((fv0-price)/price*100):null;
-    const fvC0=fvUp0==null?'var(--muted)':fvUp0>15?'var(--green)':fvUp0>0?'var(--yellow)':'var(--red)';
-    items += dItem('Fair value (GGM)', fv0?'$'+fv0.toFixed(2):'—', fvC0);
-    items += dItem('Upside', fvUp0!=null?(fvUp0>0?'+':'')+fvUp0.toFixed(1)+'%':'—', fvC0);
-    items += '<div class="d-item" style="grid-column:1/-1"><span class="d-label" style="color:var(--muted);font-size:.52rem">★ interní skóre · Beta, 52W, Market Cap se načítají…</span></div>';
+  // ── Základní data (vždy) ─────────────────────────────────────
+  items += dItem('Sektor',              sec,                                    'var(--blue)');
+  items += dItem('Hodnota pozice',      '$'+posVal.toLocaleString('cs-CZ',{maximumFractionDigits:0}), 'var(--text)');
+  items += dItem('Počet kusů',          portfolio.qty[t]||0,                    'var(--text)');
+  items += dItem('Roční dividenda',     '$'+annualDiv.toFixed(0),               'var(--green)');
+  items += dItem('Dividendový výnos',   s.yield.toFixed(2)+'%',                 s.yield>9?'var(--red)':'var(--green)');
+  items += dItem('Růst dividendy',      growthPct+'% p.a.',                     'var(--muted)');
+  items += dItem('P/E',                 pe!=null?pe.toFixed(1):'—',             peColor);
+  items += dItem('Výplatní poměr',      payR!=null?payR.toFixed(0)+'%':'—',     payColor);
+  if(isBR){
+    items += dItem('Krytí dividendy',   nii!=null?nii.toFixed(2)+'×':'—',       niiColor);
+    if(pNav!=null) items += dItem('Cena / NAV', pNav.toFixed(2)+'×',            pNavColor);
   }
+  if(de!=null) items += dItem('Dluh / Vlastní jmění', de.toFixed(2)+'×',        deColor);
+  items += dItem('Skóre',              s.score+'/100',                          s.score>=75?'var(--green)':s.score>=50?'var(--yellow)':'var(--red)');
+  items += fvItems;
+  items += dItem('Doporučení',         recLabel(rec)+recSrc,                   recColor(rec));
+
+  // ── Live data z Finnhub (po enrichmentu) ─────────────────────
+  if(live){
+    if(rangePct!=null) items += dItem('Pozice v pásmu 52T', rangePct+'%',       rangeColor, rangePct);
+    if(l52)            items += dItem('52T minimum',         '$'+l52.toFixed(2), 'var(--green)');
+    if(h52)            items += dItem('52T maximum',         '$'+h52.toFixed(2), 'var(--red)');
+    if(f.beta!=null)   items += dItem('Beta',                f.beta.toFixed(2),  betaColor);
+    if(f.yieldYH!=null)items += dItem('Výnos (Finnhub)',    f.yieldYH.toFixed(2)+'%', f.yieldYH>9?'var(--red)':f.yieldYH>=5?'var(--green)':'var(--muted)');
+    if(f.exDiv)        items += dItem('Ex-dividendový den',  f.exDiv,            'var(--text)');
+    if(f.marketCap)    items += dItem('Tržní kapitalizace',  fmtBig(f.marketCap),'var(--muted)');
+    if(isBR&&f.pb!=null) items += dItem('Cena / Účetní hodnota', f.pb.toFixed(2), pbColor);
+  }
+
+  // ── Poznámka — timestampy aktualizací ────────────────────────
+  const pTs  = priceTs[t]  ? fmtTs(priceTs[t])  : '—';
+  const dTs  = dpsTs[t]    ? fmtTs(dpsTs[t])    : 'výchozí';
+  const liveNote = live ? '' : ' · živá data se načítají…';
+  items += `<div class="d-item" style="grid-column:1/-1;margin-top:4px;padding-top:6px;border-top:1px solid var(--border)">
+    <span class="d-label" style="font-size:.5rem;color:var(--muted);line-height:1.8">
+      📈 Cena aktualizována: ${pTs}${liveNote}<br>
+      💰 DPS aktualizováno: ${dTs}${recSrc?' · ★ doporučení ze skóre (API bez dat)':''}
+    </span>
+  </div>`;
 
   return items;
 }
@@ -1310,7 +1543,7 @@ function render(){
     const dps = getDPS(t);
     const sObj = calculateScore(t);
     const diff = getSectorDiffLocal(t);
-    const [sig, sigC] = getSignal(sObj.score, sObj.trap, diff);
+    const [sig, sigC] = getSignal(sObj.score, sObj.trap, diff, getFVValuation(t));
     const qty = portfolio.qty[t] || 0;
     const bar = `<div class="score-wrap"><span style="color:${sObj.score>=75?'#16a34a':sObj.score>=50?'#d97706':'#dc2626'}">${sObj.score}</span><div class="score-bar"><div class="score-fill" style="width:${sObj.score}%;background:${sObj.score>=75?'#16a34a':sObj.score>=50?'#d97706':'#dc2626'}"></div></div></div>`;
     // Badge pokud je nadváha a signál byl potlačen
@@ -1397,7 +1630,7 @@ function autopilot(){
   const { vals, total } = calcSectorValues();
   const ranked = portfolio.tickers.map(t => {
     const sObj = calculateScore(t);
-    const [sig, sigC] = getSignal(sObj.score, sObj.trap);
+    const [sig, sigC] = getSignal(sObj.score, sObj.trap, undefined, getFVValuation(t));
     const sector = portfolio.sectors[t] || 'Other';
     const sectorCfg = TARGET_WEIGHTS[sector];
     const actualPct = total > 0 ? ((vals[sector]||0) / total * 100) : 0;
@@ -1460,7 +1693,7 @@ function confirmAutoBuy(){
   if(qty <= 0){ document.getElementById('abErr').textContent = 'Rozpočet nestačí na 1 ks'; return; }
   const t = abSelectedTicker;
   const sObj = calculateScore(t);
-  const [sig, sigC] = getSignal(sObj.score, sObj.trap);
+  const [sig, sigC] = getSignal(sObj.score, sObj.trap, undefined, getFVValuation(t));
   const totalCost = qty * price;
   const newQty = (portfolio.qty[t]||0) + qty;
   portfolio.qty[t] = newQty;
@@ -1482,7 +1715,7 @@ function confirmAutoBuy(){
   `;
   const ranked = portfolio.tickers.map(x=>({t:x,score:calculateScore(x).score,p:getPrice(x)})).sort((a,b)=>b.score-a.score);
   document.getElementById('purch-top3').innerHTML = ranked.slice(0,3).map((r,i)=>{
-    const [s,sc]=getSignal(r.score,false);
+    const [s,sc]=getSignal(r.score,false,undefined,getFVValuation(r.t));
     return `<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;${i<2?'border-bottom:1px solid var(--border)':''}">
       <span style="font-weight:${r.t===t?'700':'400'};color:${r.t===t?'var(--green)':'var(--text)'}">${r.t}${r.t===t?' ← právě nakoupeno':''}</span>
       <span style="color:${r.score>=75?'var(--green)':r.score>=50?'var(--yellow)':'var(--red)'}">skóre ${r.score}</span>
@@ -1664,7 +1897,7 @@ function renderRebalance(){
     const s = portfolio.sectors[t] || 'Other';
     if(!tickersBySector[s]) tickersBySector[s] = [];
     const sObj = calculateScore(t);
-    const [sig, sigC] = getSignal(sObj.score, sObj.trap);
+    const [sig, sigC] = getSignal(sObj.score, sObj.trap, undefined, getFVValuation(t));
     tickersBySector[s].push({ t, sig, sigC, score: sObj.score });
   });
 
@@ -1821,7 +2054,7 @@ async function fetchAll(){
   fetchBusy=true; let liveCount=0;
   document.getElementById('statusBadge').textContent='📡 Načítám ceny…';
   const results=await Promise.all(portfolio.tickers.map(t=>fetchPriceFromFinnhub(t).then(p=>({t,p}))));
-  results.forEach(({t,p})=>{ if(p){prices[t]=p;livePrices[t]=true;liveCount++;}else{livePrices[t]=false;} });
+  results.forEach(({t,p})=>{ if(p){prices[t]=p;livePrices[t]=true;priceTs[t]=Date.now();liveCount++;}else{livePrices[t]=false;} });
   render();
   portfolio.tickers.forEach(t=>fetchFundamentals(t));
   const now=new Date();
@@ -2061,6 +2294,239 @@ function checkFirstDay(){
   document.getElementById('nextUpdateBadge').innerHTML=`📅 další záznam za ${daysUntil} dní`;
 }
 
+// ═══════════════════════════════════════════════════════════════
+// SPRÁVA FUNDAMENTÁLNÍCH DAT — kvartální auto-refresh + ruční editace
+// ═══════════════════════════════════════════════════════════════
+const FUND_CACHE_KEY = 'fundCache';
+const FUND_TS_KEY    = 'fundCacheTs';
+const FUND_LOG_KEY   = 'fundLog';
+const FUND_TTL_MS    = 90 * 24 * 60 * 60 * 1000; // 90 dní = ~1 kvartál
+const RF_KEY         = 'rfRate';
+
+// Dynamická rf — přepisuje konstantu RF v modelu
+let rfOverride = parseFloat(localStorage.getItem(RF_KEY) || '0.045');
+// Monkey-patch: fairValueRange používá RF ale my přepíšeme přes rfOverride
+// Proto RF je deklarováno jako let
+// (zajistíme přepsáním v getFVValuation)
+
+function getRf(){ return rfOverride; }
+
+function updateRf(val){
+  rfOverride = parseFloat(val)/100;
+  document.getElementById('rfVal').textContent = parseFloat(val).toFixed(2)+'%';
+}
+function saveRf(){
+  localStorage.setItem(RF_KEY, rfOverride.toString());
+  toast(`📊 Bezriziková sazba uložena: ${(rfOverride*100).toFixed(2)} %`);
+  render();
+}
+
+// ── Log ──────────────────────────────────────────────────────
+function addLog(msg){
+  const logs = JSON.parse(localStorage.getItem(FUND_LOG_KEY)||'[]');
+  logs.unshift({ ts: Date.now(), msg });
+  if(logs.length > 60) logs.pop();
+  localStorage.setItem(FUND_LOG_KEY, JSON.stringify(logs));
+}
+function renderLog(){
+  const el = document.getElementById('dataLog');
+  if(!el) return;
+  const logs = JSON.parse(localStorage.getItem(FUND_LOG_KEY)||'[]');
+  if(!logs.length){ el.textContent = '— žádné záznamy'; return; }
+  el.innerHTML = logs.map(l=>`<div>${fmtTs(l.ts)} &nbsp;${l.msg}</div>`).join('');
+}
+
+// ── Kvartální Finnhub refresh (D/E, P/B, Payout) ─────────────
+async function refreshFundamentalsFromFinnhub(force=false){
+  const token = getFinnhubKey();
+  if(!token) return;
+  const lastTs = parseInt(localStorage.getItem(FUND_TS_KEY)||'0');
+  if(!force && Date.now()-lastTs < FUND_TTL_MS) return;
+
+  const cache = JSON.parse(localStorage.getItem(FUND_CACHE_KEY)||'{}');
+  let changed = 0;
+  addLog(`🔄 Spuštěna aktualizace fundamentů (${portfolio.tickers.length} tickerů)`);
+
+  for(const t of portfolio.tickers){
+    try{
+      const r = await fetch(`https://finnhub.io/api/v1/stock/metric?symbol=${t}&metric=all&token=${token}`);
+      if(!r.ok) continue;
+      const data = await r.json();
+      const m = data.metric || {};
+      const entry = cache[t] || {};
+      const prev = JSON.stringify(entry);
+
+      // Co Finnhub free poskytuje
+      if(m.debtToEquityAnnual)    entry.de      = parseFloat(m.debtToEquityAnnual.toFixed(2));
+      if(m.pbAnnual)              entry.pb       = parseFloat(m.pbAnnual.toFixed(2));
+      if(m.payoutRatioAnnual)     entry.payout   = parseFloat((m.payoutRatioAnnual/100).toFixed(3));
+      if(m.peNormalizedAnnual)    entry.pe       = parseFloat(m.peNormalizedAnnual.toFixed(1));
+      entry.fundTs = Date.now();
+
+      cache[t] = entry;
+      if(JSON.stringify(entry) !== prev) changed++;
+
+      // Sloučení do fundamentals
+      if(!fundamentals[t]) fundamentals[t] = {};
+      Object.assign(fundamentals[t], entry);
+    }catch(e){}
+    await new Promise(r=>setTimeout(r,150));
+  }
+
+  localStorage.setItem(FUND_CACHE_KEY, JSON.stringify(cache));
+  localStorage.setItem(FUND_TS_KEY, Date.now().toString());
+  addLog(`✅ Hotovo — ${changed} změn (D/E, P/B, Payout, P/E)`);
+  toast(`📊 Fundamenty aktualizovány: ${changed} změn`);
+  render();
+  renderDataTable();
+}
+
+function refreshFundamentalsManual(){
+  refreshFundamentalsFromFinnhub(true);
+}
+
+function clearFundamentalsCache(){
+  localStorage.removeItem(FUND_CACHE_KEY);
+  localStorage.removeItem(FUND_TS_KEY);
+  addLog('🗑 Cache fundamentů vymazána');
+  toast('Cache vymazána');
+  renderDataTable();
+}
+
+// Načti cache do fundamentals při startu
+function loadFundCache(){
+  try{
+    const cache = JSON.parse(localStorage.getItem(FUND_CACHE_KEY)||'{}');
+    for(const [t, entry] of Object.entries(cache)){
+      if(!fundamentals[t]) fundamentals[t] = {};
+      Object.assign(fundamentals[t], entry);
+    }
+  }catch(e){}
+}
+
+// ── Ruční editace NAV / NII ───────────────────────────────────
+let editTicker = null;
+function openEdit(t){
+  editTicker = t;
+  const f = fundamentals[t] || {};
+  const sec = portfolio.sectors[t] || 'Other';
+  const isBDC = sec==='BDC', isREIT = sec==='REIT';
+  document.getElementById('editTitle').textContent = `✏️ Ruční data — ${t}`;
+  const fields = [];
+  if(isBDC) fields.push(
+    `<label style="font-size:.62rem;font-weight:600">P/NAV (aktuální cena / NAV)</label>
+     <input id="ef_pNav" type="number" step="0.01" value="${f.pNav||''}" placeholder="např. 0.91" style="padding:7px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:.72rem;font-family:var(--font-mono)">`,
+    `<label style="font-size:.62rem;font-weight:600">NII coverage (NII / dividenda)</label>
+     <input id="ef_nii" type="number" step="0.01" value="${f.niiCoverage||''}" placeholder="např. 1.08" style="padding:7px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:.72rem;font-family:var(--font-mono)">`
+  );
+  if(isREIT) fields.push(
+    `<label style="font-size:.62rem;font-weight:600">AFFO coverage (AFFO / dividenda)</label>
+     <input id="ef_nii" type="number" step="0.01" value="${f.niiCoverage||''}" placeholder="např. 1.22" style="padding:7px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:.72rem;font-family:var(--font-mono)">`
+  );
+  fields.push(
+    `<label style="font-size:.62rem;font-weight:600">D/E (přepis Finnhub)</label>
+     <input id="ef_de" type="number" step="0.01" value="${f.de||''}" placeholder="např. 1.57" style="padding:7px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:.72rem;font-family:var(--font-mono)">`,
+    `<label style="font-size:.62rem;font-weight:600">Dividendový růst % p.a.</label>
+     <input id="ef_growth" type="number" step="0.1" value="${((dividendGrowth[t]||0.03)*100).toFixed(1)}" placeholder="např. 3.0" style="padding:7px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:.72rem;font-family:var(--font-mono)">`
+  );
+  document.getElementById('editFields').innerHTML = fields.join('');
+  const ov = document.getElementById('editOverlay');
+  ov.style.display='flex';
+}
+function closeEditModal(){ document.getElementById('editOverlay').style.display='none'; }
+function saveEdit(){
+  if(!editTicker) return;
+  const t = editTicker;
+  if(!fundamentals[t]) fundamentals[t]={};
+  const pNav   = document.getElementById('ef_pNav');
+  const nii    = document.getElementById('ef_nii');
+  const de     = document.getElementById('ef_de');
+  const growth = document.getElementById('ef_growth');
+  if(pNav&&pNav.value)    fundamentals[t].pNav        = parseFloat(pNav.value);
+  if(nii&&nii.value)      fundamentals[t].niiCoverage = parseFloat(nii.value);
+  if(de&&de.value)        fundamentals[t].de          = parseFloat(de.value);
+  if(growth&&growth.value) dividendGrowth[t]          = parseFloat(growth.value)/100;
+
+  // Uloži do FUND_CACHE s timestampem ruční editace
+  const cache = JSON.parse(localStorage.getItem(FUND_CACHE_KEY)||'{}');
+  if(!cache[t]) cache[t]={};
+  Object.assign(cache[t], fundamentals[t], {manualTs: Date.now()});
+  localStorage.setItem(FUND_CACHE_KEY, JSON.stringify(cache));
+  addLog(`✏️ ${t}: ručně editováno (pNav/NII/D/E/growth)`);
+  toast(`✅ ${t} uloženo`);
+  closeEditModal();
+  render();
+  renderDataTable();
+}
+
+// ── Tabulka čerstvosti ────────────────────────────────────────
+function freshnessColor(ts){
+  if(!ts) return 'var(--red)';
+  const days = (Date.now()-ts)/(1000*60*60*24);
+  if(days < 30)  return 'var(--green)';
+  if(days < 90)  return 'var(--yellow)';
+  return 'var(--red)';
+}
+function freshnessLabel(ts){
+  if(!ts) return '—';
+  const days = Math.floor((Date.now()-ts)/(1000*60*60*24));
+  if(days === 0) return 'dnes';
+  if(days === 1) return 'včera';
+  return `${days}d`;
+}
+
+function renderDataTable(){
+  const tbody = document.getElementById('dataTableBody');
+  if(!tbody) return;
+  const cache = JSON.parse(localStorage.getItem(FUND_CACHE_KEY)||'{}');
+  const dpsCacheTs = parseInt(localStorage.getItem(DPS_TS_KEY)||'0');
+
+  tbody.innerHTML = portfolio.tickers.map(t=>{
+    const f   = fundamentals[t] || {};
+    const ca  = cache[t] || {};
+    const sec = portfolio.sectors[t] || 'Other';
+    const isBDC  = sec==='BDC';
+    const isREIT = sec==='REIT';
+    const fundTs = ca.fundTs || ca.manualTs || null;
+    const fColor = freshnessColor(fundTs);
+    const fLabel = freshnessLabel(fundTs);
+    const dpsColor = freshnessColor(dpsTs[t] || dpsCacheTs||0);
+    const dpsLabel = freshnessLabel(dpsTs[t] || dpsCacheTs||0);
+    const manual   = ca.manualTs ? `<span style="color:var(--blue);font-size:.5rem">✏️ ${freshnessLabel(ca.manualTs)}</span>` : '';
+
+    return `<tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:5px 7px;font-family:var(--font-mono);font-weight:700">${t}
+        <span style="font-size:.48rem;color:var(--muted)">${sec}</span></td>
+      <td style="padding:5px 7px;text-align:center">
+        <span style="color:${dpsColor}">${(dividendData[t]||0).toFixed(2)}</span>
+        <div style="font-size:.48rem;color:${dpsColor}">${dpsLabel}</div></td>
+      <td style="padding:5px 7px;text-align:center">${f.de!=null?f.de.toFixed(2):'—'}</td>
+      <td style="padding:5px 7px;text-align:center">${isBDC?(f.pNav!=null?f.pNav.toFixed(2):'<span style="color:var(--red)">?</span>'):'—'}</td>
+      <td style="padding:5px 7px;text-align:center">${(isBDC||isREIT)?(f.niiCoverage!=null?f.niiCoverage.toFixed(2)+'×':'<span style="color:var(--red)">?</span>'):'—'}</td>
+      <td style="padding:5px 7px;text-align:center">${f.payout!=null?(f.payout*100).toFixed(0)+'%':'—'}</td>
+      <td style="padding:5px 7px;text-align:center;color:${fColor};font-size:.58rem">${fLabel} ${manual}</td>
+      <td style="padding:5px 7px;text-align:center">
+        <button onclick="openEdit('${t}')" style="font-size:.55rem;padding:2px 7px;border:1px solid var(--border);border-radius:5px;background:transparent;color:var(--blue);cursor:pointer">✏️ Edit</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  // rf slider
+  const slider = document.getElementById('rfSlider');
+  const rfVal  = document.getElementById('rfVal');
+  if(slider){ slider.value = (rfOverride*100).toString(); }
+  if(rfVal)  { rfVal.textContent = (rfOverride*100).toFixed(2)+'%'; }
+  renderLog();
+}
+
+function openDataModal(){
+  document.getElementById('dataModalOverlay').style.display='block';
+  renderDataTable();
+}
+function closeDataModal(){
+  document.getElementById('dataModalOverlay').style.display='none';
+}
+
 // ── Dark mode ────────────────────────────────────────────────
 function toggleDark(){
   const dark=document.documentElement.classList.toggle('dark');
@@ -2086,14 +2552,14 @@ const DPS_TS_KEY    = 'dpsCacheTs';
 const DPS_TTL_MS    = 24 * 60 * 60 * 1000; // 24 hodin
 
 function loadDpsCache(){
-  // Načti uloženou DPS cache a přepiš dividendData
   try{
     const raw = localStorage.getItem(DPS_CACHE_KEY);
     if(!raw) return false;
     const cache = JSON.parse(raw);
+    const ts = parseInt(localStorage.getItem(DPS_TS_KEY)||'0');
     let loaded = 0;
     for(const [t, dps] of Object.entries(cache)){
-      if(dps > 0){ dividendData[t] = dps; loaded++; }
+      if(dps > 0){ dividendData[t] = dps; dpsTs[t] = ts; loaded++; }
     }
     return loaded > 0;
   }catch(e){ return false; }
@@ -2133,18 +2599,18 @@ async function refreshDpsAll(force=false){
   // Zkus aktualizovat každý ticker (postupně, aby se nespustil rate limit)
   const cache = {};
   let updated = 0;
+  const nowTs = Date.now();
   for(const t of portfolio.tickers){
     const dps = await fetchOneDps(t, token);
     if(dps !== null){
       const old = dividendData[t] || 0;
       dividendData[t] = dps;
+      dpsTs[t] = nowTs;
       cache[t] = dps;
       if(Math.abs(dps - old) > 0.001) updated++;
     } else {
-      // API nevrátilo data — zachovej stávající hodnotu v cache
       cache[t] = dividendData[t];
     }
-    // Malá pauza mezi requesty (Finnhub free tier: 60 req/min)
     await new Promise(r => setTimeout(r, 120));
   }
 
@@ -2161,13 +2627,17 @@ async function refreshDpsAll(force=false){
 
 // Načti cache okamžitě při startu (zobrazí poslední uložená data)
 loadDpsCache();
+loadFundCache();
 
 render();
 saveSnaps();
 setTimeout(fetchAll, 400);
-// DPS refresh: spustí se po 2s (po načtení cen), dál každých 24h
+// DPS refresh: 24h
 setTimeout(()=>refreshDpsAll(), 2000);
 setInterval(()=>refreshDpsAll(), DPS_TTL_MS);
+// Kvartální refresh fundamentů z Finnhub (D/E, P/B, Payout, P/E)
+setTimeout(()=>refreshFundamentalsFromFinnhub(), 3500);
+setInterval(()=>refreshFundamentalsFromFinnhub(), FUND_TTL_MS);
 checkFirstDay();
 setInterval(checkFirstDay, 60*60*1000);
 setInterval(()=>{ checkAndSaveMonthlyDividend(); updateDividendDisplay(); }, 24*60*60*1000);
