@@ -293,9 +293,16 @@ canvas.small-chart{width:100%!important;height:100%!important}
   .kpi-row{padding:16px 18px 0;gap:10px}
   .kpi{padding:14px 18px}
   .kpi-val{font-size:1.65rem}
-  .main-grid{padding:10px 18px 18px;gap:10px}
+  .main-grid{padding:10px 18px 18px;gap:10px;align-items:start}
+  .main-grid > .card:first-child{align-self:start}
   .tbl{font-size:.76rem}
   .tbl td,.tbl th{padding:8px 10px}
+  /* Karty které jsou na PC schované ve výchozím stavu */
+  .pc-collapsible .card-body{overflow:hidden;max-height:0;transition:max-height .3s ease}
+  .pc-collapsible.expanded .card-body{max-height:2000px}
+  .pc-collapsible .card-header{cursor:pointer;user-select:none}
+  .pc-collapsible .card-header::after{content:'▼';font-size:.55rem;color:var(--muted);margin-left:6px;transition:transform .2s}
+  .pc-collapsible.expanded .card-header::after{transform:rotate(180deg)}
 }
 
 /* ── TABLET LANDSCAPE 768-1023px ─── */
@@ -366,25 +373,33 @@ canvas.small-chart{width:100%!important;height:100%!important}
   /* Main grid */
   .main-grid{padding:6px 8px 10px;gap:6px}
 
-  /* Tabulka: skryj DPS, D/E, Cov/Pay */
+  /* Tabulka: skryj DPS, D/E, Cov/Pay + nadpis Signál */
   .tbl th:nth-child(3),.tbl td:nth-child(3),
   .tbl th:nth-child(5),.tbl td:nth-child(5),
   .tbl th:nth-child(6),.tbl td:nth-child(6){display:none}
+  .th-signal{font-size:0;letter-spacing:0} /* schovat text "Signál ⓘ", nechat jen badge */
   /* Skryj score bar — zůstane jen číslo */
   .score-bar{display:none}
-  .tbl{font-size:.63rem}
-  .tbl td,.tbl th{padding:5px 4px}
-  .tbl td:first-child{font-size:.65rem}
+  .tbl{font-size:.63rem;table-layout:fixed;width:100%}
+  .tbl td,.tbl th{padding:5px 3px}
+  .tbl td:first-child{font-size:.65rem;width:52px}
+  .tbl td:nth-child(2){width:52px} /* cena */
+  .tbl td:nth-child(4){width:38px} /* výnos */
+  .tbl td:nth-child(7){width:32px} /* score */
 
-  /* Větší touch targety pro tlačítka */
-  .qty-btn{width:32px;height:32px;font-size:16px;border-radius:8px}
-  .qty-input{width:42px;font-size:10px;padding:2px 2px}
-  .btn-del{width:30px;height:30px;font-size:13px}
+  /* Signal badge — kompaktní bez emoji, jen text */
+  .sig{font-size:.55rem!important;padding:2px 5px!important;white-space:nowrap}
+
+  /* Qty controls — vejdou se na obrazovku */
+  .qty-wrap{display:flex;align-items:center;gap:2px}
+  .qty-btn{width:28px;height:28px;font-size:15px;border-radius:7px;flex-shrink:0}
+  .qty-input{width:36px;font-size:10px;padding:2px 1px}
+  .btn-del{width:26px;height:26px;font-size:12px;flex-shrink:0}
 
   /* Detail panel — 2 sloupce */
   .detail-panel.open{grid-template-columns:repeat(2,1fr);padding:10px 12px}
 
-  /* Sektor pie — skryj graf na nejmenším, ukáže tabulka */
+  /* Sektor pie */
   .sector-inner{grid-template-columns:1fr}
   .sector-pie-wrap{height:160px;padding:6px 14px 10px}
 
@@ -718,17 +733,23 @@ canvas.small-chart{width:100%!important;height:100%!important}
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-header">
+    <div class="card pc-collapsible" id="card-rebalance">
+      <div class="card-header" onclick="togglePcCard('card-rebalance')">
         <span class="card-title">🎯 Doporučení — kam nakoupit</span>
         <span style="font-size:.6rem;color:var(--muted);font-family:var(--font-mono)">vs. cílová váha</span>
       </div>
+      <div class="card-body">
       <div id="rebalanceBox" style="padding:10px 14px 12px;font-family:var(--font-mono);font-size:.68rem;line-height:1.9"></div>
+      </div>
     </div>
 
-    <div class="card">
-      <div class="card-header"><span class="card-title">📈 Vývoj hodnoty portfolia</span></div>
+    <div class="card pc-collapsible" id="card-hist">
+      <div class="card-header" onclick="togglePcCard('card-hist')">
+        <span class="card-title">📈 Vývoj hodnoty portfolia</span>
+      </div>
+      <div class="card-body">
       <div class="chart-wrap"><canvas id="histChart" class="mini"></canvas></div>
+      </div>
     </div>
 
   </div>
@@ -2441,7 +2462,7 @@ async function refreshFundamentalsFromFinnhub(force=false){
   localStorage.setItem(FUND_CACHE_KEY, JSON.stringify(cache));
   localStorage.setItem(FUND_TS_KEY, Date.now().toString());
   addLog(`✅ Hotovo — ${changed} změn (D/E, P/B, Payout, P/E)`);
-  toast(`📊 Fundamenty aktualizovány: ${changed} změn`);
+  if(changed > 0) toast(`📊 Fundamenty aktualizovány: ${changed} změn`);
   render();
   renderDataTable();
 }
@@ -2524,7 +2545,22 @@ function saveEdit(){
   renderDataTable();
 }
 
-// ── Tabulka čerstvosti ────────────────────────────────────────
+// ── Kolapsovatelné karty na PC ────────────────────────────────
+function togglePcCard(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.classList.toggle('expanded');
+}
+// Na mobilu/tabletu všechny karty rozbalit (PC collapsible nemá efekt)
+function initPcCards(){
+  if(window.innerWidth < 1024){
+    document.querySelectorAll('.pc-collapsible').forEach(el=>{
+      el.classList.add('expanded');
+    });
+  }
+}
+document.addEventListener('DOMContentLoaded', initPcCards);
+window.addEventListener('resize', initPcCards);
 function freshnessColor(ts){
   if(!ts) return 'var(--red)';
   const days = (Date.now()-ts)/(1000*60*60*24);
