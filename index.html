@@ -332,6 +332,23 @@ canvas.small-chart{width:100%!important;height:100%!important}
   .pc-collapsible.expanded .card-header::after{transform:rotate(180deg)}
 }
 
+/* ── PC EXTRA WIDE 1600px+ — sidebar na 2 sloupce ─── */
+@media(min-width:1600px){
+  /* Tabulka přes celou šíři, sidebar pod ní ve 3 sloupcích */
+  .main-grid{grid-template-columns:1fr !important;align-items:start}
+  .side-stack{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .side-stack .card:first-child{grid-column:1/-1} /* dividenda přes celou šíři */
+  .side-stack .card:nth-child(5){grid-column:1/-1} /* alerty přes celou šíři */
+}
+
+/* ── 1280–1599px — tabulka + sidebar 2 sloupce ─── */
+@media(min-width:1280px) and (max-width:1599px){
+  .main-grid{grid-template-columns:1fr !important;align-items:start}
+  .side-stack{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  .side-stack .card:first-child{grid-column:1/-1}
+  .side-stack .card:nth-child(3){grid-column:1/-1} /* kalendář přes celou šíři */
+}
+
 /* ── TABLET LANDSCAPE 768-1023px ─── */
 @media(min-width:768px) and (max-width:1023px){
   .kpi-row{padding:12px 14px 0;gap:8px}
