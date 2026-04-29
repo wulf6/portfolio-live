@@ -358,7 +358,7 @@ canvas.small-chart{width:100%!important;height:100%!important}
 @media(max-width:479px){
   /* Header kompaktní */
   .header{padding:8px 10px;gap:4px}
-  #nextUpdateBadge{display:none}          /* Skryj timer na malém telefonu */
+  #nextUpdateBadge{display:none}
   #statusBadge{font-size:.58rem}
   .pill{font-size:.6rem;padding:3px 8px}
   .pill-add{padding:5px 10px}
@@ -373,30 +373,69 @@ canvas.small-chart{width:100%!important;height:100%!important}
   /* Main grid */
   .main-grid{padding:6px 8px 10px;gap:6px}
 
-  /* Tabulka: skryj DPS, D/E, Cov/Pay + nadpis Signál */
-  .tbl th:nth-child(3),.tbl td:nth-child(3),
-  .tbl th:nth-child(5),.tbl td:nth-child(5),
-  .tbl th:nth-child(6),.tbl td:nth-child(6){display:none}
-  .th-signal{font-size:0;letter-spacing:0} /* schovat text "Signál ⓘ", nechat jen badge */
-  /* Skryj score bar — zůstane jen číslo */
-  .score-bar{display:none}
-  .tbl{font-size:.63rem;table-layout:fixed;width:100%}
-  .tbl td,.tbl th{padding:5px 3px}
-  .tbl td:first-child{font-size:.65rem;width:52px}
-  .tbl td:nth-child(2){width:52px} /* cena */
-  .tbl td:nth-child(4){width:38px} /* výnos */
-  .tbl td:nth-child(7){width:32px} /* score */
+  /* === TABULKA AKCIÍ — mobilní karta === */
+  /* Skryj thead úplně */
+  .tbl thead{display:none}
 
-  /* Signal badge — kompaktní bez emoji, jen text */
-  .sig{font-size:.55rem!important;padding:2px 5px!important;white-space:nowrap}
+  /* Každý řádek = karta */
+  .tbl,.tbl tbody,.tbl tr,.tbl td{display:block;width:100%}
+  .tbl tbody{display:flex;flex-direction:column;gap:4px;padding:6px 8px}
 
-  /* Qty controls — vejdou se na obrazovku */
-  .qty-wrap{display:flex;align-items:center;gap:2px}
-  .qty-btn{width:28px;height:28px;font-size:15px;border-radius:7px;flex-shrink:0}
-  .qty-input{width:36px;font-size:10px;padding:2px 1px}
-  .btn-del{width:26px;height:26px;font-size:12px;flex-shrink:0}
+  /* Ticker-row = flex karta */
+  .ticker-row{
+    display:flex!important;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:4px 8px;
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:8px 10px!important;
+    cursor:pointer;
+  }
+  .ticker-row td{
+    display:inline-flex!important;
+    align-items:center;
+    padding:0!important;
+    border:none!important;
+    background:none!important;
+    width:auto!important;
+  }
 
-  /* Detail panel — 2 sloupce */
+  /* Skryj nepotřebné sloupce (DPS, D/E, Cov/Pay, Score) */
+  .tbl td:nth-child(3),
+  .tbl td:nth-child(5),
+  .tbl td:nth-child(6),
+  .tbl td:nth-child(7){display:none!important}
+
+  /* Ticker (col 1) — vyplní celou první "řádku" */
+  .ticker-row td:nth-child(1){
+    flex:1 0 100%;
+    font-size:.78rem;
+    font-weight:700;
+  }
+  /* Cena (col 2) */
+  .ticker-row td:nth-child(2){font-size:.72rem;color:var(--text);min-width:60px}
+  /* Výnos (col 4) */
+  .ticker-row td:nth-child(4){font-size:.72rem;min-width:44px}
+  /* Signál (col 8) */
+  .ticker-row td:nth-child(8){flex:1}
+  /* Qty (col 9) */
+  .ticker-row td:nth-child(9){margin-left:auto}
+  /* Smazat (col 10) */
+  .ticker-row td:nth-child(10){}
+
+  /* Qty ovládání */
+  .qty-wrap{display:flex;align-items:center;gap:4px}
+  .qty-btn{width:30px;height:30px;font-size:16px;border-radius:8px;flex-shrink:0}
+  .qty-input{width:44px;font-size:.72rem;padding:4px 2px;text-align:center}
+  .btn-del{width:30px;height:30px;font-size:13px}
+
+  /* Signal badge */
+  .sig{font-size:.58rem!important;padding:3px 7px!important}
+
+  /* Detail row */
+  .detail-row td{display:block!important;padding:0!important}
   .detail-panel.open{grid-template-columns:repeat(2,1fr);padding:10px 12px}
 
   /* Sektor pie */
