@@ -74,10 +74,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-ui);min-heigh
 .kpi-val.green{color:var(--green)}
 .kpi-sub{font-size:.65rem;color:var(--muted);margin-top:3px;font-family:var(--font-mono)}
 
-.main-grid{display:grid;gap:8px;padding:8px 12px 12px}
-@media(min-width:768px){.main-grid{grid-template-columns:1fr 260px}}
-@media(min-width:1024px){.main-grid{grid-template-columns:1fr 300px}}
-@media(min-width:1440px){.main-grid{grid-template-columns:1fr 340px}}
+.main-grid{display:grid;gap:8px;padding:8px 12px 12px;align-items:start}
+@media(min-width:768px){.main-grid{grid-template-columns:1fr 260px;align-items:start}}
+@media(min-width:1024px){.main-grid{grid-template-columns:1fr 300px;align-items:start}}
+@media(min-width:1440px){.main-grid{grid-template-columns:1fr 340px;align-items:start}}
+@media(min-width:1920px){.main-grid{grid-template-columns:1fr 400px;align-items:start}}
+@media(min-width:2560px){.main-grid{grid-template-columns:1fr 480px;align-items:start}}
 
 .card{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
 .card-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border)}
@@ -286,6 +288,31 @@ canvas.small-chart{width:100%!important;height:100%!important}
   .kpi-val{font-size:1.75rem}
   .tbl{font-size:.78rem}
   .tbl td,.tbl th{padding:9px 11px}
+}
+
+/* ── 2K 1920px+ ─── */
+@media(min-width:1920px){
+  .kpi-row,.main-grid{max-width:1800px}
+  .kpi-val{font-size:1.9rem}
+  .kpi-label{font-size:.72rem}
+  .kpi-sub{font-size:.68rem}
+  .tbl{font-size:.84rem}
+  .tbl td,.tbl th{padding:10px 13px}
+}
+
+/* ── 4K 2560px+ ─── */
+@media(min-width:2560px){
+  .kpi-row,.main-grid{max-width:2400px}
+  .kpi-val{font-size:2.2rem}
+  .kpi-label{font-size:.82rem}
+  .kpi-sub{font-size:.76rem}
+  .tbl{font-size:.96rem}
+  .tbl td,.tbl th{padding:12px 15px}
+  .card-title{font-size:.82rem}
+  .sig{font-size:.72rem!important;padding:5px 12px!important}
+  .qty-btn{width:36px;height:36px;font-size:18px}
+  .qty-input{width:54px;font-size:.88rem}
+  .pill{font-size:.72rem;padding:6px 14px}
 }
 
 /* ── DESKTOP 1024px+ ─── */
