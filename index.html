@@ -75,11 +75,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-ui);min-heigh
 .kpi-sub{font-size:.65rem;color:var(--muted);margin-top:3px;font-family:var(--font-mono)}
 
 .main-grid{display:grid;gap:8px;padding:8px 12px 12px;align-items:start}
-@media(min-width:768px){.main-grid{grid-template-columns:1fr 260px;align-items:start}}
-@media(min-width:1024px){.main-grid{grid-template-columns:1fr 300px;align-items:start}}
-@media(min-width:1440px){.main-grid{grid-template-columns:1fr 340px;align-items:start}}
-@media(min-width:1920px){.main-grid{grid-template-columns:1fr 400px;align-items:start}}
-@media(min-width:2560px){.main-grid{grid-template-columns:1fr 480px;align-items:start}}
+@media(min-width:768px){.main-grid{grid-template-columns:1fr;align-items:start}}
+@media(min-width:1024px){.main-grid{grid-template-columns:1fr;align-items:start}}
+@media(min-width:1440px){.main-grid{grid-template-columns:1fr;align-items:start}}
+@media(min-width:1920px){.main-grid{grid-template-columns:1fr;align-items:start}}
+@media(min-width:2560px){.main-grid{grid-template-columns:1fr;align-items:start}}
 
 .card{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
 .card-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border)}
@@ -105,7 +105,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-ui);min-heigh
 .sig-strong{background:rgba(22,163,74,.2);color:#0d6e2e;border:1px solid rgba(22,163,74,.4)}
 .sig-hold{background:rgba(217,119,6,.1);color:var(--yellow);border:1px solid rgba(217,119,6,.3)}
 .sig-risk{background:rgba(220,38,38,.1);color:var(--red);border:1px solid rgba(220,38,38,.3)}
-tr.ticker-row{cursor:pointer;transition:background .15s}
+tr.ticker-row{cursor:pointer;transition:background .15s;transform:translateZ(0);backface-visibility:hidden}
 tr.ticker-row:hover{background:rgba(2,132,199,.05)}
 tr.detail-row td{padding:0!important;border-bottom:1px solid var(--border)}
 .detail-panel{display:none;padding:14px 16px;background:rgba(2,132,199,.04);border-top:1px solid var(--border)}
@@ -118,7 +118,8 @@ tr.detail-row td{padding:0!important;border-bottom:1px solid var(--border)}
 
 .score-wrap{display:flex;align-items:center;gap:6px;justify-content:flex-end}
 .score-bar{width:36px;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
-.score-fill{height:100%;border-radius:2px;transition:width .4s}
+.score-fill{height:100%;border-radius:2px;transition:width .4s;will-change:width}
+.tbl{border-collapse:collapse;width:100%;contain:layout style}
 
 .qty-wrap{display:flex;align-items:center;gap:4px;justify-content:flex-end}
 .qty-btn{
@@ -334,19 +335,16 @@ canvas.small-chart{width:100%!important;height:100%!important}
 
 /* ── PC EXTRA WIDE 1600px+ — sidebar na 2 sloupce ─── */
 @media(min-width:1600px){
-  /* Tabulka přes celou šíři, sidebar pod ní ve 3 sloupcích */
-  .main-grid{grid-template-columns:1fr !important;align-items:start}
   .side-stack{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-  .side-stack .card:first-child{grid-column:1/-1} /* dividenda přes celou šíři */
-  .side-stack .card:nth-child(5){grid-column:1/-1} /* alerty přes celou šíři */
+  .side-stack .card:first-child{grid-column:1/-1}
+  .side-stack .card:nth-child(5){grid-column:1/-1}
 }
 
-/* ── 1280–1599px — tabulka + sidebar 2 sloupce ─── */
-@media(min-width:1280px) and (max-width:1599px){
-  .main-grid{grid-template-columns:1fr !important;align-items:start}
+/* ── 1280–1599px — sidebar 2 sloupce ─── */
+@media(min-width:1024px) and (max-width:1599px){
   .side-stack{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
   .side-stack .card:first-child{grid-column:1/-1}
-  .side-stack .card:nth-child(3){grid-column:1/-1} /* kalendář přes celou šíři */
+  .side-stack .card:nth-child(3){grid-column:1/-1}
 }
 
 /* ── TABLET LANDSCAPE 768-1023px ─── */
@@ -560,14 +558,21 @@ canvas.small-chart{width:100%!important;height:100%!important}
 </div>
 
 <!-- Calendar Detail Modal -->
-<div id="calModalOverlay" onclick="closeCalModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:130;align-items:center;justify-content:center;padding:16px">
-  <div onclick="event.stopPropagation()" style="background:var(--card);border:1px solid var(--border);border-radius:14px;max-width:360px;width:95vw;padding:20px 22px;position:relative;box-shadow:0 8px 32px rgba(0,0,0,.4)">
-    <button onclick="closeCalModal()" style="position:absolute;top:10px;right:12px;background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--muted)">✕</button>
-    <div id="calModalTitle" style="font-family:var(--font-mono);font-size:.7rem;font-weight:700;letter-spacing:.1em;color:var(--blue);margin-bottom:14px"></div>
-    <div id="calModalTotal" style="font-size:1.6rem;font-weight:700;color:var(--green);font-family:var(--font-mono);margin-bottom:4px"></div>
-    <div id="calModalNet" style="font-size:.72rem;color:var(--muted);font-family:var(--font-mono);margin-bottom:16px"></div>
-    <div id="calModalTickers" style="display:flex;flex-direction:column;gap:6px"></div>
-    <div style="margin-top:16px;font-size:.58rem;color:var(--muted);text-align:center">Klepni kdekoli mimo pro zavření</div>
+<div id="calModalOverlay" onclick="closeCalModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:130;align-items:center;justify-content:center;padding:16px">
+  <div onclick="event.stopPropagation()" id="calModalBox" style="background:var(--card);border:1px solid var(--border);border-radius:16px;max-width:420px;width:95vw;padding:24px 26px;position:relative;box-shadow:0 12px 48px rgba(0,0,0,.5);transition:transform .2s">
+    <button onclick="closeCalModal()" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--muted);line-height:1">✕</button>
+
+    <div id="calModalTitle" style="font-family:var(--font-mono);font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:10px"></div>
+
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:4px">
+      <div id="calModalTotal" style="font-size:2rem;font-weight:800;color:var(--green);font-family:var(--font-mono)"></div>
+      <div style="font-size:.68rem;color:var(--muted);font-family:var(--font-mono)">hrubá</div>
+    </div>
+    <div id="calModalNet" style="font-size:.75rem;color:var(--muted);font-family:var(--font-mono);margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border)"></div>
+
+    <div id="calModalTickers" style="display:flex;flex-direction:column;gap:6px;max-height:55vh;overflow-y:auto;padding-right:4px"></div>
+
+    <div style="margin-top:16px;font-size:.55rem;color:var(--muted);text-align:center;letter-spacing:.06em">KLEPNI MIMO PRO ZAVŘENÍ</div>
   </div>
 </div>
 
@@ -624,7 +629,7 @@ canvas.small-chart{width:100%!important;height:100%!important}
   </div>
 </div>
 <!-- Version badge -->
-<div style="position:fixed;bottom:6px;left:8px;font-size:.5rem;color:rgba(255,255,255,.2);font-family:monospace;z-index:999;pointer-events:none">v29.04-22:00</div>
+<div style="position:fixed;bottom:6px;left:8px;font-size:.5rem;color:rgba(255,255,255,.2);font-family:monospace;z-index:999;pointer-events:none">v01.05-09:00</div>
 <!-- First-run sync banner -->
 <div id="syncBanner" style="display:none;background:linear-gradient(135deg,rgba(2,132,199,.12),rgba(2,132,199,.06));border-bottom:1px solid rgba(2,132,199,.25);padding:8px 14px;font-family:var(--font-mono);font-size:.62rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
   <span style="color:var(--blue);font-weight:700">☁️ Sync není nastaven</span>
@@ -1769,6 +1774,7 @@ function render(){
   renderSectorPie();
   renderRebalance();
   renderDividendCalendar();
+  setTimeout(renderAutopilotTop3, 50);
 }
 
 function changeQty(ticker, delta){
@@ -1912,6 +1918,27 @@ function confirmAutoBuy(){
     ${ranked.slice(0,3).map(r=>`<div class="ap-row"><span>${r.t}</span><span style="color:${r.score>=75?'#16a34a':r.score>=50?'#d97706':'#dc2626'}">${r.score}</span></div>`).join('')}`;
 
   document.getElementById('purchaseOverlay').classList.add('open');
+}
+
+// Naplní Autopilot Top 3 sidebar bez nákupu
+function renderAutopilotTop3(){
+  const el = document.getElementById('apResult');
+  if(!el || !portfolio.tickers.length) return;
+  const ranked = portfolio.tickers
+    .map(x=>({t:x, score:calculateScore(x).score, p:getPrice(x)}))
+    .sort((a,b)=>b.score-a.score)
+    .slice(0,3);
+  el.innerHTML = `<div style="color:var(--muted);font-size:.58rem;margin-bottom:6px">TOP skóre — doporučeno ke koupi</div>`
+    + ranked.map((r,i)=>{
+      const [s,sc]=getSignal(r.score,false,undefined,getFVValuation(r.t));
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;${i<2?'border-bottom:1px solid var(--border)':''}">
+        <span style="font-weight:700">${r.t}</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span class="sig ${sc}" style="font-size:.55rem">${s}</span>
+          <span style="color:${r.score>=75?'var(--green)':r.score>=50?'var(--yellow)':'var(--red)'}">skóre ${r.score}</span>
+        </div>
+      </div>`;
+    }).join('');
 }
 
 function closePurchase(){
@@ -2649,23 +2676,36 @@ function openCalModal(idx){
   const calData = window._calData;
   if(!calData) return;
   const mo = calData[idx];
+  const isCurrent = idx === new Date().getMonth();
   const overlay = document.getElementById('calModalOverlay');
-  document.getElementById('calModalTitle').textContent = `📅 ${MONTH_NAMES[idx]} ${new Date().getFullYear()}`;
-  document.getElementById('calModalTotal').textContent = mo.tickers.length ? `$${mo.gross.toFixed(2)}` : '—';
+  const box = document.getElementById('calModalBox');
+
+  // Zvýrazni aktuální měsíc modrou linkou
+  box.style.borderColor = isCurrent ? 'var(--blue)' : 'var(--border)';
+  box.style.boxShadow = isCurrent
+    ? '0 12px 48px rgba(0,0,0,.5), 0 0 0 1px rgba(2,132,199,.4)'
+    : '0 12px 48px rgba(0,0,0,.5)';
+
+  document.getElementById('calModalTitle').textContent =
+    `📅 ${MONTH_NAMES[idx]} ${new Date().getFullYear()}${isCurrent ? ' — aktuální měsíc' : ''}`;
+  document.getElementById('calModalTotal').textContent =
+    mo.tickers.length ? `$${mo.gross.toFixed(2)}` : '—';
   document.getElementById('calModalNet').textContent = mo.tickers.length
-    ? `čistá (85%): $${mo.net.toFixed(2)}`
-    : 'žádné výplaty tento měsíc';
+    ? `čistá po dani (85%): $${mo.net.toFixed(2)}`
+    : 'Žádné výplaty tento měsíc';
+
   const tickersEl = document.getElementById('calModalTickers');
   tickersEl.innerHTML = mo.tickers.length
     ? mo.tickers.map(({t, amount}) => `
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:var(--bg);border-radius:7px;font-family:var(--font-mono)">
-          <span style="font-weight:700;font-size:.78rem">${t}</span>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--bg);border-radius:8px;font-family:var(--font-mono)">
+          <span style="font-weight:700;font-size:.82rem">${t}</span>
           <div style="text-align:right">
-            <div style="font-size:.78rem;color:var(--green)">$${amount.toFixed(2)}</div>
-            <div style="font-size:.58rem;color:var(--muted)">čistá: $${(amount*0.85).toFixed(2)}</div>
+            <div style="font-size:.82rem;color:var(--green);font-weight:600">$${amount.toFixed(2)}</div>
+            <div style="font-size:.6rem;color:var(--muted)">čistá: $${(amount*0.85).toFixed(2)}</div>
           </div>
         </div>`).join('')
-    : '<div style="color:var(--muted);font-size:.7rem;text-align:center;padding:10px">Žádné výplaty tento měsíc</div>';
+    : '<div style="color:var(--muted);font-size:.72rem;text-align:center;padding:16px">Žádné výplaty</div>';
+
   overlay.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
@@ -2808,16 +2848,40 @@ function ghSerialize(){
 // ── Deserializace — aplikace stažených dat ───────────────────
 function ghApply(data){
   if(!data || data._version < 2) return false;
-  if(data.qty)           Object.assign(portfolio.qty, data.qty);
-  if(data.tickers)       portfolio.tickers = data.tickers;
-  if(data.sectors)       Object.assign(portfolio.sectors, data.sectors);
-  if(data.fallback)      Object.assign(portfolio.fallback, data.fallback);
-  if(data.dividendData)  Object.assign(dividendData, data.dividendData);
-  if(data.dividendGrowth)Object.assign(dividendGrowth, data.dividendGrowth);
-  if(data.fundamentals)  Object.assign(fundamentals, data.fundamentals);
-  if(data.rfOverride)    rfOverride = data.rfOverride;
-  if(data.dpsCache)      localStorage.setItem(DPS_CACHE_KEY, JSON.stringify(data.dpsCache));
-  if(data.fundCache)     localStorage.setItem(FUND_CACHE_KEY, JSON.stringify(data.fundCache));
+  // Plné nahrazení (ne merge) — zajistí správná data na novém zařízení
+  if(data.qty){
+    Object.keys(portfolio.qty).forEach(k => delete portfolio.qty[k]);
+    Object.assign(portfolio.qty, data.qty);
+  }
+  if(data.tickers)       portfolio.tickers = [...data.tickers];
+  if(data.sectors){
+    Object.keys(portfolio.sectors).forEach(k => delete portfolio.sectors[k]);
+    Object.assign(portfolio.sectors, data.sectors);
+  }
+  if(data.fallback){
+    Object.keys(portfolio.fallback).forEach(k => delete portfolio.fallback[k]);
+    Object.assign(portfolio.fallback, data.fallback);
+  }
+  if(data.dividendData){
+    Object.keys(dividendData).forEach(k => delete dividendData[k]);
+    Object.assign(dividendData, data.dividendData);
+  }
+  if(data.dividendGrowth){
+    Object.keys(dividendGrowth).forEach(k => delete dividendGrowth[k]);
+    Object.assign(dividendGrowth, data.dividendGrowth);
+  }
+  if(data.fundamentals){
+    Object.keys(fundamentals).forEach(k => delete fundamentals[k]);
+    Object.assign(fundamentals, data.fundamentals);
+  }
+  if(data.rfOverride !== undefined) rfOverride = data.rfOverride;
+  if(data.dpsCache)  localStorage.setItem(DPS_CACHE_KEY,  JSON.stringify(data.dpsCache));
+  if(data.fundCache) localStorage.setItem(FUND_CACHE_KEY, JSON.stringify(data.fundCache));
+  // Ulož i do localStorage aby přežil reload
+  try{ localStorage.setItem('portfolio_v8', JSON.stringify({
+    qty: portfolio.qty, tickers: portfolio.tickers, sectors: portfolio.sectors,
+    fallback: portfolio.fallback, dividendData, dividendGrowth, fundamentals, rfOverride
+  })); }catch(e){}
   return true;
 }
 
