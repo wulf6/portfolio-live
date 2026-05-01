@@ -9,7 +9,21 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Portfolio">
 <meta name="theme-color" content="#0284c7">
-<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Dividendov%C3%A9+portfolio%22%2C%22short_name%22%3A%22Portfolio%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f0f4f8%22%2C%22theme_color%22%3A%22%230284c7%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg+xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'+viewBox%3D'0+0+100+100'%253E%253Crect+width%3D'100'+height%3D'100'+rx%3D'20'+fill%3D'%230284c7'%2F%253E%253Ctext+y%3D'.9em'+font-size%3D'80'+x%3D'10'%253E%25F0%259F%2592%25B9%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22any%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+<link rel="manifest" href="data:application/manifest+json,{
+  %22name%22:%22Dividendov%C3%A9+portfolio%22,
+  %22short_name%22:%22Portfolio%22,
+  %22description%22:%22Dividendov%C3%A9+portfolio+tracker%22,
+  %22start_url%22:%22/portfolio-live/%22,
+  %22scope%22:%22/portfolio-live/%22,
+  %22display%22:%22standalone%22,
+  %22orientation%22:%22portrait%22,
+  %22background_color%22:%22%230f172a%22,
+  %22theme_color%22:%22%230284c7%22,
+  %22icons%22:[
+    {%22src%22:%22https://raw.githubusercontent.com/wulf6/portfolio-live/main/icon-192.png%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22,%22purpose%22:%22any%20maskable%22},
+    {%22src%22:%22https://raw.githubusercontent.com/wulf6/portfolio-live/main/icon-512.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22,%22purpose%22:%22any%20maskable%22}
+  ]
+}">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230284c7'/><text y='.9em' font-size='80' x='10'>💹</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
@@ -629,7 +643,7 @@ canvas.small-chart{width:100%!important;height:100%!important}
   </div>
 </div>
 <!-- Version badge -->
-<div style="position:fixed;bottom:6px;left:8px;font-size:.5rem;color:rgba(255,255,255,.2);font-family:monospace;z-index:999;pointer-events:none">v01.05-14:00</div>
+<div style="position:fixed;bottom:6px;left:8px;font-size:.5rem;color:rgba(255,255,255,.2);font-family:monospace;z-index:999;pointer-events:none">v01.05-16:00</div>
 <!-- First-run sync banner -->
 <div id="syncBanner" style="display:none;background:linear-gradient(135deg,rgba(2,132,199,.12),rgba(2,132,199,.06));border-bottom:1px solid rgba(2,132,199,.25);padding:8px 14px;font-family:var(--font-mono);font-size:.62rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
   <span style="color:var(--blue);font-weight:700">☁️ Sync není nastaven</span>
@@ -788,7 +802,7 @@ canvas.small-chart{width:100%!important;height:100%!important}
     <div class="card">
       <div class="card-header"><span class="card-title">💰 Měsíční dividenda (čistá)</span></div>
       <div class="dividend-box">
-        <div class="dividend-label">AKTUÁLNÍ MĚSÍC</div>
+        <div class="dividend-label" id="currentMonthLabel">AKTUÁLNÍ MĚSÍC</div>
         <div class="dividend-amount" id="currentMonthDiv">—</div>
         <div class="dividend-tax">průměr za rok</div>
         <div class="dividend-amount" id="netMonth" style="font-size:1.8rem;">—</div>
@@ -1196,16 +1210,26 @@ function updateDividendDisplay(){
   const avgNetMonthly = avgGrossMonthly * 0.85;
   const totalNetYear = avgNetMonthly * 12;
   
+  const MONTH_NAMES_CZ = ['Leden','Únor','Březen','Duben','Květen','Červen','Červenec','Srpen','Září','Říjen','Listopad','Prosinec'];
+  document.getElementById('currentMonthLabel').textContent = MONTH_NAMES_CZ[currentMonthIdx].toUpperCase();
   document.getElementById('currentMonthDiv').textContent = '$' + currentMonthGross.toFixed(2);
   document.getElementById('netMonth').textContent = '$' + avgNetMonthly.toFixed(2);
   document.getElementById('netYear').textContent = '$' + totalNetYear.toFixed(2) + ' / rok (netto)';
   document.getElementById('kpiMonthlyNet').textContent = '$' + avgNetMonthly.toFixed(2);
   document.getElementById('kpiAnnualNet').textContent = '$' + totalNetYear.toFixed(2) + '/rok (netto)';
-  
+
   const history = loadDividendHistory();
   if(history.length > 0){
-    document.getElementById('dividendHistory').innerHTML = '<span style="font-size:.5rem;">📅 poslední záznamy:</span><br>' + 
-      history.slice(-6).map(h => `<span style="font-size:.45rem;">${h.month}: $${h.netDiv.toFixed(2)} netto</span>`).join(' · ');
+    const histRows = history.slice(-6).map(h => {
+      const [yr, mo] = h.month.split('-');
+      const moName = MONTH_NAMES_CZ[parseInt(mo)-1] || h.month;
+      return `<div style="display:flex;justify-content:space-between;font-size:.58rem;padding:2px 0;border-bottom:1px solid rgba(255,255,255,.05)">
+        <span style="color:var(--muted)">${moName} ${yr}</span>
+        <span style="color:var(--green);font-weight:600">$${h.netDiv.toFixed(2)} netto</span>
+      </div>`;
+    }).join('');
+    document.getElementById('dividendHistory').innerHTML = 
+      `<div style="margin-top:10px;font-size:.52rem;color:var(--muted);letter-spacing:.08em;margin-bottom:4px">HISTORIE</div>${histRows}`;
   } else {
     document.getElementById('dividendHistory').innerHTML = '<span style="font-size:.45rem;">⏳ první záznam bude 1. dne měsíce</span>';
   }
@@ -1214,6 +1238,7 @@ function updateDividendDisplay(){
 
 function renderDividendCalendar(){
   const MONTH_NAMES = ['LED','ÚNO','BŘE','DUB','KVĚ','ČVN','ČVC','SRP','ZÁŘ','ŘÍJ','LIS','PRO'];
+  window.MONTH_NAMES = MONTH_NAMES; // Globální přístup pro modal
   const now = new Date();
   const currentMonth = now.getMonth(); // 0-based
 
@@ -2674,6 +2699,7 @@ function saveEdit(){
 // ── Kalendář detail modal ─────────────────────────────────────
 function openCalModal(idx){
   const calData = window._calData;
+  const MONTH_NAMES = window.MONTH_NAMES || ['LED','ÚNO','BŘE','DUB','KVĚ','ČVN','ČVC','SRP','ZÁŘ','ŘÍJ','LIS','PRO'];
   if(!calData) return;
   const mo = calData[idx];
   const isCurrent = idx === new Date().getMonth();
