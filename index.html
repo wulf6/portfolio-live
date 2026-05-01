@@ -630,7 +630,7 @@ canvas.small-chart{width:100%!important;height:100%!important}
   </div>
 </div>
 <!-- Version badge -->
-<div style="position:fixed;bottom:6px;left:8px;font-size:.5rem;color:rgba(255,255,255,.2);font-family:monospace;z-index:999;pointer-events:none">v01.05-10:30</div>
+<div style="position:fixed;bottom:6px;left:8px;font-size:.5rem;color:rgba(255,255,255,.2);font-family:monospace;z-index:999;pointer-events:none">v01.05-11:30</div>
 <!-- First-run sync banner -->
 <div id="syncBanner" style="display:none;background:linear-gradient(135deg,rgba(2,132,199,.12),rgba(2,132,199,.06));border-bottom:1px solid rgba(2,132,199,.25);padding:8px 14px;font-family:var(--font-mono);font-size:.62rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
   <span style="color:var(--blue);font-weight:700">☁️ Sync není nastaven</span>
@@ -2908,14 +2908,17 @@ async function ghPush(manual=false){
   updateGhBtn('☁️ ↑');
 
   try{
+    // Vždy načti aktuální SHA ze serveru aby nedošlo ke konfliktu
+    let sha = localStorage.getItem(GH_SHA_KEY) || '';
+    try{
+      const check = await fetch(ghApiUrl(c)+'?t='+Date.now(), {headers: ghHeaders(c)});
+      if(check.ok){ const d = await check.json(); sha = d.sha || sha; }
+    }catch(e){}
+
     const payload = JSON.stringify(ghSerialize(), null, 2);
     const encoded = btoa(unescape(encodeURIComponent(payload)));
-
-    const body = {
-      message: `portfolio sync ${new Date().toISOString().slice(0,16)}`,
-      content: encoded,
-    };
-    if(c.sha) body.sha = c.sha; // potřeba pro aktualizaci existujícího souboru
+    const body = { message: `portfolio sync ${new Date().toISOString().slice(0,16)}`, content: encoded };
+    if(sha) body.sha = sha;
 
     const resp = await fetch(ghApiUrl(c), {
       method: 'PUT',
