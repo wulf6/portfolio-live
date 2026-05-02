@@ -645,7 +645,7 @@ canvas.small-chart{width:100%!important;height:100%!important}
   </div>
 </div>
 <!-- Version badge -->
-<div style="position:fixed;bottom:6px;left:8px;font-size:.5rem;color:rgba(255,255,255,.2);font-family:monospace;z-index:999;pointer-events:none">v02.05-13:00</div>
+<div style="position:fixed;bottom:6px;left:8px;font-size:.5rem;color:rgba(255,255,255,.2);font-family:monospace;z-index:999;pointer-events:none">v02.05-15:00</div>
 <!-- First-run sync banner -->
 <div id="syncBanner" style="display:none;background:linear-gradient(135deg,rgba(2,132,199,.12),rgba(2,132,199,.06));border-bottom:1px solid rgba(2,132,199,.25);padding:8px 14px;font-family:var(--font-mono);font-size:.62rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
   <span style="color:var(--blue);font-weight:700">☁️ Sync není nastaven</span>
@@ -921,10 +921,10 @@ const divMonths = {
 let portfolio = {
   tickers: ['PFLT','ARCC','CSWC','HTGC','MAIN','O','WPC','OHI','VICI','MO','VZ','BMY'],
   sectors: { PFLT:'BDC',ARCC:'BDC',CSWC:'BDC',HTGC:'BDC',MAIN:'BDC', O:'REIT',WPC:'REIT',OHI:'REIT',VICI:'REIT', MO:'Other',VZ:'Other',BMY:'Pharma' },
-  qty: { PFLT:1913,ARCC:113,CSWC:85,HTGC:53,MAIN:28, O:53,WPC:18,OHI:47,VICI:7, MO:31,VZ:22,BMY:3 },
-  avgCost: {},  // vážená průměrná nákupní cena
-  costQty: {},  // celkový počet nakoupených ks (pro průměrování)
-  fallback: { PFLT:8.63,ARCC:18.67,CSWC:23.50,HTGC:15.51,MAIN:54.06, O:63.33,WPC:73.23,OHI:46.41,VICI:28.42, MO:66.88,VZ:47.12,BMY:58.71 } // aktualizováno 25.4.2026
+  qty: { PFLT:0,ARCC:0,CSWC:0,HTGC:0,MAIN:0, O:0,WPC:0,OHI:0,VICI:0, MO:0,VZ:0,BMY:0 },
+  avgCost: {},
+  costQty: {},
+  fallback: { PFLT:8.63,ARCC:18.67,CSWC:23.50,HTGC:15.51,MAIN:54.06, O:63.33,WPC:73.23,OHI:46.41,VICI:28.42, MO:66.88,VZ:47.12,BMY:58.71 }
 };
 
 let dividendData = { PFLT:1.23, ARCC:1.92, CSWC:2.40, HTGC:1.80, MAIN:3.12, O:3.07, WPC:4.20, OHI:2.68, VICI:1.72, MO:3.92, VZ:2.66, BMY:2.40 };
@@ -1877,7 +1877,7 @@ function render(){
       <td style="color:${plColor}">${plText}</td>
       <td>${bar}</td>
       <td>${sigCell}</td>
-      <td style="text-align:center;font-family:var(--font-mono);font-weight:700">${qty}</td>
+      <td style="text-align:center;font-family:var(--font-mono);font-weight:700"><span style="border:1px solid var(--border);border-radius:6px;padding:2px 8px">${qty}</span></td>
     </tr>
     <tr class="detail-row"><td colspan="9"><div class="detail-panel" id="detail-${t}"></div></td></tr>`;
   });
@@ -3505,6 +3505,13 @@ loadFundCache();
 render();
 saveSnaps();
 setTimeout(fetchAll, 400);
+// Jednorázový reset starých localStorage dat (v02.05-15)
+if(!localStorage.getItem('reset_v02_05_15')){
+  localStorage.removeItem('portfolio_v8');
+  localStorage.removeItem('ppv8_lastDay');
+  localStorage.setItem('reset_v02_05_15', '1');
+}
+
 // GitHub pull při startu — stáhne aktuální data ze všech zařízení
 setTimeout(()=>ghPull(false), 800);
 // Spusť auto-polling (každých 60 s kontroluj změny)
