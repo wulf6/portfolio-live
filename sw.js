@@ -1,4 +1,4 @@
-const CACHE = 'portfolio-v2';
+const CACHE = 'portfolio-v3';
 const SHELL = [
   './',
   './index.html',
@@ -52,7 +52,10 @@ self.addEventListener('fetch', e => {
     fetch(e.request)
       .then(resp => {
         const clone = resp.clone();
-        caches.open(CACHE).then(c => c.put(e.request, clone));
+        // Ukládej do cache jen http/https requesty
+        if(e.request.url.startsWith('http')){
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+        }
         return resp;
       })
       .catch(() => caches.match(e.request))
