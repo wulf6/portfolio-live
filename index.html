@@ -133,7 +133,9 @@ tr.detail-row td{padding:0!important;border-bottom:1px solid var(--border)}
 .score-wrap{display:flex;align-items:center;gap:6px;justify-content:flex-end}
 .score-bar{width:36px;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
 .score-fill{height:100%;border-radius:2px;transition:width .4s;will-change:width}
-.tbl{border-collapse:collapse;width:100%;contain:layout style}
+.tbl{border-collapse:collapse;width:100%}
+tr.ticker-row{cursor:pointer;transition:background .12s;backface-visibility:hidden}
+tr.ticker-row:hover{background:rgba(2,132,199,.07)}
 
 .qty-wrap{display:flex;align-items:center;gap:4px;justify-content:flex-end}
 .qty-btn{
@@ -643,13 +645,13 @@ canvas.small-chart{width:100%!important;height:100%!important}
   </div>
 </div>
 <!-- Version badge -->
-<div style="position:fixed;bottom:6px;left:8px;font-size:.5rem;color:rgba(255,255,255,.2);font-family:monospace;z-index:999;pointer-events:none">v01.05-16:00</div>
+<div style="position:fixed;bottom:6px;left:8px;font-size:.5rem;color:rgba(255,255,255,.2);font-family:monospace;z-index:999;pointer-events:none">v02.05-12:00</div>
 <!-- First-run sync banner -->
 <div id="syncBanner" style="display:none;background:linear-gradient(135deg,rgba(2,132,199,.12),rgba(2,132,199,.06));border-bottom:1px solid rgba(2,132,199,.25);padding:8px 14px;font-family:var(--font-mono);font-size:.62rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
   <span style="color:var(--blue);font-weight:700">☁️ Sync není nastaven</span>
   <span style="color:var(--muted)">Chceš mít portfolio dostupné na PC, telefonu i tabletu?</span>
   <button onclick="openGhModal();document.getElementById('syncBanner').style.display='none'" class="pill pill-add" style="font-size:.58rem;padding:3px 10px">Nastavit synchronizaci →</button>
-  <button onclick="document.getElementById('syncBanner').style.display='none'" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:.7rem;margin-left:auto">✕</button>
+  <button onclick="document.getElementById('syncBanner').style.display='none';localStorage.setItem('syncBannerDismissed','1')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:.7rem;margin-left:auto">✕</button>
 </div>
 <!-- GitHub Sync Modal -->
 <div class="modal-overlay" id="ghModalOverlay" onclick="if(event.target===this)closeGhModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:120;align-items:center;justify-content:center;overflow-y:auto;padding:16px">
@@ -784,7 +786,7 @@ canvas.small-chart{width:100%!important;height:100%!important}
     <div style="overflow-x:auto">
     <table class="tbl">
       <thead>
-        <tr><th style="text-align:left">Ticker</th><th>Cena</th><th>DPS</th><th>Výnos</th><th>D/E</th><th title="BDC/REIT: NII Coverage | Ostatní: Payout ratio">Cov/Pay</th><th>Score</th><th class="th-signal">Signál ⓘ</th><th>Počet ks</th><th></th></tr>
+        <tr><th style="text-align:left">Ticker</th><th>Cena</th><th>DPS</th><th>Výnos</th><th>Nák.cena</th><th>Zisk/Ztráta</th><th>Score</th><th class="th-signal">Signál ⓘ</th><th>Počet ks</th><th></th></tr>
       </thead>
       <tbody id="tbl"></tbody>
     </table>
@@ -812,7 +814,17 @@ canvas.small-chart{width:100%!important;height:100%!important}
     </div>
 
     <div class="card">
-      <div class="card-header"><span class="card-title">📊 Historie vyplacených dividend</span></div>
+      <div class="card-header">
+        <span class="card-title">📊 Historie dividend</span>
+        <div style="display:flex;gap:4px" id="histFilterBtns">
+          <button onclick="setHistFilter(1)" id="hf1" class="pill" style="font-size:.52rem;padding:2px 7px">1M</button>
+          <button onclick="setHistFilter(6)" id="hf6" class="pill" style="font-size:.52rem;padding:2px 7px">6M</button>
+          <button onclick="setHistFilter(12)" id="hf12" class="pill pill-add" style="font-size:.52rem;padding:2px 7px">1R</button>
+          <button onclick="setHistFilter(60)" id="hf60" class="pill" style="font-size:.52rem;padding:2px 7px">5R</button>
+          <button onclick="setHistFilter(999)" id="hfall" class="pill" style="font-size:.52rem;padding:2px 7px">Vše</button>
+        </div>
+      </div>
+      <div id="histTableWrap" style="padding:8px 12px 10px;font-family:var(--font-mono);font-size:.65rem;max-height:260px;overflow-y:auto"></div>
       <div class="chart-wrap-small"><canvas id="dividendChart" class="small-chart"></canvas></div>
     </div>
 
@@ -875,6 +887,12 @@ canvas.small-chart{width:100%!important;height:100%!important}
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
+// Fallback pokud CDN selže
+if(typeof Chart === 'undefined'){
+  document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"><\/script>');
+}
+</script>
+<script>
 
 // ═══════════════════════════════════════════════════════════════
 // 📅 DIVIDENDOVÉ KALENDÁŘE
@@ -904,6 +922,8 @@ let portfolio = {
   tickers: ['PFLT','ARCC','CSWC','HTGC','MAIN','O','WPC','OHI','VICI','MO','VZ','BMY'],
   sectors: { PFLT:'BDC',ARCC:'BDC',CSWC:'BDC',HTGC:'BDC',MAIN:'BDC', O:'REIT',WPC:'REIT',OHI:'REIT',VICI:'REIT', MO:'Other',VZ:'Other',BMY:'Pharma' },
   qty: { PFLT:1913,ARCC:113,CSWC:85,HTGC:53,MAIN:28, O:53,WPC:18,OHI:47,VICI:7, MO:31,VZ:22,BMY:3 },
+  avgCost: {},  // vážená průměrná nákupní cena
+  costQty: {},  // celkový počet nakoupených ks (pro průměrování)
   fallback: { PFLT:8.63,ARCC:18.67,CSWC:23.50,HTGC:15.51,MAIN:54.06, O:63.33,WPC:73.23,OHI:46.41,VICI:28.42, MO:66.88,VZ:47.12,BMY:58.71 } // aktualizováno 25.4.2026
 };
 
@@ -1188,13 +1208,18 @@ function checkAndSaveMonthlyDividend(){
   const history = loadDividendHistory();
   const now = new Date();
   const currentKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-  const existing = history.find(h => h.month === currentKey);
-  if(!existing && now.getDate() === 1){
-    const currentDiv = getCurrentMonthDividend();
-    history.push({ month: currentKey, grossDiv: currentDiv, netDiv: currentDiv * 0.85, timestamp: Date.now() });
-    while(history.length > 12) history.shift();
-    saveDividendHistory(history);
-    return true;
+  // Ulož předchozí měsíc pokud ještě není v historii (první den nového měsíce)
+  if(now.getDate() === 1){
+    const prevDate = new Date(now.getFullYear(), now.getMonth()-1, 1);
+    const prevKey = `${prevDate.getFullYear()}-${String(prevDate.getMonth()+1).padStart(2,'0')}`;
+    if(!history.find(h => h.month === prevKey)){
+      const monthly = calculateMonthlyDividends();
+      const prevDiv = monthly[prevDate.getMonth()];
+      history.push({ month: prevKey, grossDiv: prevDiv, netDiv: prevDiv * 0.85, timestamp: Date.now() });
+      while(history.length > 60) history.shift();
+      saveDividendHistory(history);
+      return true;
+    }
   }
   return false;
 }
@@ -1234,6 +1259,7 @@ function updateDividendDisplay(){
     document.getElementById('dividendHistory').innerHTML = '<span style="font-size:.45rem;">⏳ první záznam bude 1. dne měsíce</span>';
   }
   renderDividendChart(history);
+  renderHistTable();
 }
 
 function renderDividendCalendar(){
@@ -1307,6 +1333,7 @@ function renderDividendCalendar(){
 }
 
 function renderDividendChart(historyData){
+  if(typeof Chart === 'undefined') return;
   const ctx = document.getElementById('dividendChart').getContext('2d');
   if(window.dividendChartInstance) window.dividendChartInstance.destroy();
   const months = historyData.map(h => h.month.slice(5));
@@ -1687,23 +1714,58 @@ function renderDetail(t){
 
   let items='';
 
-  // ── Základní data (vždy) ─────────────────────────────────────
   items += dItem('Sektor',              sec,                                    'var(--blue)');
   items += dItem('Hodnota pozice',      '$'+posVal.toLocaleString('cs-CZ',{maximumFractionDigits:0}), 'var(--text)');
   items += dItem('Počet kusů',          portfolio.qty[t]||0,                    'var(--text)');
   items += dItem('Roční dividenda',     '$'+annualDiv.toFixed(0),               'var(--green)');
   items += dItem('Dividendový výnos',   s.yield.toFixed(2)+'%',                 s.yield>9?'var(--red)':'var(--green)');
   items += dItem('Růst dividendy',      growthPct+'% p.a.',                     'var(--muted)');
-  items += dItem('P/E',                 pe!=null?pe.toFixed(1):'—',             peColor);
-  items += dItem('Výplatní poměr',      payR!=null?payR.toFixed(0)+'%':'—',     payColor);
+
+  // ── D/E a Cov/Pay přesunuty sem z tabulky ────────────────────
+  if(de!=null) items += dItem('Dluh / Vlastní jmění', de.toFixed(2)+'×', deColor);
   if(isBR){
-    items += dItem('Krytí dividendy',   nii!=null?nii.toFixed(2)+'×':'—',       niiColor);
-    if(pNav!=null) items += dItem('Cena / NAV', pNav.toFixed(2)+'×',            pNavColor);
+    items += dItem('Krytí dividendy', nii!=null?nii.toFixed(2)+'×':'—', niiColor);
+    if(pNav!=null) items += dItem('Cena / NAV', pNav.toFixed(2)+'×', pNavColor);
+  } else {
+    items += dItem('Výplatní poměr', payR!=null?payR.toFixed(0)+'%':'—', payColor);
   }
-  if(de!=null) items += dItem('Dluh / Vlastní jmění', de.toFixed(2)+'×',        deColor);
+
+  items += dItem('P/E',                 pe!=null?pe.toFixed(1):'—',             peColor);
   items += dItem('Skóre',              s.score+'/100',                          s.score>=75?'var(--green)':s.score>=50?'var(--yellow)':'var(--red)');
   items += fvItems;
   items += dItem('Doporučení',         recLabel(rec)+recSrc,                   recColor(rec));
+
+  // ── Nákupní cena — průměrovaný input ─────────────────────────
+  const avgCost = portfolio.avgCost[t] || '';
+  const plVal2 = avgCost ? (price - avgCost) * (portfolio.qty[t]||0) : null;
+  const plPct2 = avgCost ? ((price - avgCost) / avgCost * 100) : null;
+  const plColor2 = plVal2 === null ? 'var(--muted)' : plVal2 >= 0 ? 'var(--green)' : 'var(--red)';
+  items += `<div class="d-item" style="grid-column:1/-1;margin-top:6px;padding-top:8px;border-top:1px solid var(--border)">
+    <div style="font-size:.6rem;font-weight:700;color:var(--muted);letter-spacing:.08em;margin-bottom:6px">PŘIDAT NÁKUP (průměruje nákupní cenu)</div>
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:4px 8px">
+        <span style="font-size:.6rem;color:var(--muted)">ks</span>
+        <input id="cost-qty-${t}" type="number" min="1" step="1" placeholder="počet"
+          style="width:55px;background:none;border:none;color:var(--text);font-family:var(--font-mono);font-size:.72rem;outline:none"
+          onclick="event.stopPropagation()">
+      </div>
+      <div style="display:flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:4px 8px">
+        <span style="font-size:.6rem;color:var(--muted)">$</span>
+        <input id="cost-input-${t}" type="number" step="0.01" min="0" placeholder="cena/ks"
+          style="width:70px;background:none;border:none;color:var(--text);font-family:var(--font-mono);font-size:.72rem;outline:none"
+          onclick="event.stopPropagation()">
+      </div>
+      <button class="pill pill-add" style="font-size:.6rem;padding:4px 10px"
+        onclick="event.stopPropagation();addPurchasePrice('${t}')">+ Přidat</button>
+      ${avgCost ? `<button class="pill" style="font-size:.6rem;padding:4px 10px;color:var(--red);border-color:var(--red)"
+        onclick="event.stopPropagation();clearPurchasePrice('${t}')">Smazat vše</button>` : ''}
+    </div>
+    ${avgCost ? `
+    <div style="margin-top:8px;font-size:.65rem;font-family:var(--font-mono);line-height:1.9">
+      Průměr nák. cena: <b>$${Number(avgCost).toFixed(2)}</b> &nbsp;|&nbsp; Celkem ks: <b>${portfolio.qty[t]||0}</b><br>
+      Zisk/Ztráta: <b style="color:${plColor2}">${plVal2>=0?'+':''}$${plVal2.toFixed(0)} (${plPct2>=0?'+':''}${plPct2.toFixed(1)}%)</b>
+    </div>` : '<div style="font-size:.58rem;color:var(--muted);margin-top:4px">Zadej počet ks a cenu za kus — průměr se vypočítá automaticky.</div>'}
+  </div>`;
 
   // ── Live data z Finnhub (po enrichmentu) ─────────────────────
   if(live){
@@ -1765,15 +1827,21 @@ function render(){
       ? `<span class="sig ${sigC}">${sig}</span><span style="font-size:.52rem;color:var(--red);margin-left:3px;display:block;line-height:1.2">▲nadváha</span>`
       : `<span class="sig ${sigC}">${sig}</span>`;
 
+    const avgCost = portfolio.avgCost[t] || null;
+    const plVal = avgCost ? (price - avgCost) * qty : null;
+    const plPct = avgCost ? ((price - avgCost) / avgCost * 100) : null;
+    const plColor = plVal === null ? 'var(--muted)' : plVal >= 0 ? 'var(--green)' : 'var(--red)';
+    const plText = plVal === null ? '—' :
+      `${plVal >= 0 ? '+' : ''}$${(plVal).toFixed(0)}<br><span style="font-size:.55rem">${plPct >= 0 ? '+' : ''}${plPct.toFixed(1)}%</span>`;
+    const costText = avgCost ? `$${avgCost.toFixed(2)}` : '<span style="color:var(--muted);font-size:.6rem">—</span>';
+
     html += `<tr class="ticker-row" onclick="toggleDetail('${t}')">
       <td>${t}<br><span style="font-size:.58rem;color:var(--muted)">${portfolio.sectors[t]||'Other'}</span></td>
       <td title="${livePrices[t]===false?'záložní cena (API nedostupné)':'live cena'}">${livePrices[t]===false?'<span style="color:var(--muted)" title="záložní cena">~</span>':''}$${price.toFixed(2)}</td>
       <td>$${dps.toFixed(2)}</td>
       <td style="color:${sObj.yield>9?'var(--red)':sObj.yield>=5?'var(--green)':'var(--muted)'}">${sObj.yield.toFixed(1)}%</td>
-      <td style="color:${sObj.de>1.5?'var(--red)':sObj.de>1?'var(--yellow)':'var(--green)'}">${sObj.de.toFixed(2)}</td>
-      <td style="color:${(portfolio.sectors[t]==='BDC'||portfolio.sectors[t]==='REIT') ? (sObj.coverage>=1.10?'var(--green)':sObj.coverage>=0.90?'var(--yellow)':'var(--red)') : (sObj.payout>1?'var(--red)':sObj.payout>0.9?'var(--yellow)':'var(--green)')}">
-        ${(portfolio.sectors[t]==='BDC'||portfolio.sectors[t]==='REIT') ? sObj.coverage.toFixed(2)+'×' : (sObj.payout*100).toFixed(0)+'%'}
-      </td>
+      <td>${costText}</td>
+      <td style="color:${plColor}">${plText}</td>
       <td>${bar}</td>
       <td>${sigCell}</td>
       <td><div class="qty-wrap"><button class="qty-btn" onclick="event.stopPropagation();changeQty('${t}',-1)">−</button><input class="qty-input" id="qty-${t}" type="number" value="${qty}" min="0" onchange="event.stopPropagation();setQty('${t}', this.value)"><button class="qty-btn" onclick="event.stopPropagation();changeQty('${t}',1)">+</button></div></td>
@@ -1781,7 +1849,24 @@ function render(){
     </tr>
     <tr class="detail-row"><td colspan="10"><div class="detail-panel" id="detail-${t}"></div></td></tr>`;
   });
+
+  // Zachovej otevřené detail panely při re-renderu
+  const openDetails = new Set();
+  document.querySelectorAll('.detail-panel.open').forEach(p => {
+    const id = p.id.replace('detail-', '');
+    openDetails.add(id);
+  });
+
   document.getElementById('tbl').innerHTML = html;
+
+  // Znovu otevři detail panely které byly otevřené
+  openDetails.forEach(t => {
+    const el = document.getElementById('detail-'+t);
+    if(el){
+      el.classList.add('open');
+      el.innerHTML = renderDetail(t);
+    }
+  });
 
   const alerts = [];
   portfolio.tickers.forEach(t=>{
@@ -2023,6 +2108,7 @@ function calcSectorValues(){
 }
 
 function renderSectorPie(){
+  if(typeof Chart === 'undefined') return; // Chart.js ještě nenačteno
   const { vals, total } = calcSectorValues();
   const ctx = document.getElementById('sectorPieChart').getContext('2d');
   if(sectorPieInst) sectorPieInst.destroy();
@@ -2741,7 +2827,111 @@ function closeCalModal(){
 }
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeCalModal(); });
 
-// ── Kolapsovatelné karty na PC ────────────────────────────────
+// ── Historie dividend — filtr ─────────────────────────────────
+let _histFilter = 12;
+function setHistFilter(months){
+  _histFilter = months;
+  // Zvýrazni aktivní tlačítko
+  ['1','6','12','60','all'].forEach(k => {
+    const el = document.getElementById('hf'+(k==='all'?'all':k));
+    if(!el) return;
+    const active = (k === 'all' && months === 999) || parseInt(k) === months;
+    el.className = active ? 'pill pill-add' : 'pill';
+    el.style.fontSize = '.52rem';
+    el.style.padding = '2px 7px';
+  });
+  renderHistTable();
+}
+
+function renderHistTable(){
+  const history = loadDividendHistory();
+  const wrap = document.getElementById('histTableWrap');
+  if(!wrap) return;
+
+  // Přidej aktuální měsíc jako preview (není uložen dokud není 1. den)
+  const now = new Date();
+  const currentKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const monthly = calculateMonthlyDividends();
+  const currentGross = monthly[now.getMonth()];
+  const allEntries = [...history];
+  // Přidej aktuální měsíc jako odhad pokud ještě není v historii
+  if(!allEntries.find(h => h.month === currentKey) && currentGross > 0){
+    allEntries.push({ month: currentKey, grossDiv: currentGross, netDiv: currentGross * 0.85, estimated: true });
+  }
+  allEntries.sort((a,b) => b.month.localeCompare(a.month));
+
+  const filtered = _histFilter === 999 ? allEntries : allEntries.slice(0, _histFilter);
+
+  if(!filtered.length){
+    wrap.innerHTML = '<div style="color:var(--muted);text-align:center;padding:16px">Zatím žádná data</div>';
+    return;
+  }
+
+  const MONTH_CZ = ['Leden','Únor','Březen','Duben','Květen','Červen','Červenec','Srpen','Září','Říjen','Listopad','Prosinec'];
+  const maxNet = Math.max(...filtered.map(h => h.netDiv));
+
+  wrap.innerHTML = filtered.map(h => {
+    const [yr, mo] = h.month.split('-');
+    const moName = MONTH_CZ[parseInt(mo)-1];
+    const barW = maxNet > 0 ? Math.round((h.netDiv / maxNet) * 100) : 0;
+    const isEstimate = h.estimated;
+    return `<div style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:2px">
+        <span style="color:var(--muted);font-size:.6rem">${moName} ${yr}${isEstimate ? ' <span style="color:var(--yellow);font-size:.5rem">odhad</span>' : ''}</span>
+        <div style="text-align:right">
+          <span style="color:var(--green);font-weight:600">$${h.netDiv.toFixed(2)}</span>
+          <span style="color:var(--muted);font-size:.55rem"> netto</span>
+        </div>
+      </div>
+      <div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden">
+        <div style="height:100%;width:${barW}%;background:${isEstimate ? 'var(--yellow)' : 'var(--green)'};border-radius:2px;transition:width .3s"></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  renderDividendChart(filtered.slice().reverse());
+}
+// ── Nákupní cena — vážený průměr ─────────────────────────────
+function addPurchasePrice(t){
+  const inputPrice = document.getElementById('cost-input-'+t);
+  const inputQty   = document.getElementById('cost-qty-'+t);
+  if(!inputPrice || !inputQty) return;
+
+  const newPrice = parseFloat(inputPrice.value);
+  const newQty   = parseInt(inputQty.value);
+
+  if(!newPrice || newPrice <= 0){ toast('⚠️ Zadej cenu za kus'); return; }
+  if(!newQty   || newQty   <= 0){ toast('⚠️ Zadej počet kusů'); return; }
+
+  const prevAvg = portfolio.avgCost[t]  || 0;
+  const prevQty = portfolio.costQty[t]  || 0;
+
+  // Vážený průměr nákupní ceny
+  const newTotalQty = prevQty + newQty;
+  const newAvg = (prevAvg * prevQty + newPrice * newQty) / newTotalQty;
+
+  portfolio.avgCost[t]  = newAvg;
+  portfolio.costQty[t]  = newTotalQty;
+
+  // Přičti nakoupené kusy k celkovému počtu
+  portfolio.qty[t] = (portfolio.qty[t] || 0) + newQty;
+
+  inputPrice.value = '';
+  inputQty.value   = '';
+
+  render();
+  ghScheduleSave();
+  toast(`✅ ${t}: +${newQty} ks @ $${newPrice.toFixed(2)} → průměr $${newAvg.toFixed(2)}`);
+}
+
+function clearPurchasePrice(t){
+  delete portfolio.avgCost[t];
+  delete portfolio.costQty[t];
+  render();
+  ghScheduleSave();
+  toast(`🗑 Nákupní cena ${t} smazána`);
+}
+
 function togglePcCard(id){
   const el = document.getElementById(id);
   if(!el) return;
@@ -2756,6 +2946,13 @@ function initPcCards(){
   }
 }
 document.addEventListener('DOMContentLoaded', initPcCards);
+// Retry Chart.js grafy pokud se CDN načetlo pozdě
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    if(typeof Chart !== 'undefined'){ renderSectorPie(); renderHistTable(); }
+    else setTimeout(() => { if(typeof Chart !== 'undefined'){ renderSectorPie(); renderHistTable(); }}, 2000);
+  }, 500);
+});
 window.addEventListener('resize', initPcCards);
 function freshnessColor(ts){
   if(!ts) return 'var(--red)';
@@ -2862,6 +3059,8 @@ function ghSerialize(){
     tickers:       portfolio.tickers,
     sectors:       portfolio.sectors,
     fallback:      portfolio.fallback,
+    avgCost:       portfolio.avgCost,
+    costQty:       portfolio.costQty,
     dividendData,
     dividendGrowth,
     fundamentals,
@@ -2880,6 +3079,14 @@ function ghApply(data){
     Object.assign(portfolio.qty, data.qty);
   }
   if(data.tickers)       portfolio.tickers = [...data.tickers];
+  if(data.avgCost){
+    portfolio.avgCost = {};
+    Object.assign(portfolio.avgCost, data.avgCost);
+  }
+  if(data.costQty){
+    portfolio.costQty = {};
+    Object.assign(portfolio.costQty, data.costQty);
+  }
   if(data.sectors){
     Object.keys(portfolio.sectors).forEach(k => delete portfolio.sectors[k]);
     Object.assign(portfolio.sectors, data.sectors);
