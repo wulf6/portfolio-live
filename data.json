@@ -1,19 +1,19 @@
 {
   "_version": 2,
-  "_savedAt": "2026-05-02T13:38:44.631Z",
+  "_savedAt": "2026-05-02T13:40:47.089Z",
   "qty": {
-    "PFLT": 1914,
-    "ARCC": 113,
-    "CSWC": 85,
-    "HTGC": 53,
-    "MAIN": 28,
-    "O": 53,
-    "WPC": 18,
-    "OHI": 47,
-    "VICI": 7,
-    "MO": 31,
-    "VZ": 22,
-    "BMY": 3
+    "PFLT": 0,
+    "ARCC": 0,
+    "CSWC": 0,
+    "HTGC": 0,
+    "MAIN": 0,
+    "O": 0,
+    "WPC": 0,
+    "OHI": 0,
+    "VICI": 0,
+    "MO": 0,
+    "VZ": 0,
+    "BMY": 0
   },
   "tickers": [
     "PFLT",
@@ -57,12 +57,8 @@
     "VZ": 47.12,
     "BMY": 58.71
   },
-  "avgCost": {
-    "PFLT": 9
-  },
-  "costQty": {
-    "PFLT": 1
-  },
+  "avgCost": {},
+  "costQty": {},
   "dividendData": {
     "PFLT": 1.23,
     "ARCC": 1.92,
@@ -93,124 +89,100 @@
   },
   "fundamentals": {
     "PFLT": {
-      "pe": 13,
+      "pe": 8.3,
       "de": 1.57,
-      "payout": 1.681,
+      "payout": 0.9,
       "sectorStability": 0.65,
       "niiCoverage": 0.88,
-      "pNav": 0.77,
-      "pb": 0.82,
-      "fundTs": 1777438220552
+      "pNav": 0.77
     },
     "ARCC": {
-      "pe": 10.4,
+      "pe": 9.5,
       "de": 1.08,
-      "payout": 0.973,
+      "payout": 0.95,
       "sectorStability": 0.8,
       "niiCoverage": 1.05,
-      "pNav": 0.95,
-      "pb": 1.01,
-      "fundTs": 1777438220558
+      "pNav": 0.95
     },
     "CSWC": {
-      "pe": 20.1,
+      "pe": 9.8,
       "de": 0.85,
-      "payout": 1.776,
+      "payout": 0.92,
       "sectorStability": 0.75,
       "niiCoverage": 1.15,
-      "pNav": 1.1,
-      "pb": 1.34,
-      "fundTs": 1777438280063
+      "pNav": 1.1
     },
     "HTGC": {
-      "pe": 8.4,
+      "pe": 11.5,
       "de": 1.02,
-      "payout": 0.96,
+      "payout": 1.02,
       "sectorStability": 0.7,
       "niiCoverage": 1.02,
-      "pNav": 1.5,
-      "pb": 1.54,
-      "fundTs": 1777438280019
+      "pNav": 1.5
     },
     "MAIN": {
-      "pe": 9.9,
+      "pe": 16.2,
       "de": 0.73,
-      "payout": 0.688,
+      "payout": 0.85,
       "sectorStability": 0.9,
       "niiCoverage": 1.02,
-      "pNav": 1.8,
-      "pb": 1.81,
-      "fundTs": 1777438280061
+      "pNav": 1.8
     },
     "O": {
-      "pe": 55.8,
+      "pe": 13.8,
       "de": 1.2,
-      "payout": 2.759,
+      "payout": 0.73,
       "sectorStability": 0.9,
       "niiCoverage": 1.37,
-      "pNav": 1,
-      "pb": 1.33,
-      "fundTs": 1777438280019
+      "pNav": 1
     },
     "WPC": {
-      "pe": 34.5,
+      "pe": 14,
       "de": 0.82,
-      "payout": 1.694,
+      "payout": 0.79,
       "sectorStability": 0.85,
       "niiCoverage": 1.2,
-      "pNav": 1,
-      "pb": 1.76,
-      "fundTs": 1777438340510
+      "pNav": 1
     },
     "OHI": {
-      "pe": 23.2,
+      "pe": 14,
       "de": 1.1,
-      "payout": 1.322,
+      "payout": 0.84,
       "sectorStability": 0.85,
       "niiCoverage": 1.19,
-      "pNav": 0.95,
-      "pb": 2.56,
-      "fundTs": 1777438340399
+      "pNav": 0.95
     },
     "VICI": {
-      "pe": 10.9,
+      "pe": 12,
       "de": 0.7,
-      "payout": 0.668,
+      "payout": 0.72,
       "sectorStability": 0.85,
       "niiCoverage": 1.38,
-      "pNav": 1.05,
-      "pb": 1.09,
-      "fundTs": 1777438340351
+      "pNav": 1.05
     },
     "MO": {
-      "pe": 16.3,
+      "pe": 9.5,
       "de": 2,
-      "payout": 1.002,
+      "payout": 0.77,
       "sectorStability": 0.55,
       "niiCoverage": 1.3,
-      "pNav": null,
-      "pb": 26.84,
-      "fundTs": 1777438340347
+      "pNav": null
     },
     "VZ": {
-      "pe": 11.6,
+      "pe": 9.3,
       "de": 1.51,
-      "payout": 0.668,
+      "payout": 0.55,
       "sectorStability": 0.65,
       "niiCoverage": 1.25,
-      "pNav": null,
-      "pb": 1.64,
-      "fundTs": 1777438340458
+      "pNav": null
     },
     "BMY": {
-      "pe": 16.9,
+      "pe": 8.8,
       "de": 2.55,
-      "payout": 0.715,
+      "payout": 0.4,
       "sectorStability": 0.65,
       "niiCoverage": 1.5,
-      "pNav": null,
-      "pb": 5.94,
-      "fundTs": 1777438340470
+      "pNav": null
     }
   },
   "rfOverride": 0.045,
