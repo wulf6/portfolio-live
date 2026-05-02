@@ -1,6 +1,6 @@
 {
   "_version": 2,
-  "_savedAt": "2026-05-02T13:40:47.089Z",
+  "_savedAt": "2026-05-02T18:36:40.058Z",
   "qty": {
     "PFLT": 0,
     "ARCC": 0,
@@ -13,7 +13,8 @@
     "VICI": 0,
     "MO": 0,
     "VZ": 0,
-    "BMY": 0
+    "BMY": 0,
+    "ENB": 1
   },
   "tickers": [
     "PFLT",
@@ -27,7 +28,8 @@
     "VICI",
     "MO",
     "VZ",
-    "BMY"
+    "BMY",
+    "ENB"
   ],
   "sectors": {
     "PFLT": "BDC",
@@ -41,7 +43,8 @@
     "VICI": "REIT",
     "MO": "Other",
     "VZ": "Other",
-    "BMY": "Pharma"
+    "BMY": "Pharma",
+    "ENB": "Other"
   },
   "fallback": {
     "PFLT": 8.63,
@@ -55,7 +58,8 @@
     "VICI": 28.42,
     "MO": 66.88,
     "VZ": 47.12,
-    "BMY": 58.71
+    "BMY": 58.71,
+    "ENB": 54.85
   },
   "avgCost": {},
   "costQty": {},
@@ -71,7 +75,8 @@
     "VICI": 1.72,
     "MO": 3.92,
     "VZ": 2.66,
-    "BMY": 2.4
+    "BMY": 2.4,
+    "ENB": 2.8522000000000003
   },
   "dividendGrowth": {
     "PFLT": 0.02,
@@ -85,7 +90,8 @@
     "VICI": 0.05,
     "MO": 0.03,
     "VZ": 0.02,
-    "BMY": 0.05
+    "BMY": 0.05,
+    "ENB": 0.03
   },
   "fundamentals": {
     "PFLT": {
@@ -182,6 +188,14 @@
       "payout": 0.4,
       "sectorStability": 0.65,
       "niiCoverage": 1.5,
+      "pNav": null
+    },
+    "ENB": {
+      "pe": 15,
+      "de": 1,
+      "payout": 0.7,
+      "sectorStability": 0.6,
+      "niiCoverage": 1,
       "pNav": null
     }
   },
