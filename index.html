@@ -9,22 +9,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Portfolio">
 <meta name="theme-color" content="#0284c7">
-<link rel="manifest" href="data:application/manifest+json,{
-  %22name%22:%22Dividendov%C3%A9+portfolio%22,
-  %22short_name%22:%22Portfolio%22,
-  %22description%22:%22Dividendov%C3%A9+portfolio+tracker%22,
-  %22start_url%22:%22/portfolio-live/%22,
-  %22scope%22:%22/portfolio-live/%22,
-  %22display%22:%22standalone%22,
-  %22orientation%22:%22portrait%22,
-  %22background_color%22:%22%230f172a%22,
-  %22theme_color%22:%22%230284c7%22,
-  %22icons%22:[
-    {%22src%22:%22https://raw.githubusercontent.com/wulf6/portfolio-live/main/icon-192.png%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22,%22purpose%22:%22any%20maskable%22},
-    {%22src%22:%22https://raw.githubusercontent.com/wulf6/portfolio-live/main/icon-512.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22,%22purpose%22:%22any%20maskable%22}
-  ]
-}">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230284c7'/><text y='.9em' font-size='80' x='10'>💹</text></svg>">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -645,7 +631,7 @@ canvas.small-chart{width:100%!important;height:100%!important}
   </div>
 </div>
 <!-- Version badge -->
-<div style="position:fixed;bottom:6px;left:8px;font-size:.5rem;color:rgba(255,255,255,.2);font-family:monospace;z-index:999;pointer-events:none">v02.05-16:00</div>
+<div style="position:fixed;bottom:6px;left:8px;font-size:.5rem;color:rgba(255,255,255,.2);font-family:monospace;z-index:999;pointer-events:none">v02.05-17:00</div>
 <!-- First-run sync banner -->
 <div id="syncBanner" style="display:none;background:linear-gradient(135deg,rgba(2,132,199,.12),rgba(2,132,199,.06));border-bottom:1px solid rgba(2,132,199,.25);padding:8px 14px;font-family:var(--font-mono);font-size:.62rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
   <span style="color:var(--blue);font-weight:700">☁️ Sync není nastaven</span>
@@ -3568,11 +3554,9 @@ self.addEventListener('fetch',e=>{
 `;
 
 if('serviceWorker' in navigator && location.protocol==='https:'){
-  const blob=new Blob([SW_CODE],{type:'application/javascript'});
-  const swUrl=URL.createObjectURL(blob);
-  navigator.serviceWorker.register(swUrl,{scope:'./'})
-    .then(r=>console.log('SW registrován'))
-    .catch(()=>{});
+  navigator.serviceWorker.register('./sw.js', {scope: '/portfolio-live/'})
+    .then(r => console.log('SW registrován, scope:', r.scope))
+    .catch(e => console.log('SW chyba:', e));
 }
 
 // PWA Install prompt
