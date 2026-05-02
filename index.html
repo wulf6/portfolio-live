@@ -645,7 +645,7 @@ canvas.small-chart{width:100%!important;height:100%!important}
   </div>
 </div>
 <!-- Version badge -->
-<div style="position:fixed;bottom:6px;left:8px;font-size:.5rem;color:rgba(255,255,255,.2);font-family:monospace;z-index:999;pointer-events:none">v02.05-12:00</div>
+<div style="position:fixed;bottom:6px;left:8px;font-size:.5rem;color:rgba(255,255,255,.2);font-family:monospace;z-index:999;pointer-events:none">v02.05-13:00</div>
 <!-- First-run sync banner -->
 <div id="syncBanner" style="display:none;background:linear-gradient(135deg,rgba(2,132,199,.12),rgba(2,132,199,.06));border-bottom:1px solid rgba(2,132,199,.25);padding:8px 14px;font-family:var(--font-mono);font-size:.62rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
   <span style="color:var(--blue);font-weight:700">☁️ Sync není nastaven</span>
@@ -786,7 +786,7 @@ canvas.small-chart{width:100%!important;height:100%!important}
     <div style="overflow-x:auto">
     <table class="tbl">
       <thead>
-        <tr><th style="text-align:left">Ticker</th><th>Cena</th><th>DPS</th><th>Výnos</th><th>Nák.cena</th><th>Zisk/Ztráta</th><th>Score</th><th class="th-signal">Signál ⓘ</th><th>Počet ks</th><th></th></tr>
+        <tr><th style="text-align:left">Ticker</th><th>Cena</th><th>DPS</th><th>Výnos</th><th>Nák.cena</th><th>Zisk/Ztráta</th><th>Score</th><th class="th-signal">Signál ⓘ</th><th>Ks</th></tr>
       </thead>
       <tbody id="tbl"></tbody>
     </table>
@@ -1741,30 +1741,63 @@ function renderDetail(t){
   const plPct2 = avgCost ? ((price - avgCost) / avgCost * 100) : null;
   const plColor2 = plVal2 === null ? 'var(--muted)' : plVal2 >= 0 ? 'var(--green)' : 'var(--red)';
   items += `<div class="d-item" style="grid-column:1/-1;margin-top:6px;padding-top:8px;border-top:1px solid var(--border)">
-    <div style="font-size:.6rem;font-weight:700;color:var(--muted);letter-spacing:.08em;margin-bottom:6px">PŘIDAT NÁKUP (průměruje nákupní cenu)</div>
-    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-      <div style="display:flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:4px 8px">
-        <span style="font-size:.6rem;color:var(--muted)">ks</span>
-        <input id="cost-qty-${t}" type="number" min="1" step="1" placeholder="počet"
-          style="width:55px;background:none;border:none;color:var(--text);font-family:var(--font-mono);font-size:.72rem;outline:none"
-          onclick="event.stopPropagation()">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;flex-wrap:wrap">
+
+      <!-- NÁKUP -->
+      <div>
+        <div style="font-size:.6rem;font-weight:700;color:var(--green);letter-spacing:.08em;margin-bottom:6px">📈 PŘIDAT NÁKUP</div>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <div style="display:flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:4px 8px">
+            <span style="font-size:.6rem;color:var(--muted)">ks</span>
+            <input id="cost-qty-${t}" type="number" min="1" step="1" placeholder="počet"
+              style="width:55px;background:none;border:none;color:var(--text);font-family:var(--font-mono);font-size:.72rem;outline:none"
+              onclick="event.stopPropagation()">
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:4px 8px">
+            <span style="font-size:.6rem;color:var(--muted)">$</span>
+            <input id="cost-input-${t}" type="number" step="0.01" min="0" placeholder="cena/ks"
+              style="width:70px;background:none;border:none;color:var(--text);font-family:var(--font-mono);font-size:.72rem;outline:none"
+              onclick="event.stopPropagation()">
+          </div>
+          <button class="pill pill-add" style="font-size:.6rem;padding:5px 10px"
+            onclick="event.stopPropagation();addPurchasePrice('${t}')">+ Přidat</button>
+        </div>
       </div>
-      <div style="display:flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:4px 8px">
-        <span style="font-size:.6rem;color:var(--muted)">$</span>
-        <input id="cost-input-${t}" type="number" step="0.01" min="0" placeholder="cena/ks"
-          style="width:70px;background:none;border:none;color:var(--text);font-family:var(--font-mono);font-size:.72rem;outline:none"
-          onclick="event.stopPropagation()">
+
+      <!-- PRODEJ -->
+      <div>
+        <div style="font-size:.6rem;font-weight:700;color:var(--red);letter-spacing:.08em;margin-bottom:6px">📉 PRODAT</div>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <div style="display:flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:4px 8px">
+            <span style="font-size:.6rem;color:var(--muted)">ks</span>
+            <input id="sell-qty-${t}" type="number" min="1" step="1" placeholder="počet"
+              style="width:55px;background:none;border:none;color:var(--text);font-family:var(--font-mono);font-size:.72rem;outline:none"
+              onclick="event.stopPropagation()">
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:4px 8px">
+            <span style="font-size:.6rem;color:var(--muted)">$</span>
+            <input id="sell-price-${t}" type="number" step="0.01" min="0" placeholder="cena/ks"
+              style="width:70px;background:none;border:none;color:var(--text);font-family:var(--font-mono);font-size:.72rem;outline:none"
+              onclick="event.stopPropagation()">
+          </div>
+          <div style="display:flex;gap:5px">
+            <button class="pill" style="font-size:.6rem;padding:5px 10px;color:var(--red);border-color:var(--red);flex:1"
+              onclick="event.stopPropagation();sellShares('${t}')">− Prodat</button>
+            <button class="pill" style="font-size:.6rem;padding:5px 10px;color:var(--red);border-color:var(--red)"
+              title="Smazat celou pozici" onclick="event.stopPropagation();if(confirm('Smazat ${t}?'))removeTicker('${t}')">🗑</button>
+          </div>
+        </div>
       </div>
-      <button class="pill pill-add" style="font-size:.6rem;padding:4px 10px"
-        onclick="event.stopPropagation();addPurchasePrice('${t}')">+ Přidat</button>
-      ${avgCost ? `<button class="pill" style="font-size:.6rem;padding:4px 10px;color:var(--red);border-color:var(--red)"
-        onclick="event.stopPropagation();clearPurchasePrice('${t}')">Smazat vše</button>` : ''}
+
     </div>
+
     ${avgCost ? `
-    <div style="margin-top:8px;font-size:.65rem;font-family:var(--font-mono);line-height:1.9">
+    <div style="margin-top:10px;font-size:.65rem;font-family:var(--font-mono);line-height:1.9;padding-top:8px;border-top:1px solid var(--border)">
       Průměr nák. cena: <b>$${Number(avgCost).toFixed(2)}</b> &nbsp;|&nbsp; Celkem ks: <b>${portfolio.qty[t]||0}</b><br>
       Zisk/Ztráta: <b style="color:${plColor2}">${plVal2>=0?'+':''}$${plVal2.toFixed(0)} (${plPct2>=0?'+':''}${plPct2.toFixed(1)}%)</b>
-    </div>` : '<div style="font-size:.58rem;color:var(--muted);margin-top:4px">Zadej počet ks a cenu za kus — průměr se vypočítá automaticky.</div>'}
+      &nbsp;<button class="pill" style="font-size:.55rem;padding:2px 7px;color:var(--red);border-color:var(--red)"
+        onclick="event.stopPropagation();clearPurchasePrice('${t}')">Smazat historii cen</button>
+    </div>` : '<div style="font-size:.58rem;color:var(--muted);margin-top:6px">Zadej počet ks a cenu — průměr se vypočítá automaticky.</div>'}
   </div>`;
 
   // ── Live data z Finnhub (po enrichmentu) ─────────────────────
@@ -1844,10 +1877,9 @@ function render(){
       <td style="color:${plColor}">${plText}</td>
       <td>${bar}</td>
       <td>${sigCell}</td>
-      <td><div class="qty-wrap"><button class="qty-btn" onclick="event.stopPropagation();changeQty('${t}',-1)">−</button><input class="qty-input" id="qty-${t}" type="number" value="${qty}" min="0" onchange="event.stopPropagation();setQty('${t}', this.value)"><button class="qty-btn" onclick="event.stopPropagation();changeQty('${t}',1)">+</button></div></td>
-      <td><button class="btn-del" onclick="event.stopPropagation();removeTicker('${t}')">🗑</button></td>
+      <td style="text-align:center;font-family:var(--font-mono);font-weight:700">${qty}</td>
     </tr>
-    <tr class="detail-row"><td colspan="10"><div class="detail-panel" id="detail-${t}"></div></td></tr>`;
+    <tr class="detail-row"><td colspan="9"><div class="detail-panel" id="detail-${t}"></div></td></tr>`;
   });
 
   // Zachovej otevřené detail panely při re-renderu
@@ -2892,6 +2924,41 @@ function renderHistTable(){
   renderDividendChart(filtered.slice().reverse());
 }
 // ── Nákupní cena — vážený průměr ─────────────────────────────
+function sellShares(t){
+  const inputQty   = document.getElementById('sell-qty-'+t);
+  const inputPrice = document.getElementById('sell-price-'+t);
+  if(!inputQty) return;
+
+  const sellQty   = parseInt(inputQty.value);
+  const sellPrice = parseFloat(inputPrice?.value) || null;
+
+  if(!sellQty || sellQty <= 0){ toast('⚠️ Zadej počet kusů k prodeji'); return; }
+
+  const currentQty = portfolio.qty[t] || 0;
+  if(sellQty > currentQty){ toast(`⚠️ Nemáš tolik kusů (máš ${currentQty})`); return; }
+
+  const newQty = currentQty - sellQty;
+
+  // Ziskovost prodeje
+  if(sellPrice && portfolio.avgCost[t]){
+    const plPerShare = sellPrice - portfolio.avgCost[t];
+    const totalPl = plPerShare * sellQty;
+    toast(`📉 ${t}: prodáno ${sellQty} ks @ $${sellPrice.toFixed(2)} | P/L: ${totalPl>=0?'+':''}$${totalPl.toFixed(0)}`);
+  } else {
+    toast(`📉 ${t}: prodáno ${sellQty} ks → zbývá ${newQty} ks`);
+  }
+
+  if(newQty === 0){
+    removeTicker(t);
+  } else {
+    portfolio.qty[t] = newQty;
+    // Aktualizuj costQty (počet ks v průměru)
+    if(portfolio.costQty[t]) portfolio.costQty[t] = Math.max(0, portfolio.costQty[t] - sellQty);
+    render();
+    ghScheduleSave();
+  }
+}
+
 function addPurchasePrice(t){
   const inputPrice = document.getElementById('cost-input-'+t);
   const inputQty   = document.getElementById('cost-qty-'+t);
