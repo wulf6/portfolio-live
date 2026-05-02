@@ -631,7 +631,7 @@ canvas.small-chart{width:100%!important;height:100%!important}
   </div>
 </div>
 <!-- Version badge -->
-<div style="position:fixed;bottom:6px;left:8px;font-size:.5rem;color:rgba(255,255,255,.2);font-family:monospace;z-index:999;pointer-events:none">v02.05-17:00</div>
+<div style="position:fixed;bottom:6px;left:8px;font-size:.5rem;color:rgba(255,255,255,.2);font-family:monospace;z-index:999;pointer-events:none">v02.05-18:00</div>
 <!-- First-run sync banner -->
 <div id="syncBanner" style="display:none;background:linear-gradient(135deg,rgba(2,132,199,.12),rgba(2,132,199,.06));border-bottom:1px solid rgba(2,132,199,.25);padding:8px 14px;font-family:var(--font-mono);font-size:.62rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
   <span style="color:var(--blue);font-weight:700">☁️ Sync není nastaven</span>
@@ -2393,10 +2393,21 @@ async function fetchAll(){
   if(fetchBusy) return;
   fetchBusy=true; let liveCount=0;
   document.getElementById('statusBadge').textContent='📡 Načítám ceny…';
-  const results=await Promise.all(portfolio.tickers.map(t=>fetchPriceFromFinnhub(t).then(p=>({t,p}))));
-  results.forEach(({t,p})=>{ if(p){prices[t]=p;livePrices[t]=true;priceTs[t]=Date.now();liveCount++;}else{livePrices[t]=false;} });
+
+  // Postupné načítání cen — 300ms mezi tickery
+  for(let i=0; i<portfolio.tickers.length; i++){
+    const t = portfolio.tickers[i];
+    const p = await fetchPriceFromFinnhub(t).catch(()=>null);
+    if(p){ prices[t]=p; livePrices[t]=true; priceTs[t]=Date.now(); liveCount++; }
+    else { livePrices[t]=false; }
+    if(i < portfolio.tickers.length-1) await new Promise(r=>setTimeout(r,300));
+  }
+
   render();
-  portfolio.tickers.forEach(t=>fetchFundamentals(t));
+  // Rozlož fundamentals requesty — 1 ticker každých 1.2s
+  portfolio.tickers.forEach((t, i) => {
+    setTimeout(() => fetchFundamentals(t), i * 1200);
+  });
   const now=new Date();
   const timeStr=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
   const total=portfolio.tickers.length;
