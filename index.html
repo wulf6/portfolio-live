@@ -645,7 +645,7 @@ canvas.small-chart{width:100%!important;height:100%!important}
   </div>
 </div>
 <!-- Version badge -->
-<div style="position:fixed;bottom:6px;left:8px;font-size:.5rem;color:rgba(255,255,255,.2);font-family:monospace;z-index:999;pointer-events:none">v02.05-15:00</div>
+<div style="position:fixed;bottom:6px;left:8px;font-size:.5rem;color:rgba(255,255,255,.2);font-family:monospace;z-index:999;pointer-events:none">v02.05-16:00</div>
 <!-- First-run sync banner -->
 <div id="syncBanner" style="display:none;background:linear-gradient(135deg,rgba(2,132,199,.12),rgba(2,132,199,.06));border-bottom:1px solid rgba(2,132,199,.25);padding:8px 14px;font-family:var(--font-mono);font-size:.62rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
   <span style="color:var(--blue);font-weight:700">☁️ Sync není nastaven</span>
@@ -3505,11 +3505,13 @@ loadFundCache();
 render();
 saveSnaps();
 setTimeout(fetchAll, 400);
-// Jednorázový reset starých localStorage dat (v02.05-15)
-if(!localStorage.getItem('reset_v02_05_15')){
+// Jednorázový reset starých localStorage dat (v02.05-16)
+if(!localStorage.getItem('reset_v02_05_16')){
   localStorage.removeItem('portfolio_v8');
   localStorage.removeItem('ppv8_lastDay');
-  localStorage.setItem('reset_v02_05_15', '1');
+  localStorage.removeItem('divHistory');
+  localStorage.removeItem('syncBannerDismissed');
+  localStorage.setItem('reset_v02_05_16', '1');
 }
 
 // GitHub pull při startu — stáhne aktuální data ze všech zařízení
@@ -3521,8 +3523,10 @@ setTimeout(()=>{
   const banner = document.getElementById('syncBanner');
   if(banner && !ghConfigured() && !localStorage.getItem('syncBannerDismissed')){
     banner.style.display = 'flex';
+  } else if(banner){
+    banner.style.display = 'none';
   }
-}, 500);
+}, 1000);
 // DPS refresh: 24h
 setTimeout(()=>refreshDpsAll(), 2000);
 setInterval(()=>refreshDpsAll(), DPS_TTL_MS);
