@@ -631,7 +631,7 @@ canvas.small-chart{width:100%!important;height:100%!important}
   </div>
 </div>
 <!-- Version badge -->
-<div style="position:fixed;bottom:6px;left:8px;font-size:.5rem;color:rgba(255,255,255,.2);font-family:monospace;z-index:999;pointer-events:none">v02.05-18:00</div>
+<div style="position:fixed;bottom:6px;left:8px;font-size:.5rem;color:rgba(255,255,255,.2);font-family:monospace;z-index:999;pointer-events:none">v02.05-19:00</div>
 <!-- First-run sync banner -->
 <div id="syncBanner" style="display:none;background:linear-gradient(135deg,rgba(2,132,199,.12),rgba(2,132,199,.06));border-bottom:1px solid rgba(2,132,199,.25);padding:8px 14px;font-family:var(--font-mono);font-size:.62rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
   <span style="color:var(--blue);font-weight:700">☁️ Sync není nastaven</span>
@@ -1390,17 +1390,11 @@ function toggleDetail(t){
       if(!token) return;
       Promise.all([
         fetch('https://finnhub.io/api/v1/stock/metric?symbol='+t+'&metric=all&token='+token).then(r=>r.ok?r.json():null).catch(()=>null),
-        fetch('https://finnhub.io/api/v1/stock/profile2?symbol='+t+'&token='+token).then(r=>r.ok?r.json():null).catch(()=>null),
-        fetch('https://finnhub.io/api/v1/recommendation?symbol='+t+'&limit=1&token='+token).then(r=>r.ok?r.json():null).catch(()=>null)
-      ]).then(([q,met,rec])=>{
-        if(!q||!q.metric) return; // API selhalo → lokální data zůstanou
+        fetch('https://finnhub.io/api/v1/stock/profile2?symbol='+t+'&token='+token).then(r=>r.ok?r.json():null).catch(()=>null)
+      ]).then(([q,met])=>{
+        if(!q||!q.metric) return;
         const m=q.metric||{};
-        let recommendation=yfData[t].recommendation;
-        if(Array.isArray(rec)&&rec.length>0){
-          const r=rec[0],total=(r.buy||0)+(r.hold||0)+(r.sell||0)+(r.strongBuy||0)+(r.strongSell||0);
-          if(total>0){const s=((r.strongBuy||0)*2+(r.buy||0)-(r.sell||0)-(r.strongSell||0)*2)/total;recommendation=s>0.8?'strong_buy':s>0.2?'buy':s>-0.2?'hold':'sell';}
-        }
-        // Enrichment: doplní/přepíše jen to, co Finnhub vrátil
+        // Enrichment
         yfData[t]={...yfData[t],
           pe:          m.peNormalizedAnnual||m.peTTM||yfData[t].pe,
           pb:          m.pbAnnual||m.pbQuarterly||null,
@@ -1411,7 +1405,6 @@ function toggleDetail(t){
           high52:      m['52WeekHigh']||null,
           low52:       m['52WeekLow']||null,
           marketCap:   met&&met.marketCapitalization?met.marketCapitalization*1e6:null,
-          recommendation,
           _local: false
         };
         if(el.classList.contains('open')) el.innerHTML=renderDetail(t);
@@ -2478,21 +2471,15 @@ async function fetchPriceForAdd(ticker){
 }
 
 async function fetchFundamentals(t){
-  const token=getFinnhubKey(); if(!token) return false; // Finnhub fundamenty přeskočeny
+  const token=getFinnhubKey(); if(!token) return false;
   try{
-    const [qR,mR,rR]=await Promise.all([
+    const [qR,mR]=await Promise.all([
       fetch('https://finnhub.io/api/v1/stock/metric?symbol='+t+'&metric=all&token='+token),
-      fetch('https://finnhub.io/api/v1/stock/profile2?symbol='+t+'&token='+token),
-      fetch('https://finnhub.io/api/v1/recommendation?symbol='+t+'&limit=1&token='+token)
+      fetch('https://finnhub.io/api/v1/stock/profile2?symbol='+t+'&token='+token)
     ]);
-    const q=qR.ok?await qR.json():{},met=mR.ok?await mR.json():{},rec=rR.ok?await rR.json():[];
+    const q=qR.ok?await qR.json():{},met=mR.ok?await mR.json():{};
     const m=q.metric||{};
-    let recommendation=null;
-    if(Array.isArray(rec)&&rec.length>0){
-      const r=rec[0],total=(r.buy||0)+(r.hold||0)+(r.sell||0)+(r.strongBuy||0)+(r.strongSell||0);
-      if(total>0){const s=((r.strongBuy||0)*2+(r.buy||0)-(r.sell||0)-(r.strongSell||0)*2)/total;recommendation=s>0.8?'strong_buy':s>0.2?'buy':s>-0.2?'hold':'sell';}
-    }
-    yfData[t]={pe:m.peNormalizedAnnual||m.peTTM||null,pb:m.pbAnnual||m.pbQuarterly||null,beta:m.beta||null,yieldYH:m.dividendYieldIndicatedAnnual||null,payoutRatio:m.payoutRatioAnnual||null,exDiv:m.exDividendDate||null,high52:m['52WeekHigh']||null,low52:m['52WeekLow']||null,targetPrice:null,recommendation,industry:met.finnhubIndustry||null,sector:met.finnhubIndustry||null,marketCap:met.marketCapitalization?met.marketCapitalization*1e6:null};
+    yfData[t]={pe:m.peNormalizedAnnual||m.peTTM||null,pb:m.pbAnnual||m.pbQuarterly||null,beta:m.beta||null,yieldYH:m.dividendYieldIndicatedAnnual||null,payoutRatio:m.payoutRatioAnnual||null,exDiv:m.exDividendDate||null,high52:m['52WeekHigh']||null,low52:m['52WeekLow']||null,targetPrice:null,recommendation:null,industry:met.finnhubIndustry||null,sector:met.finnhubIndustry||null,marketCap:met.marketCapitalization?met.marketCapitalization*1e6:null};
     return true;
   }catch(e){ return false; }
 }
