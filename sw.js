@@ -26,6 +26,9 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const url = e.request.url;
 
+  // Ignoruj chrome-extension a non-http requesty
+  if(!url.startsWith('http')) return;
+
   // GitHub API a ceny — vždy network, nikdy necachuj
   if(url.includes('api.github.com') || url.includes('finance.yahoo') ||
      url.includes('allorigins') || url.includes('finnhub') ||
