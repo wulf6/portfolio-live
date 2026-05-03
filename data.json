@@ -1,11 +1,11 @@
 {
   "_version": 2,
-  "_savedAt": "2026-05-03T04:10:36.580Z",
+  "_savedAt": "2026-05-03T04:11:04.943Z",
   "qty": {
     "PFLT": 0,
     "ARCC": 113,
     "CSWC": 85,
-    "HTGC": 0,
+    "HTGC": 1,
     "MAIN": 0,
     "O": 51,
     "WPC": 18,
@@ -66,7 +66,8 @@
     "WPC": 69.6738888888889,
     "VICI": 28.77,
     "BMY": 59.38,
-    "ARCC": 20.65
+    "ARCC": 20.65,
+    "HTGC": 18.75
   },
   "costQty": {
     "MO": 30,
@@ -77,7 +78,8 @@
     "WPC": 18,
     "VICI": 7,
     "BMY": 3,
-    "ARCC": 113
+    "ARCC": 113,
+    "HTGC": 1
   },
   "dividendData": {
     "PFLT": 1.23,
