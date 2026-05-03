@@ -1,6 +1,6 @@
 {
   "_version": 2,
-  "_savedAt": "2026-05-02T18:36:59.968Z",
+  "_savedAt": "2026-05-03T04:03:17.675Z",
   "qty": {
     "PFLT": 0,
     "ARCC": 0,
@@ -11,7 +11,7 @@
     "WPC": 0,
     "OHI": 0,
     "VICI": 0,
-    "MO": 0,
+    "MO": 28,
     "VZ": 0,
     "BMY": 0
   },
@@ -57,8 +57,12 @@
     "VZ": 47.12,
     "BMY": 58.71
   },
-  "avgCost": {},
-  "costQty": {},
+  "avgCost": {
+    "MO": 61.93
+  },
+  "costQty": {
+    "MO": 28
+  },
   "dividendData": {
     "PFLT": 1.23,
     "ARCC": 1.92,
